@@ -28,7 +28,7 @@
             border-top: 1px solid color-mix(in srgb, var(--tacc, #8fc63f) 30%, transparent); }
     .bnav button { flex: 1; background: none; border: 0; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 2px;
                    font: 600 11px Inter, sans-serif; padding: 4px 0; position: relative; border-radius: 14px; transition: color .2s; }
-    .bnav button .ic { font-size: 22px; line-height: 28px; width: 56px; border-radius: 14px; transition: background .25s, transform .25s; filter: grayscale(.6); }
+    .bnav button .ic { font-size: 22px; line-height: 28px; width: 50px; border-radius: 14px; transition: background .25s, transform .25s; filter: grayscale(.6); }
     .bnav button.on { color: var(--tacc, #8fc63f); }
     .bnav button.on .ic { background: color-mix(in srgb, var(--tacc, #8fc63f) 22%, transparent); transform: translateY(-1px); filter: none; }
     .bnav .bdg { position: absolute; top: 0; left: calc(50% + 10px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #ff4757; color: #fff; font: 700 11px/18px Inter, sans-serif; }
@@ -59,7 +59,7 @@
   document.head.appendChild(st);
 
   /* ---------- Markup ---------- */
-  const tabs = [["consoles", "🎮", "navConsoles"], ["chat", "💬", "navChat"], ["sessions", "🕹️", "navSessions"], ["friends", "👥", "navFriends"]];
+  const tabs = [["consoles", "🎮", "navConsoles"], ["chat", "💬", "navChat"], ["sessions", "🕹️", "navSessions"], ["requests", "📨", "navRequests"], ["friends", "👥", "navFriends"]];
   const nav = document.createElement("nav"); nav.className = "bnav";
   document.body.appendChild(nav);
   const views = {};
@@ -78,6 +78,8 @@
   function paintBadges() {
     const n = (window.kameiChat && window.kameiChat.unreadCount) ? window.kameiChat.unreadCount() : 0;
     const el = nav.querySelector('[data-bdg="chat"]'); if (el) el.textContent = n ? String(n) : "";
+    const rn = window.kameiRequests ? window.kameiRequests.badge() : 0;
+    const er = nav.querySelector('[data-bdg="requests"]'); if (er) er.textContent = rn ? String(rn) : "";
   }
   function go(k, force) {
     if (k === cur && !force) { if (k === "consoles") window.scrollTo({ top: 0, behavior: "smooth" }); else render(k); return; }
@@ -102,6 +104,7 @@
     }
     if (k === "chat") return renderChat(v);
     if (k === "sessions") return renderSessions(v);
+    if (k === "requests" && window.kameiRequests) return window.kameiRequests.render(v);
   }
 
   /* ---------- Chat: list of conversations ---------- */
