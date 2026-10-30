@@ -1,0 +1,15 @@
+{
+  "games": [
+    {
+      "id": "pokemon-version-rouge",
+      "title": "Pokemon - Version Rouge",
+      "system": "gb",
+      "file": "catalogue/files/pokemon-version-rouge.zip",
+      "size": 381325,
+      "author": "Kamei Productions",
+      "source": null,
+      "cover": null,
+      "added": "2026-10-30T02:39:37.690Z"
+    }
+  ]
+}
