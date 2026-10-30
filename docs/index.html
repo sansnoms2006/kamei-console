@@ -1162,6 +1162,7 @@ function showSlots(slots) {
 /* =================== Hooks used by the Android app =================== */
 window.kameiBack = () => {
   if ($("sheetBg").classList.contains("on")) { closeSheet(); return "stay"; }
+  if (window.kameiPlay && window.kameiPlay.state().guest) { window.kameiPlay.stopGuest(); return "stay"; }
   if ($("player").classList.contains("on")) { $("quit").click(); return "stay"; }
   return "exit";
 };
@@ -1177,6 +1178,7 @@ window.kameiKey = (code, down) => {
 window.kameiAxis = (...v) => { padNotice(); if (current) frameWin().postMessage({ type: "axis", v }, "*"); };
 
 window.kameiReload = load;
+window.kameiCurrentGame = () => current;
 $("catBtn").onclick = () => window.kameiCatalogue && window.kameiCatalogue.open();
 applyLang();
 load().then(scrapeMissing);
@@ -1190,6 +1192,7 @@ window.addEventListener("online", scrapeMissing);
 <script src="chat.js"></script>
 <script src="requests.js"></script>
 <script src="nav.js"></script>
+<script src="netplay.js"></script>
 <script src="gh.js"></script>
 <script src="catalogue.js"></script>
 <script src="update.js"></script>

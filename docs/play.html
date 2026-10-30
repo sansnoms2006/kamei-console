@@ -22,6 +22,24 @@
     window.AudioContext = Wrapped;
     window.webkitAudioContext = Wrapped;
   }
+  /* "Jouer ensemble": remember what is plugged into the speakers, so it can also be sent to the friend */
+  const toSpeakers = new Set(); let tee = null;
+  const origConnect = AudioNode.prototype.connect;
+  AudioNode.prototype.connect = function (dest, ...rest) {
+    const r = origConnect.call(this, dest, ...rest);
+    try {
+      if (dest === this.context.destination) {
+        toSpeakers.add(this);
+        if (tee && tee.context === this.context) origConnect.call(this, tee);
+      }
+    } catch (e) {}
+    return r;
+  };
+  window.kameiAudioStream = () => {
+    const node = [...toSpeakers][0]; if (!node) return null;
+    if (!tee) { tee = node.context.createMediaStreamDestination(); for (const n of toSpeakers) { try { if (n.context === tee.context) origConnect.call(n, tee); } catch (e) {} } }
+    return tee.stream;
+  };
   window.kameiResumeAudio = () => { for (const c of all) { try { if (c.state !== "running") c.resume(); } catch (e) {} } };
   for (const ev of ["touchstart", "touchend", "pointerdown", "keydown", "click"]) {
     window.addEventListener(ev, window.kameiResumeAudio, true);
@@ -136,6 +154,60 @@
     setBtn(12, lt > 0.5); setBtn(13, rt > 0.5);
   };
 
+  /* ---------- Jouer ensemble (host): send the picture + sound, receive player 2's buttons ---------- */
+  let pc = null, dc = null, p2 = 0, p2axis = [0, 0];
+  const sig = (data) => parent.postMessage({ type: "netSig", data }, "*");
+  function netStop() {
+    try { dc && dc.close(); } catch (e) {} try { pc && pc.close(); } catch (e) {}
+    pc = null; dc = null;
+    if (ready()) for (let i = 0; i < 20; i++) { try { emu().gameManager.simulateInput(1, i, 0); } catch (e) {} }
+    p2 = 0;
+  }
+  function applyP2(m) {
+    if (!ready()) return;
+    const gm = emu().gameManager;
+    const b = m.b | 0;
+    for (let i = 0; i < 16; i++) { const on = (b >> i) & 1; if (((p2 >> i) & 1) !== on) gm.simulateInput(1, i, on); }
+    p2 = b;
+    const [x, y] = m.a || [0, 0], A = 0x7fff;
+    if (x !== p2axis[0] || y !== p2axis[1]) {
+      gm.simulateInput(1, 16, x > 0 ? Math.round(x * A) : 0); gm.simulateInput(1, 17, x < 0 ? Math.round(-x * A) : 0);
+      gm.simulateInput(1, 18, y > 0 ? Math.round(y * A) : 0); gm.simulateInput(1, 19, y < 0 ? Math.round(-y * A) : 0);
+      p2axis = [x, y];
+    }
+  }
+  async function netHost(ice) {
+    netStop();
+    const canvas = document.querySelector("#game canvas");
+    if (!canvas || !canvas.captureStream) { parent.postMessage({ type: "netState", state: "error", why: "canvas" }, "*"); return; }
+    pc = new RTCPeerConnection({ iceServers: ice });
+    const video = canvas.captureStream(60).getVideoTracks()[0];
+    try { video.contentHint = "motion"; } catch (e) {}
+    const vs = pc.addTrack(video);
+    const audio = window.kameiAudioStream && window.kameiAudioStream();
+    if (audio && audio.getAudioTracks()[0]) pc.addTrack(audio.getAudioTracks()[0], audio);
+    dc = pc.createDataChannel("p2", { ordered: false, maxRetransmits: 0 });
+    dc.onmessage = (e) => { try { applyP2(JSON.parse(e.data)); } catch (err) {} };
+    pc.onicecandidate = (e) => { if (e.candidate) sig({ kind: "ice", data: e.candidate.toJSON() }); };
+    pc.onconnectionstatechange = () => {
+      parent.postMessage({ type: "netState", state: pc && pc.connectionState }, "*");
+      if (pc && pc.connectionState === "connected") {
+        try { const prm = vs.getParameters(); prm.encodings = prm.encodings && prm.encodings.length ? prm.encodings : [{}];
+              prm.encodings[0].maxBitrate = 3500000; prm.encodings[0].maxFramerate = 60; prm.degradationPreference = "maintain-framerate"; vs.setParameters(prm); } catch (e) {}
+      }
+    };
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    sig({ kind: "offer", data: pc.localDescription.toJSON() });
+  }
+  async function netSig(m) {
+    if (!pc) return;
+    try {
+      if (m.kind === "answer") await pc.setRemoteDescription(m.data);
+      if (m.kind === "ice" && m.data) await pc.addIceCandidate(m.data);
+    } catch (e) {}
+  }
+
   /* ---------- Start ---------- */
   function startGame(msg) {
     if (started) return;
@@ -204,6 +276,9 @@
     }
     if (d.type === "key") window.kameiKey(d.code, d.down);
     if (d.type === "axis") window.kameiAxis(...d.v);
+    if (d.type === "netHost") netHost(d.ice || []);
+    if (d.type === "netSig") netSig(d.data);
+    if (d.type === "netStop") netStop();
   });
   parent.postMessage({ type: "ready" }, "*");
 })();
