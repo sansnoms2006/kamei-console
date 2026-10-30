@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Jeu</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b0b12; overflow: hidden; }
+  #game { width: 100%; height: 100%; }
+  #wait { position: fixed; inset: 0; display: grid; place-items: center; color: #8b8ba7;
+          font: 600 14px/1.4 system-ui, sans-serif; }
+</style>
+<script>
+/* Keep track of every AudioContext so sound can be (re)started on the first touch:
+   some Android WebViews create them "suspended", which gives a game without sound. */
+(function () {
+  const all = [];
+  const Orig = window.AudioContext || window.webkitAudioContext;
+  if (Orig) {
+    const Wrapped = function (...args) { const c = new Orig(...args); all.push(c); return c; };
+    Wrapped.prototype = Orig.prototype;
+    window.AudioContext = Wrapped;
+    window.webkitAudioContext = Wrapped;
+  }
+  window.kameiResumeAudio = () => { for (const c of all) { try { if (c.state !== "running") c.resume(); } catch (e) {} } };
+  for (const ev of ["touchstart", "touchend", "pointerdown", "keydown", "click"]) {
+    window.addEventListener(ev, window.kameiResumeAudio, true);
+  }
+})();
+</script>
+</head>
+<body>
+<div id="game"></div>
+<div id="wait">…</div>
+<script>
+(function () {
+  let started = false;
+  let meta = null;
+
+  /* ---------- Save slots (stored on the device, in IndexedDB) ---------- */
+  let dbp = null;
+  function db() {
+    if (!dbp) dbp = new Promise((res, rej) => {
+      const r = indexedDB.open("kamei-states", 1);
+      r.onupgradeneeded = () => r.result.createObjectStore("states");
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+    return dbp;
+  }
+  async function idb(mode, fn) {
+    const d = await db();
+    return new Promise((res, rej) => {
+      const t = d.transaction("states", mode); const req = fn(t.objectStore("states"));
+      t.oncomplete = () => res(req && req.result); t.onerror = () => rej(t.error);
+    });
+  }
+  const key = (slot) => meta.saveKey + "|" + meta.system + "|" + slot;
+  const emu = () => window.EJS_emulator;
+  const ready = () => emu() && emu().started && emu().gameManager;
+
+  async function saveSlot(slot) {
+    if (!ready()) return false;
+    const gm = emu().gameManager;
+    const state = gm.getState().slice();
+    let shot = null;
+    try { shot = await Promise.race([gm.screenshot(), new Promise((r) => setTimeout(() => r(null), 1500))]); } catch (e) {}
+    await idb("readwrite", (s) => s.put({ time: Date.now(), state, shot: shot ? new Blob([shot], { type: "image/png" }) : null }, key(slot)));
+    return true;
+  }
+  async function loadSlot(slot) {
+    if (!ready()) return false;
+    const rec = await idb("readonly", (s) => s.get(key(slot)));
+    if (!rec) return false;
+    emu().gameManager.loadState(rec.state);
+    if (emu().paused) emu().togglePlaying && emu().togglePlaying();
+    return true;
+  }
+  async function listSlots() {
+    const out = {};
+    for (const slot of ["auto", "1", "2", "3"]) {
+      const rec = await idb("readonly", (s) => s.get(key(slot)));
+      out[slot] = rec ? { time: rec.time, shot: rec.shot } : null;
+    }
+    return out;
+  }
+
+  /* ---------- DS: turn finger touches into mouse input for the bottom screen ---------- */
+  function setupTouchToMouse() {
+    const canvas = emu() && emu().canvas;
+    if (!canvas) return setTimeout(setupTouchToMouse, 300);
+    let id = null;
+    const send = (type, t) => canvas.dispatchEvent(new MouseEvent(type, {
+      bubbles: true, cancelable: true, clientX: t.clientX, clientY: t.clientY, screenX: t.screenX, screenY: t.screenY, button: 0, buttons: type === "mouseup" ? 0 : 1 }));
+    canvas.addEventListener("touchstart", (e) => {
+      if (id !== null) return;
+      const t = e.changedTouches[0]; id = t.identifier;
+      send("mousemove", t); send("mousedown", t); e.preventDefault();
+    }, { passive: false });
+    canvas.addEventListener("touchmove", (e) => {
+      for (const t of e.changedTouches) if (t.identifier === id) { send("mousemove", t); e.preventDefault(); }
+    }, { passive: false });
+    const end = (e) => {
+      for (const t of e.changedTouches) if (t.identifier === id) { send("mouseup", t); id = null; e.preventDefault(); }
+    };
+    canvas.addEventListener("touchend", end, { passive: false });
+    canvas.addEventListener("touchcancel", end, { passive: false });
+  }
+
+  /* ---------- Physical controllers forwarded by the Android app ---------- */
+  // Android key codes -> RetroPad inputs (0 B, 1 Y, 2 Select, 3 Start, 4 Up, 5 Down, 6 Left, 7 Right, 8 A, 9 X, 10 L, 11 R, 12 L2, 13 R2, 14 L3, 15 R3)
+  const KEYMAP = { 96: 0, 97: 8, 99: 1, 100: 9, 102: 10, 103: 11, 104: 12, 105: 13, 106: 14, 107: 15, 108: 3, 109: 2,
+                   19: 4, 20: 5, 21: 6, 22: 7, 23: 0, 66: 3, 62: 2, 188: 0, 189: 8, 190: 1, 191: 9, 192: 10, 193: 11, 196: 3, 197: 2 };
+  const held = {};
+  function padSeen() { try { emu().toggleVirtualGamepad && emu().toggleVirtualGamepad(false); } catch (e) {} }
+  window.kameiKey = (code, down) => {
+    const idx = KEYMAP[code];
+    if (idx === undefined || !ready()) return;
+    padSeen();
+    emu().gameManager.simulateInput(0, idx, down ? 1 : 0);
+  };
+  function setBtn(idx, on) {
+    if (!!held[idx] === on) return;
+    held[idx] = on; emu().gameManager.simulateInput(0, idx, on ? 1 : 0);
+  }
+  window.kameiAxis = (x, y, hx, hy, lt, rt) => {
+    if (!ready()) return;
+    padSeen();
+    const gm = emu().gameManager, A = 0x7fff;
+    // left stick: analog (16 right, 17 left, 18 down, 19 up) + d-pad emulation for 2D games
+    gm.simulateInput(0, 16, x > 0 ? Math.round(x * A) : 0); gm.simulateInput(0, 17, x < 0 ? Math.round(-x * A) : 0);
+    gm.simulateInput(0, 18, y > 0 ? Math.round(y * A) : 0); gm.simulateInput(0, 19, y < 0 ? Math.round(-y * A) : 0);
+    const analog = ["n64", "psx"].includes(meta.system);
+    setBtn(4, hy < -0.5 || (!analog && y < -0.5)); setBtn(5, hy > 0.5 || (!analog && y > 0.5));
+    setBtn(6, hx < -0.5 || (!analog && x < -0.5)); setBtn(7, hx > 0.5 || (!analog && x > 0.5));
+    setBtn(12, lt > 0.5); setBtn(13, rt > 0.5);
+  };
+
+  /* ---------- Start ---------- */
+  function startGame(msg) {
+    if (started) return;
+    started = true; meta = msg;
+    document.getElementById("wait").remove();
+    window.EJS_player = "#game";
+    window.EJS_core = msg.system;
+    window.EJS_gameUrl = msg.blob;
+    window.EJS_gameName = msg.saveKey;
+    window.EJS_pathtodata = "data/";
+    window.EJS_DEBUG_XX = true;
+    window.EJS_language = msg.lang || "fr-FR";
+    window.EJS_color = msg.color || "#8fc63f";
+    window.EJS_startOnLoaded = true;
+    window.EJS_backgroundColor = "#0b0b12";
+    window.EJS_threads = !!msg.threads && typeof SharedArrayBuffer === "function";
+    if (msg.ext) window.EJS_kameiExt = msg.ext;
+    if (msg.bios) window.EJS_biosUrl = msg.bios;
+    window.EJS_volume = 1;
+    window.EJS_defaultOptions = { "save-save-interval": "30", "melonds_touch_mode": "Touch" };
+    window.EJS_Buttons = { netplay: false, exitEmulation: false, cacheManager: false, contextMenu: false, saveState: false, loadState: false };
+    const s = document.createElement("script");
+    s.src = "data/loader.js";
+    document.body.appendChild(s);
+    if (msg.system === "nds") setupTouchToMouse();
+    if (msg.vibe) setupVibe();
+    const iv = setInterval(() => { if (ready()) { clearInterval(iv); parent.postMessage({ type: "started" }, "*"); } }, 400);
+  }
+
+  /* Short vibration when a virtual (touch) button is pressed */
+  function setupVibe() {
+    const buzz = () => {
+      try { const n = window.KameiNative || (parent && parent.KameiNative); if (n && n.vibrate) { n.vibrate(16); return; } } catch (e) {}
+      try { navigator.vibrate && navigator.vibrate(16); } catch (e) {}
+    };
+    document.addEventListener("touchstart", (e) => {
+      for (const tch of e.changedTouches) {
+        const el = tch.target && tch.target.closest && tch.target.closest(".ejs_virtualGamepad_button, .ejs_dpad_main, .ejs_virtualGamepad_left > *, .ejs_virtualGamepad_right > *");
+        if (el) { buzz(); break; }
+      }
+    }, { passive: true, capture: true });
+  }
+
+  function saveBattery() {
+    try { if (ready()) emu().gameManager.saveSaveFiles(); } catch (e) {}
+  }
+
+  window.addEventListener("message", async (e) => {
+    if (e.source !== parent || !e.data) return;
+    const d = e.data;
+    if (d.type === "load") startGame(d);
+    if (d.type === "save") saveBattery();
+    if (d.type === "quit") {
+      saveBattery();
+      try { await saveSlot("auto"); } catch (err) {}
+      setTimeout(() => parent.postMessage({ type: "saved" }, "*"), 600);
+    }
+    if (d.type === "slots") parent.postMessage({ type: "slots", slots: await listSlots().catch(() => ({})) }, "*");
+    if (d.type === "saveSlot") {
+      let ok = false; try { ok = await saveSlot(d.slot); } catch (err) {}
+      parent.postMessage({ type: "slotDone", action: "save", ok, slot: d.slot }, "*");
+    }
+    if (d.type === "loadSlot") {
+      let ok = false; try { ok = await loadSlot(d.slot); } catch (err) {}
+      parent.postMessage({ type: "slotDone", action: "load", ok, slot: d.slot }, "*");
+    }
+    if (d.type === "key") window.kameiKey(d.code, d.down);
+    if (d.type === "axis") window.kameiAxis(...d.v);
+  });
+  parent.postMessage({ type: "ready" }, "*");
+})();
+</script>
+</body>
+</html>

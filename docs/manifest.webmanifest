@@ -1,0 +1,14 @@
+{
+  "name": "Kamei Productions Game Console",
+  "short_name": "Kamei Console",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0b12",
+  "theme_color": "#0b0b12",
+  "icons": [
+    { "src": "icons/default-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/default-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
