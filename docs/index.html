@@ -357,7 +357,7 @@ const I18N = {
     savedOk: "Partie sauvegardée", loadedOk: "Partie chargée", failed: "Ça n'a pas marché, réessaie",
     coverSearching: "Recherche de la jaquette…", coverFound: "Jaquette trouvée", coverNone: "Pas de jaquette trouvée pour ce nom",
     storage: "Le stockage n'est pas disponible ici", language: "Langue", foot: "Émulation : EmulatorJS (GPL-3.0) et cœurs libretro. Jaquettes : projet libretro-thumbnails.",
-    padOn: "Manette connectée 🎮", other: "Autre",
+    padOn: "Manette connectée 🎮 · boutons tactiles cachés", padOff: "Boutons tactiles affichés 👆", other: "Autre",
     getApk: "📱 Télécharger l'appli Android", noApk: "Pas encore de lien vers l'APK",
     resume: "Continuer", 
     newGame: "Nouvelle partie", gfSaves: "SAUVEGARDES", gfMore: "PLUS", gfNone: "—", 
@@ -385,7 +385,7 @@ const I18N = {
     savedOk: "Spel opgeslagen", loadedOk: "Spel geladen", failed: "Dat lukte niet, probeer opnieuw",
     coverSearching: "Hoesje zoeken…", coverFound: "Hoesje gevonden", coverNone: "Geen hoesje gevonden voor deze naam",
     storage: "Opslag is hier niet beschikbaar", language: "Taal", foot: "Emulatie: EmulatorJS (GPL-3.0) en libretro-cores. Hoesjes: libretro-thumbnails.",
-    padOn: "Controller verbonden 🎮", other: "Andere",
+    padOn: "Controller verbonden 🎮 · aanraakknoppen verborgen", padOff: "Aanraakknoppen zichtbaar 👆", other: "Andere",
     getApk: "📱 Android-app downloaden", noApk: "Nog geen link naar de APK",
     resume: "Verder spelen", 
     newGame: "Nieuw spel", gfSaves: "OPSLAGEN", gfMore: "MEER", gfNone: "—", 
@@ -413,7 +413,7 @@ const I18N = {
     savedOk: "Game saved", loadedOk: "Game loaded", failed: "That didn't work, try again",
     coverSearching: "Looking for the cover…", coverFound: "Cover found", coverNone: "No cover found for this name",
     storage: "Storage isn't available here", language: "Language", foot: "Emulation: EmulatorJS (GPL-3.0) and libretro cores. Covers: libretro-thumbnails project.",
-    padOn: "Controller connected 🎮", other: "Other",
+    padOn: "Controller connected 🎮 · touch buttons hidden", padOff: "Touch buttons shown 👆", other: "Other",
     getApk: "📱 Download the Android app", noApk: "No APK link yet",
     resume: "Continue", 
     newGame: "New game", gfSaves: "SAVES", gfMore: "MORE", gfNone: "—", 
@@ -1231,6 +1231,7 @@ window.addEventListener("message", (e) => {
                              threads: !!s.threads, bios, vibe: vibeOn(), resume: play.resume || false, opts: window.kameiGameOpts ? window.kameiGameOpts.forGame(current) : {} }, "*");
     if (s.bios) getBios(current.system).then((b) => go(b ? biosZip(b.files) : null)).catch(() => go(null)); else go(null);
   }
+  if (d.type === "pad") toast(d.controller ? t("padOn") : t("padOff"));
   if (d.type === "saved") closePlayer();
   if (d.type === "slots") showSlots(d.slots);
   if (d.type === "slotDone") {
@@ -1283,7 +1284,7 @@ window.kameiBack = () => {
 };
 window.kameiPause = () => { try { if (current) frameWin().postMessage({ type: "save" }, "*"); } catch (e) {} };
 let padToastShown = false;
-function padNotice() { if (!padToastShown) { padToastShown = true; toast(t("padOn")); } }
+function padNotice() { if (!padToastShown && !current) { padToastShown = true; toast(t("padOn").split(" · ")[0]); } }
 window.kameiKey = (code, down) => {
   padNotice();
   if (current && !$("sheetBg").classList.contains("on")) { frameWin().postMessage({ type: "key", code, down }, "*"); return; }

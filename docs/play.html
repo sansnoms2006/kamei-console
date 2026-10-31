@@ -136,11 +136,40 @@
   const KEYMAP = { 96: 0, 97: 8, 99: 1, 100: 9, 102: 10, 103: 11, 104: 12, 105: 13, 106: 14, 107: 15, 108: 3, 109: 2,
                    19: 4, 20: 5, 21: 6, 22: 7, 23: 0, 66: 3, 62: 2, 188: 0, 189: 8, 190: 1, 191: 9, 192: 10, 193: 11, 196: 3, 197: 2 };
   const held = {};
-  function padSeen() { try { emu().toggleVirtualGamepad && emu().toggleVirtualGamepad(false); } catch (e) {} }
+  /* ---------- Touch controls: shown on touch screens, hidden while a real controller is used ---------- */
+  // EmulatorJS only shows them when its start button was touched by a finger; we start automatically, so we decide here.
+  const touchCapable = (navigator.maxTouchPoints || 0) > 0 || "ontouchstart" in window;
+  let padActive = false;                 // a physical controller is being used
+  const anyGamepad = () => { try { return Array.from(navigator.getGamepads ? navigator.getGamepads() : []).some((g) => g && g.connected); } catch (e) { return false; } };
+  function wantPad() {
+    if (!touchCapable) return false;
+    let set; try { set = emu().getSettingValue("virtual-gamepad"); } catch (e) {}
+    if (set === "disabled") return false;
+    return !(padActive || anyGamepad());
+  }
+  let shownPad = null;
+  function syncPad() {
+    if (!ready()) return;
+    const want = wantPad();
+    try { if (touchCapable) emu().touch = true; emu().toggleVirtualGamepad && emu().toggleVirtualGamepad(want); } catch (e) {}
+    if (shownPad !== null && shownPad !== want) parent.postMessage({ type: "pad", controller: !want }, "*");
+    shownPad = want;
+  }
+  function padSeen() { if (!padActive) { padActive = true; syncPad(); } }
+  window.addEventListener("gamepadconnected", () => setTimeout(syncPad, 50));
+  window.addEventListener("gamepaddisconnected", () => setTimeout(() => { if (!anyGamepad()) { padActive = false; syncPad(); } }, 50));
+  // touching the screen again (outside the buttons) brings the touch controls back
+  document.addEventListener("touchstart", (e) => {
+    if (!padActive && !anyGamepad()) return;
+    if (e.target.closest && e.target.closest(".ejs_menu_bar, .ejs_popup_container, #rew")) return;
+    padActive = false;
+    if (anyGamepad()) return;
+    syncPad();
+  }, { passive: true });
   window.kameiKey = (code, down) => {
     const idx = KEYMAP[code];
     if (idx === undefined || !ready()) return;
-    padSeen();
+    if (down) padSeen();
     emu().gameManager.simulateInput(0, idx, down ? 1 : 0);
   };
   function setBtn(idx, on) {
@@ -149,7 +178,7 @@
   }
   window.kameiAxis = (x, y, hx, hy, lt, rt) => {
     if (!ready()) return;
-    padSeen();
+    if ([x, y, hx, hy].some((v) => Math.abs(v) > 0.4) || lt > 0.5 || rt > 0.5) padSeen();
     const gm = emu().gameManager, A = 0x7fff;
     // left stick: analog (16 right, 17 left, 18 down, 19 up) + d-pad emulation for 2D games
     gm.simulateInput(0, 16, x > 0 ? Math.round(x * A) : 0); gm.simulateInput(0, 17, x < 0 ? Math.round(-x * A) : 0);
@@ -286,7 +315,7 @@
     document.body.appendChild(s);
     if (msg.system === "nds") setupTouchToMouse();
     if (msg.vibe) setupVibe();
-    const iv = setInterval(() => { if (ready()) { clearInterval(iv); applyOpts(); parent.postMessage({ type: "started" }, "*");
+    const iv = setInterval(() => { if (ready()) { clearInterval(iv); applyOpts(); syncPad(); setTimeout(syncPad, 600); setTimeout(syncPad, 2000); parent.postMessage({ type: "started" }, "*");
       if (msg.resume) setTimeout(() => { loadSlot(msg.resume === true ? "auto" : String(msg.resume)).then((ok) => parent.postMessage({ type: "resumed", ok }, "*"), () => {}); }, 700); } }, 400);
   }
 
