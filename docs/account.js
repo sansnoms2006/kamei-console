@@ -9,7 +9,7 @@
     gateHello: "Bienvenue sur la console Kamei", gateSub: "Connecte-toi ou crée ton compte pour jouer avec tes amis.", gateOffline: "Pas de connexion internet : il en faut une pour la première connexion.",
     finishProfile: "Choisis ton pseudo", finishHint: "Il ne manque plus que ton pseudo et ta couleur.", go: "C'est parti !", retry: "Réessayer",
     admin: "🛡️ Admin", adminTitle: "Gestion des comptes", accounts: "comptes", onlineNow: "en ligne", playTime: "de jeu",
-    searchUser: "Rechercher un joueur…", banned: "Banni", isAdmin: "Admin", created: (a) => `Inscrit ${a}`,
+    clearPhoto: "🖼️ Retirer sa photo de profil", searchUser: "Rechercher un joueur…", banned: "Banni", isAdmin: "Admin", created: (a) => `Inscrit ${a}`,
     renameUser: "Renommer", ban: "Bannir", unban: "Débannir", makeAdmin: "Rendre admin", removeAdmin: "Retirer admin",
     newCode: "Nouveau code ami", deleteUser: "Supprimer le compte", deleteUserQ: (n) => `Supprimer définitivement le compte de ${n} ?`,
     deleteUserHint: "Son profil, ses amis et son historique seront effacés. Ça ne peut pas être annulé.", done: "C'est fait",
@@ -30,7 +30,7 @@
     gateHello: "Welkom op de Kamei-console", gateSub: "Log in of maak een account om met je vrienden te spelen.", gateOffline: "Geen internetverbinding: die is nodig om de eerste keer in te loggen.",
     finishProfile: "Kies je gebruikersnaam", finishHint: "Alleen je naam en kleur ontbreken nog.", go: "Let's go!", retry: "Opnieuw proberen",
     admin: "🛡️ Admin", adminTitle: "Accounts beheren", accounts: "accounts", onlineNow: "online", playTime: "speeltijd",
-    searchUser: "Zoek een speler…", banned: "Verbannen", isAdmin: "Admin", created: (a) => `Ingeschreven ${a}`,
+    clearPhoto: "🖼️ Profielfoto verwijderen", searchUser: "Zoek een speler…", banned: "Verbannen", isAdmin: "Admin", created: (a) => `Ingeschreven ${a}`,
     renameUser: "Naam wijzigen", ban: "Verbannen", unban: "Verbanning opheffen", makeAdmin: "Admin maken", removeAdmin: "Admin afnemen",
     newCode: "Nieuwe vriendencode", deleteUser: "Account verwijderen", deleteUserQ: (n) => `Account van ${n} definitief verwijderen?`,
     deleteUserHint: "Profiel, vrienden en geschiedenis worden gewist. Dit kan niet ongedaan worden.", done: "Gedaan",
@@ -51,7 +51,7 @@
     gateHello: "Welcome to the Kamei console", gateSub: "Log in or create your account to play with your friends.", gateOffline: "No internet connection: you need it to log in the first time.",
     finishProfile: "Pick your username", finishHint: "Only your username and color are missing.", go: "Let's go!", retry: "Retry",
     admin: "🛡️ Admin", adminTitle: "Manage accounts", accounts: "accounts", onlineNow: "online", playTime: "played",
-    searchUser: "Search a player…", banned: "Banned", isAdmin: "Admin", created: (a) => `Joined ${a}`,
+    clearPhoto: "🖼️ Remove profile photo", searchUser: "Search a player…", banned: "Banned", isAdmin: "Admin", created: (a) => `Joined ${a}`,
     renameUser: "Rename", ban: "Ban", unban: "Unban", makeAdmin: "Make admin", removeAdmin: "Remove admin",
     newCode: "New friend code", deleteUser: "Delete account", deleteUserQ: (n) => `Permanently delete ${n}'s account?`,
     deleteUserHint: "Profile, friends and history will be erased. This can't be undone.", done: "Done",
@@ -81,7 +81,8 @@
   function avatarHTML(p, size) {
     const c = (p && p.color) || "#2a2a3d";
     const letter = p ? esc(p.pseudo.slice(0, 1).toUpperCase()) : "👤";
-    return `<span class="av" style="--ac:${c};width:${size}px;height:${size}px;font-size:${Math.round(size * .45)}px">${letter}</span>`;
+    const photo = p && p.avatar_url && /^[0-9a-f-]{36}\/[\w.-]+$/i.test(p.avatar_url) && sb ? sb.storage.from("avatars").getPublicUrl(p.avatar_url).data.publicUrl : "";
+    return `<span class="av" style="--ac:${c};width:${size}px;height:${size}px;font-size:${Math.round(size * .45)}px">${letter}${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" onerror="this.remove()">` : ""}</span>`;
   }
   function paintBtn() { btn.innerHTML = avatarHTML(me, 34) + (me ? "" : ""); btn.title = me ? me.pseudo : t("account"); }
 
@@ -215,6 +216,7 @@
   /* ---------- Friends ---------- */
   const isOnline = (p) => p.last_seen && Date.now() - new Date(p.last_seen).getTime() < ONLINE_MS;
   const sysLabel = (s) => (SYSTEMS[s] ? SYSTEMS[s].short : s || "");
+  async function logout() { await stopPlaying(); await pushOff(); await sb.auth.signOut(); if (window.kameiNav) window.kameiNav.go("consoles"); me = null; localStorage.removeItem("kamei-me"); paintBtn(); closeSheet(); refreshHero(); showGate("login"); }
   async function friendsSheet(into) {
     if (into && !(into instanceof Element)) into = undefined;
     if (into === undefined && window.kameiNavFriends && window.kameiNavFriends()) return;
@@ -246,11 +248,11 @@
       <div class="addf"><input id="fCode" placeholder="${t("friendCode")}" autocapitalize="characters"><button class="ok" id="fAdd">+</button></div>
       <h3 style="margin-top:6px">${t("friends")}</h3>
       ${friends.length ? friends.map(row).join("") : `<p class="hint">${t("noFriends")}</p>`}
-      ${window.kameiProfile && feat("profile") ? `<button class="row" id="fProfile">${t("pfMine")}</button>` : ""}
-      ${feat("trades") ? `<button class="row" id="fTrades">${t("trades")}</button>` : ""}
-      ${me.is_admin ? `<button class="row" id="fAdmin">${t("admin")}</button>` : ""}
-      <button class="row danger" id="fOut">${t("logout")}</button>`);
-    if (me.is_admin) document.getElementById("fAdmin").onclick = () => adminSheet();
+      ${!into && window.kameiProfile && feat("profile") ? `<button class="row" id="fProfile">${t("pfMine")}</button>` : ""}
+      ${!into && feat("trades") ? `<button class="row" id="fTrades">${t("trades")}</button>` : ""}
+      ${!into && me.is_admin ? `<button class="row" id="fAdmin">${t("admin")}</button>` : ""}
+      ${into ? "" : `<button class="row danger" id="fOut">${t("logout")}</button>`}`);
+    if (document.getElementById("fAdmin")) document.getElementById("fAdmin").onclick = () => adminSheet();
     if (document.getElementById("fTrades")) document.getElementById("fTrades").onclick = () => window.kameiTrades && window.kameiTrades.open();
     if (document.getElementById("fProfile")) document.getElementById("fProfile").onclick = () => window.kameiProfile.mine();
     document.getElementById("fCopy").onclick = async () => { try { await navigator.clipboard.writeText(me.friend_code); toast(t("copied")); } catch (e) { toast(me.friend_code); } };
@@ -261,7 +263,7 @@
       if (r.error) return toast(errMsg(r.error), 3000);
       toast(t("friendAdded", r.data)); friendsSheet(into);
     };
-    document.getElementById("fOut").onclick = async () => { await stopPlaying(); await pushOff(); await sb.auth.signOut(); if (window.kameiNav) window.kameiNav.go("consoles"); me = null; localStorage.removeItem("kamei-me"); paintBtn(); closeSheet(); refreshHero(); showGate("login"); };
+    if (document.getElementById("fOut")) document.getElementById("fOut").onclick = logout;
     (into || document.getElementById("sheet")).querySelectorAll("button.friend[data-f]").forEach((b) => b.onclick = () => {
       const fr = friends.find((p) => p.id === b.dataset.f);
       if (window.kameiChat && window.kameiChat.unreadFrom(fr.id)) window.kameiChat.open(fr); else friendDetail(fr);
@@ -341,6 +343,7 @@
       <button class="row" id="uRename">${t("renameUser")}</button>
       <button class="row" id="uCode">${t("newCode")}</button>
       ${self ? "" : `<button class="row" id="uAdmin">${u.is_admin ? t("removeAdmin") : t("makeAdmin")}</button>
+      <button class="row" id="uPhoto">${t("clearPhoto")}</button>
       <button class="row danger" id="uBan">${u.banned ? t("unban") : t("ban")}</button>
       <button class="row danger" id="uDel">${t("deleteUser")}</button>`}
       <h3>${t("recent")}</h3>
@@ -348,6 +351,7 @@
         <span class="fi"><b>${esc(s.game)}</b><span>${esc(sysLabel(s.system))} · ${ago(new Date(s.started_at).getTime())}${s.minutes ? " · " + t("minutes", s.minutes) : ""}</span></span></div>`).join("") : `<p class="hint">${t("nothingYet")}</p>`}
       <div class="btns" style="margin-top:12px"><button id="uBack">←</button></div>`);
     const act = async (fn, args) => { const res = await sb.rpc(fn, args); if (res.error) { toast(errMsg(res.error), 3000); return false; } toast(t("done")); return true; };
+    if (document.getElementById("uPhoto")) document.getElementById("uPhoto").onclick = () => act("admin_clear_avatar", { uid: u.id });
     document.getElementById("uBack").onclick = adminSheet;
     document.getElementById("uRename").onclick = () => {
       openSheet(`<h3>${t("renameUser")}</h3><input id="uNew" value="${esc(u.pseudo)}" maxlength="20">
@@ -461,6 +465,8 @@
   window.kameiAdminUser = async (uid) => { const r = await sb.rpc("admin_users"); const u = (r.data || []).find((x) => x.id === uid); if (u) adminUser(u); };
   window.kameiMe = () => me;
   window.kameiAvatar = avatarHTML;
+  window.kameiSetMe = (patch) => { if (!me) return; Object.assign(me, patch); try { localStorage.setItem("kamei-me", JSON.stringify(me)); } catch (e) {} paintBtn(); };
+  window.kameiLogout = logout;
   window.kameiFriendsSheet = (into) => friendsSheet(into);
   window.kameiOnline = (p) => isOnline(p);
   window.kameiFriendDetail = (p) => friendDetail(p);

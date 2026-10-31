@@ -1,19 +1,19 @@
 /* Kamei Game Console — bottom navigation: Consoles · Chat · Sessions · Friends */
 (function () {
   Object.assign(I18N.fr, {
-    navConsoles: "Consoles", navChat: "Chat", navSessions: "Sessions", navFriends: "Amis",
+    navConsoles: "Consoles", navChat: "Messages", navSessions: "Sessions", navFriends: "Amis", navPlay: "Jouer", navDiscover: "Découvrir", navSocial: "Social", navMe: "Moi", navCat: "Catalogue",
     chatList: "Discussions", chatStart: "Commencer une discussion", chatNone: "Ajoute des amis dans l'onglet Amis pour discuter avec eux.", chatYou: "Toi : ",
     sesMine: "Mes parties", sesFriends: "Mes amis", sesTime: "Temps de jeu", sesCount: "Parties", sesFav: "Jeu préféré", sesNone: "Aucune partie pour l'instant.",
     sesNoFriends: "Pas encore d'activité de tes amis.", needLogin: "Connecte-toi pour voir cette partie.", login: "Se connecter",
   });
   Object.assign(I18N.nl, {
-    navConsoles: "Consoles", navChat: "Chat", navSessions: "Sessies", navFriends: "Vrienden",
+    navConsoles: "Consoles", navChat: "Berichten", navSessions: "Sessies", navFriends: "Vrienden", navPlay: "Spelen", navDiscover: "Ontdekken", navSocial: "Sociaal", navMe: "Ik", navCat: "Catalogus",
     chatList: "Gesprekken", chatStart: "Een gesprek beginnen", chatNone: "Voeg vrienden toe in het tabblad Vrienden om met hen te chatten.", chatYou: "Jij: ",
     sesMine: "Mijn sessies", sesFriends: "Mijn vrienden", sesTime: "Speeltijd", sesCount: "Sessies", sesFav: "Favoriet spel", sesNone: "Nog geen sessies.",
     sesNoFriends: "Nog geen activiteit van je vrienden.", needLogin: "Log in om dit te zien.", login: "Inloggen",
   });
   Object.assign(I18N.en, {
-    navConsoles: "Consoles", navChat: "Chat", navSessions: "Sessions", navFriends: "Friends",
+    navConsoles: "Consoles", navChat: "Messages", navSessions: "Sessions", navFriends: "Friends", navPlay: "Play", navDiscover: "Discover", navSocial: "Social", navMe: "Me", navCat: "Catalogue",
     chatList: "Conversations", chatStart: "Start a conversation", chatNone: "Add friends in the Friends tab to chat with them.", chatYou: "You: ",
     sesMine: "My sessions", sesFriends: "My friends", sesTime: "Play time", sesCount: "Sessions", sesFav: "Favourite game", sesNone: "No sessions yet.",
     sesNoFriends: "No activity from your friends yet.", needLogin: "Log in to see this.", login: "Log in",
@@ -29,11 +29,16 @@
     .bnav button { flex: 1; background: none; border: 0; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 2px;
                    font: 600 11px Inter, sans-serif; padding: 4px 0; position: relative; border-radius: 14px; transition: color .2s; }
     .bnav button { font-size: 10.5px !important; min-width: 0; }
-    .bnav button .ic { font-size: 21px; line-height: 28px; width: 44px; border-radius: 14px; transition: background .25s, transform .25s; filter: grayscale(.6); }
+    .bnav button .ic { width: 44px; height: 28px; padding: 3px 0; border-radius: 14px; transition: background .25s; }
     .bnav button.on { color: var(--tacc, #8fc63f); }
-    .bnav button.on .ic { background: color-mix(in srgb, var(--tacc, #8fc63f) 22%, transparent); transform: translateY(-1px); filter: none; }
-    .bnav .bdg { position: absolute; top: 0; left: calc(50% + 10px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #ff4757; color: #fff; font: 700 11px/18px Inter, sans-serif; }
-    .bnav .bdg:empty { display: none; }
+    .bnav button.on .ic { background: color-mix(in srgb, var(--tacc, #8fc63f) 18%, transparent); }
+    .bnav { background: rgba(18,20,24,.94) !important; border-top: 1px solid var(--line) !important; }
+    .vtitle { margin: 6px 0 14px !important; }
+    .subv { display: none; } .subv.on { display: block; }
+    .subv > h2:first-child { display: none; }
+    .seg .bdg { position: static; display: inline-block; margin-left: 6px; min-width: 16px; height: 16px; line-height: 16px; font-size: 10px; padding: 0 4px; vertical-align: 1px; }
+    .bnav .bdg, .seg .bdg { position: absolute; top: 0; left: calc(50% + 10px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #ff4757; color: #fff; font: 700 11px/18px Inter, sans-serif; }
+    .bnav .bdg:empty, .seg .bdg:empty { display: none; }
     .fab { bottom: calc(env(safe-area-inset-bottom) + 84px) !important; }
     .toast { bottom: calc(env(safe-area-inset-bottom) + 150px) !important; }
     body.nv-other .wrap, body.nv-other .foot, body.nv-other .fab { display: none !important; }
@@ -48,7 +53,8 @@
     .conv.unr .fi span { color: #fff; font-weight: 700; }
     .seg { display: flex; gap: 6px; background: rgba(255,255,255,.05); padding: 4px; border-radius: 14px; margin-bottom: 14px; }
     .seg button { flex: 1; border: 0; border-radius: 10px; padding: 9px; background: none; color: var(--muted); font: 700 13px Inter, sans-serif; }
-    .seg button.on { background: var(--tacc, #8fc63f); color: #0b0b12; }
+    .seg button.on { background: #2A2F37; color: var(--text); }
+    body.themed .seg button.on { background: var(--tacc, #8fc63f); color: #0b0b12; }
     .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
     .stats div { background: rgba(255,255,255,.05); border-radius: 14px; padding: 10px; text-align: center; border: 1px solid color-mix(in srgb, var(--tacc, #8fc63f) 25%, transparent); }
     .stats b { display: block; font-size: 18px; color: var(--tacc, #8fc63f); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -59,42 +65,76 @@
     .vlogin { text-align: center; padding: 40px 10px; color: var(--muted); }`;
   document.head.appendChild(st);
 
-  /* ---------- Markup ---------- */
-  const tabs = [["consoles", "🎮", "navConsoles"], ["tv", "📺", "navTV"], ["chat", "💬", "navChat"], ["sessions", "🕹️", "navSessions"], ["requests", "📨", "navRequests"], ["friends", "👥", "navFriends"]];
-  const nav = document.createElement("nav"); nav.className = "bnav";
+  /* ---------- Markup: 4 tabs, Découvrir and Social have sub-sections ---------- */
+  const IC = {
+    consoles: '<path d="M6 9h12a4 4 0 0 1 4 4v1a3 3 0 0 1-5.2 2L15 14H9l-1.8 2A3 3 0 0 1 2 14v-1a4 4 0 0 1 4-4z"/><path d="M7 11.5v3M5.5 13h3"/>',
+    discover: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+    social: '<path d="M4 5h16v11H9l-5 4z"/>',
+    me: '<circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+  };
+  const icon = (k) => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
+  const tabs = [["consoles", "navPlay"], ["discover", "navDiscover"], ["social", "navSocial"], ["me", "navMe"]];
+  const SUBS = { discover: [["catalogue", "navCat"], ["requests", "navRequests"], ["tv", "navTV"]], social: [["chat", "navChat"], ["friends", "navFriends"], ["sessions", "navSessions"]] };
+  const parentOf = (k) => Object.keys(SUBS).find((p) => SUBS[p].some(([s]) => s === k));
+  const nav = document.createElement("nav"); nav.className = "bnav"; nav.setAttribute("aria-label", "Navigation");
   document.body.appendChild(nav);
-  const views = {};
+  const tops = {}, views = {};
   const anchor = document.querySelector(".foot");
   for (const [k] of tabs.slice(1)) {
     const v = document.createElement("section"); v.className = "view"; v.id = "v-" + k;
-    anchor.parentNode.insertBefore(v, anchor); views[k] = v;
+    anchor.parentNode.insertBefore(v, anchor); tops[k] = v;
+    if (SUBS[k]) {
+      v.innerHTML = `<h2 class="vtitle"></h2><div class="seg" role="tablist"></div>`;
+      for (const [s] of SUBS[k]) { const d = document.createElement("div"); d.className = "subv"; d.id = "v-" + s; v.appendChild(d); views[s] = d; }
+    }
   }
+  views.me = tops.me;
   let cur = "consoles";
-  const allowed = (k) => k === "consoles" || !window.kameiFeature || (k === "chat" ? (window.kameiFeature("chat") || window.kameiFeature("general")) : window.kameiFeature(k));
+  const sub = { discover: "catalogue", social: "chat" };
+  const F = (k) => !window.kameiFeature || window.kameiFeature(k);
+  const subOk = (k) => (k === "friends" ? true : k === "chat" ? (F("chat") || F("general")) : F(k));
+  const allowed = (k) => k === "consoles" || k === "me" || (SUBS[k] ? SUBS[k].some(([s]) => subOk(s)) : subOk(k));
+  const isActive = (k) => (SUBS[cur] ? sub[cur] === k : cur === k);
   function paintNav() {
-    if (!allowed(cur)) { cur = "consoles"; document.body.classList.remove("nv-other"); for (const v of Object.values(views)) v.classList.remove("on"); }
-    const h = views.friends && views.friends.querySelector("h2"); if (h) h.textContent = t("navFriends");
-    nav.innerHTML = tabs.filter(([k]) => allowed(k)).map(([k, ic, lb]) => `<button data-nv="${k}" class="${k === cur ? "on" : ""}"><span class="ic">${ic}</span>${t(lb)}<span class="bdg" data-bdg="${k}"></span></button>`).join("");
+    if (!allowed(cur)) { cur = "consoles"; document.body.classList.remove("nv-other"); for (const v of Object.values(tops)) v.classList.remove("on"); }
+    for (const p in SUBS) if (!subOk(sub[p])) { const f = SUBS[p].find(([s]) => subOk(s)); if (f) sub[p] = f[0]; }
+    nav.innerHTML = tabs.filter(([k]) => allowed(k)).map(([k, lb]) => `<button data-nv="${k}" class="${k === cur ? "on" : ""}" ${k === cur ? 'aria-current="page"' : ""}>${icon(k)}<span>${t(lb)}</span><span class="bdg" data-bdg="${k}"></span></button>`).join("");
     nav.querySelectorAll("[data-nv]").forEach((b) => b.onclick = () => go(b.dataset.nv));
+    for (const p in SUBS) {
+      const v = tops[p];
+      v.querySelector(".vtitle").textContent = t(p === "discover" ? "navDiscover" : "navSocial");
+      const list = SUBS[p].filter(([s]) => subOk(s));
+      const seg = v.querySelector(".seg");
+      seg.style.display = list.length > 1 ? "" : "none";
+      seg.innerHTML = list.map(([s, lb]) => `<button role="tab" data-sub="${s}" aria-selected="${sub[p] === s}" class="${sub[p] === s ? "on" : ""}">${t(lb)}<span class="bdg" data-bdg="${s}"></span></button>`).join("");
+      seg.querySelectorAll("[data-sub]").forEach((b) => b.onclick = () => go(b.dataset.sub));
+      for (const [s] of SUBS[p]) views[s].classList.toggle("on", sub[p] === s);
+    }
     paintBadges();
   }
   function paintBadges() {
+    const set = (k, n) => document.querySelectorAll(`[data-bdg="${k}"]`).forEach((el) => (el.textContent = n ? String(n) : ""));
     const n = (window.kameiChat && window.kameiChat.unreadCount) ? window.kameiChat.unreadCount() : 0;
-    const el = nav.querySelector('[data-bdg="chat"]'); if (el) el.textContent = n ? String(n) : "";
     const rn = window.kameiRequests ? window.kameiRequests.badge() : 0;
-    const er = nav.querySelector('[data-bdg="requests"]'); if (er) er.textContent = rn ? String(rn) : "";
-    const et = nav.querySelector('[data-bdg="tv"]'); if (et) et.textContent = window.kameiTV ? window.kameiTV.badge() : "";
+    const tv = window.kameiTV ? window.kameiTV.badge() : "";
+    set("chat", n); set("social", n); set("requests", rn); set("tv", tv);
+    set("discover", (rn || 0) + (tv ? 1 : 0));
   }
   function go(k, force) {
-    if (!allowed(k)) k = "consoles";
-    if (k === cur && !force) { if (k === "consoles") window.scrollTo({ top: 0, behavior: "smooth" }); else render(k); return; }
-    cur = k;
-    document.body.classList.toggle("nv-other", k !== "consoles");
-    for (const [n, v] of Object.entries(views)) v.classList.toggle("on", n === k);
+    let top = k, s = null;
+    if (!tabs.some(([x]) => x === k)) { top = parentOf(k) || "consoles"; s = k; }
+    if (s && !subOk(s)) s = null;
+    if (!allowed(top)) top = "consoles";
+    const same = top === cur && (!s || sub[top] === s);
+    if (s) sub[top] = s;
+    if (same && !force) { if (top === "consoles") window.scrollTo({ top: 0, behavior: "smooth" }); else render(SUBS[top] ? sub[top] : top); return; }
+    cur = top;
+    document.body.classList.toggle("nv-other", top !== "consoles");
+    for (const [n, v] of Object.entries(tops)) v.classList.toggle("on", n === top);
     paintNav();
     window.scrollTo(0, 0);
     try { window.kameiVibe && window.kameiVibe(10); } catch (e) {}
-    if (k !== "consoles") render(k);
+    if (top !== "consoles") render(SUBS[top] ? sub[top] : top);
   }
   function loginBox(v) {
     v.innerHTML = `<div class="vlogin"><p>${t("needLogin")}</p><button class="row ok-row" id="vLogin">${t("login")}</button></div>`;
@@ -102,9 +142,11 @@
   }
   async function render(k) {
     const v = views[k]; if (!v) return;
+    if (k === "catalogue" && window.kameiCatalogue) return window.kameiCatalogue.render(v);
     if (!sb || !me()) return loginBox(v);
+    if (k === "me" && window.kameiMeView) return window.kameiMeView.render(v);
     if (k === "friends") {
-      if (!v.querySelector("#vfIn")) v.innerHTML = `<h2>${t("navFriends")}</h2><div id="vfIn"></div>`;
+      if (!v.querySelector("#vfIn")) v.innerHTML = `<div id="vfIn"></div>`;
       return window.kameiFriendsSheet(v.querySelector("#vfIn"));
     }
     if (k === "chat") return renderChat(v);
@@ -129,7 +171,7 @@
       const r = await sb.from("messages").select("id,from_user,to_user,body,created_at,read_at").or(`from_user.eq.${me().id},to_user.eq.${me().id}`).order("id", { ascending: false }).limit(300);
       msgs = r.data || [];
     } catch (e) {}
-    if (cur !== "chat") return;
+    if (!isActive("chat")) return;
     const last = {}, unr = {};
     for (const m of msgs) {
       const other = m.from_user === me().id ? m.to_user : m.from_user;
@@ -172,7 +214,7 @@
         }
       }
     } catch (e) {}
-    if (cur !== "sessions") return;
+    if (!isActive("sessions")) return;
     const sysL = (s) => (SYSTEMS[s] ? SYSTEMS[s].short : s || "");
     let head = `<h2>${t("navSessions")}</h2><div class="seg"><button data-sg="mine" class="${sesTab === "mine" ? "on" : ""}">${t("sesMine")}</button><button data-sg="friends" class="${sesTab === "friends" ? "on" : ""}">${t("sesFriends")}</button></div>`;
     if (sesTab === "mine" && list.length) {
@@ -195,7 +237,9 @@
   /* ---------- Hooks used by the other files ---------- */
   // the account button and "back" buttons open the Friends tab instead of a pop-up
   window.kameiNavFriends = () => { if (!me()) return false; closeSheet(); go("friends", true); return true; };
-  window.kameiNav = { go, refresh: () => { paintBadges(); if (cur === "chat") renderChat(views.chat); }, current: () => cur, relabel: () => paintNav() };
-  setInterval(() => { paintBadges(); if (cur === "chat" && document.visibilityState === "visible" && !document.getElementById("sheetBg").classList.contains("on")) renderChat(views.chat); }, 15000);
+  window.kameiNav = { go, refresh: () => { paintBadges(); if (isActive("chat")) renderChat(views.chat); }, current: () => (SUBS[cur] ? sub[cur] : cur), relabel: () => paintNav(), rerender: () => { if (cur !== "consoles") render(SUBS[cur] ? sub[cur] : cur); } };
+  setInterval(() => { paintBadges(); if (isActive("chat") && document.visibilityState === "visible" && !document.getElementById("sheetBg").classList.contains("on")) renderChat(views.chat); }, 15000);
+  // the round account button opens "Moi"
+  document.getElementById("accBtn").onclick = () => (me() ? go("me", true) : window.kameiAccount && window.kameiAccount.open());
   paintNav();
 })();

@@ -68,15 +68,20 @@
   }
   async function load() { const j = await GH.readJSON("catalogue/catalogue.json"); return (j && Array.isArray(j.games)) ? j : { games: [] }; }
 
-  async function sheet() {
-    openSheet(`<h3>${t("cat")}</h3><p class="hint">…</p>`);
+  let lastInto = null;
+  async function sheet(into) {
+    if (into && !(into instanceof Element)) into = null;
+    lastInto = into || null;
+    const show = (h) => { if (into) into.innerHTML = h; else openSheet(h); };
+    const root = () => into || document.getElementById("sheet");
+    show(`<h3>${t("cat")}</h3><p class="hint">…</p>`);
     let cat;
     const [gh, dc] = await Promise.all([load().catch(() => null), loadDiscord()]);
-    if (!gh && !dc.length) { openSheet(`<h3>${t("cat")}</h3><p class="hint">${t("catOffline")}</p>`); return; }
+    if (!gh && !dc.length) { show(`<h3>${t("cat")}</h3><p class="hint">${t("catOffline")}</p>`); return; }
     cat = gh || { games: [] };
     const have = new Set(games.map((g) => g.catId).filter(Boolean));
     const list = [...dc, ...cat.games].sort((a, b) => (b.added || "").localeCompare(a.added || ""));
-    openSheet(`<h3>${t("cat")}</h3><p class="hint">${t("catHint")}</p>
+    show(`<h3>${t("cat")}</h3><p class="hint">${t("catHint")}</p>
       ${isAdmin() ? `<p class="hint">💬 ${t("dcHint")}</p>` : ""}
       ${canEdit() ? `<button class="row" id="catAdd">${t("ghAdd")}</button>` : ""}
       ${list.length ? list.map((x) => {
@@ -88,11 +93,11 @@
           <div class="cact">${have.has(x.id) ? `<span class="done">${t("installed")}</span>` : `<button class="ok" data-inst="${esc(x.id)}">${t("install")}</button>`}
             ${x.discord ? (isAdmin() ? `<button class="mini" data-dcrm="1">${t("catRemove")}</button>` : "") : canEdit() ? `<button class="mini" data-rm="${esc(x.id)}">${t("catRemove")}</button>` : ""}</div></div>`;
       }).join("") : `<p class="hint">${t("catEmpty")}</p>`}`);
-    document.querySelectorAll("#sheet [data-src]").forEach((a) => a.onclick = (e) => { e.preventDefault(); openLink(a.dataset.src); });
-    document.querySelectorAll("#sheet [data-inst]").forEach((b) => b.onclick = () => install(list.find((x) => x.id === b.dataset.inst), b));
-    document.querySelectorAll("#sheet [data-rm]").forEach((b) => b.onclick = () => remove(cat, b.dataset.rm));
-    document.querySelectorAll("#sheet [data-dcrm]").forEach((b) => b.onclick = () => toast(t("dcRemove"), 5000));
-    if (document.getElementById("catAdd")) document.getElementById("catAdd").onclick = () => addForm(cat);
+    root().querySelectorAll("[data-src]").forEach((a) => a.onclick = (e) => { e.preventDefault(); openLink(a.dataset.src); });
+    root().querySelectorAll("[data-inst]").forEach((b) => b.onclick = () => install(list.find((x) => x.id === b.dataset.inst), b));
+    root().querySelectorAll("[data-rm]").forEach((b) => b.onclick = () => remove(cat, b.dataset.rm));
+    root().querySelectorAll("[data-dcrm]").forEach((b) => b.onclick = () => toast(t("dcRemove"), 5000));
+    if (root().querySelector("#catAdd")) root().querySelector("#catAdd").onclick = () => addForm(cat);
   }
 
   async function install(x, btn) {
@@ -117,7 +122,7 @@
       if (x.discord && x.cover) { try { const cr = await fetch(x.cover); if (cr.ok) await updateGame("cat|" + x.id, { coverBlob: await cr.blob(), coverTried: true }); } catch (e) {} }
       await window.kameiReload();
       toast(t("catAdded", x.title), 3500);
-      sheet();
+      sheet(lastInto);
     } catch (e) { btn.disabled = false; btn.textContent = t("install"); toast(String(e.message || e), 4000); }
   }
 
@@ -175,5 +180,5 @@
     } catch (e) { toast(String(e.message || e), 5000); }
   }
 
-  window.kameiCatalogue = { open: sheet };
+  window.kameiCatalogue = { open: () => sheet(), render: (el) => sheet(el) };
 })();

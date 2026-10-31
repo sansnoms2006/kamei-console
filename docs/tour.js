@@ -4,37 +4,37 @@
     fr: { tourNext: "Suivant ➜", tourSkip: "Passer", tourEnd: "C'est parti ! 🎮", tourAgain: "🦎 Revoir la visite guidée",
       tourS: {
         hello: ["Salut, moi c'est Kamei ! 🦎", "Je vais te faire visiter l'appli en 1 minute."],
-        deck: ["Tes jeux", "Toutes tes consoles sont ici. Glisse pour changer de console et touche un jeu pour jouer. ▶️ Continuer reprend ta dernière partie là où tu l'as laissée."],
+        deck: ["Tes jeux", "Reprends ta dernière partie d'un geste, puis choisis une console et touche un jeu pour ouvrir sa fiche."],
         add: ["Ajouter un jeu", "Touche le + pour ajouter tes propres fichiers de jeux depuis ton téléphone."],
-        cat: ["📚 Le catalogue", "Les jeux créés par Kamei Productions, à télécharger en un geste."],
-        nav: ["Les onglets", "Chat avec tes amis, salon Général 🌍, sessions, demandes de jeux, amis… tout est en bas."],
+        cat: ["Découvrir", "Le catalogue des jeux Kamei Productions, tes demandes de jeux et Kamei TV."],
+        nav: ["4 onglets", "Tout est rangé en bas : Jouer, Découvrir, Social et Moi."],
+        social: ["Social", "Tes messages, le salon Général 🌍, tes amis et les sessions de jeu."],
         pet: ["Moi ! 🥚", "Je suis ton Tamagotchi. Nourris-moi, joue avec moi… et je grandis quand tu utilises l'appli !"],
-        acc: ["Ton compte", "Ton profil, tes amis, et la sauvegarde de tes données pour changer de téléphone."],
-        set: ["Réglages", "Langue, thème (même un thème perso 🎨), vibrations, notifications…"],
+        set: ["Moi", "Ta photo de profil, ton Kamei, les réglages et les thèmes, et le transfert vers un nouveau téléphone."],
         bye: ["À toi de jouer !", "Si tu veux revoir cette visite, c'est dans les Réglages. Amuse-toi bien ! 💚"],
       } },
     nl: { tourNext: "Volgende ➜", tourSkip: "Overslaan", tourEnd: "Let's go! 🎮", tourAgain: "🦎 Rondleiding opnieuw bekijken",
       tourS: {
         hello: ["Hoi, ik ben Kamei! 🦎", "Ik geef je in 1 minuut een rondleiding."],
-        deck: ["Je spellen", "Al je consoles staan hier. Swipe om van console te wisselen en tik op een spel om te spelen. ▶️ Verder spelen gaat verder waar je stopte."],
+        deck: ["Je spellen", "Ga in één tik verder met je laatste spel, kies dan een console en tik op een spel voor de fiche."],
         add: ["Spel toevoegen", "Tik op + om je eigen spelbestanden van je telefoon toe te voegen."],
-        cat: ["📚 De catalogus", "Spellen gemaakt door Kamei Productions, in één tik te downloaden."],
-        nav: ["De tabbladen", "Chat met vrienden, algemene chat 🌍, sessies, spelaanvragen, vrienden… alles staat onderaan."],
+        cat: ["Ontdekken", "De catalogus van Kamei Productions, je spelaanvragen en Kamei TV."],
+        nav: ["4 tabbladen", "Alles staat onderaan: Spelen, Ontdekken, Sociaal en Ik."],
+        social: ["Sociaal", "Je berichten, de algemene chat 🌍, je vrienden en de sessies."],
         pet: ["Ik! 🥚", "Ik ben je Tamagotchi. Voer me, speel met me… en ik groei als je de app gebruikt!"],
-        acc: ["Je account", "Je profiel, je vrienden en de back-up van je gegevens om van telefoon te wisselen."],
-        set: ["Instellingen", "Taal, thema (zelfs een eigen thema 🎨), trillen, meldingen…"],
+        set: ["Ik", "Je profielfoto, je Kamei, instellingen en thema's, en overstappen naar een nieuwe telefoon."],
         bye: ["Aan jou!", "Wil je deze rondleiding opnieuw zien? Dat kan in de Instellingen. Veel plezier! 💚"],
       } },
     en: { tourNext: "Next ➜", tourSkip: "Skip", tourEnd: "Let's go! 🎮", tourAgain: "🦎 Replay the guided tour",
       tourS: {
         hello: ["Hi, I'm Kamei! 🦎", "Let me show you around the app in 1 minute."],
-        deck: ["Your games", "All your consoles are here. Swipe to change console and tap a game to play. ▶️ Continue resumes your last game where you left it."],
+        deck: ["Your games", "Resume your last game in one tap, then pick a console and tap a game to open its page."],
         add: ["Add a game", "Tap + to add your own game files from your phone."],
-        cat: ["📚 The catalogue", "Games made by Kamei Productions, one tap to download."],
-        nav: ["The tabs", "Chat with friends, the General room 🌍, sessions, game requests, friends… it's all at the bottom."],
+        cat: ["Discover", "The Kamei Productions catalogue, your game requests and Kamei TV."],
+        nav: ["4 tabs", "Everything is at the bottom: Play, Discover, Social and Me."],
+        social: ["Social", "Your messages, the General room 🌍, your friends and game sessions."],
         pet: ["Me! 🥚", "I'm your Tamagotchi. Feed me, play with me… and I grow when you use the app!"],
-        acc: ["Your account", "Your profile, your friends, and backing up your data to switch phones."],
-        set: ["Settings", "Language, theme (even a custom theme 🎨), vibration, notifications…"],
+        set: ["Me", "Your profile photo, your Kamei, settings and themes, and moving to a new phone."],
         bye: ["Your turn!", "To see this tour again, go to Settings. Have fun! 💚"],
       } },
   };
@@ -43,7 +43,7 @@
   const me = () => window.kameiMe && window.kameiMe();
   const vis = (el) => el && el.offsetParent !== null && el.getBoundingClientRect().width > 0;
   const STEPS = [
-    ["hello", null], ["deck", "#deck"], ["add", "#add"], ["cat", "#catBtn"], ["nav", ".bnav"], ["pet", "#petBtn"], ["acc", "#accBtn"], ["set", "#langBtn"], ["bye", null],
+    ["hello", null], ["deck", "#deck"], ["add", "#add"], ["nav", ".bnav"], ["cat", '[data-nv="discover"]'], ["social", '[data-nv="social"]'], ["pet", "#petBtn"], ["set", '[data-nv="me"]'], ["bye", null],
   ];
 
   const st = document.createElement("style");

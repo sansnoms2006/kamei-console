@@ -23,10 +23,10 @@
 </script>
 <link href="fonts/fonts.css" rel="stylesheet">
 <style>
-  :root { --bg: #0b0b12; --panel: #15151f; --line: #26263a; --text: #f1f1f7; --muted: #8b8ba7; --theme: #8fc63f; }
+  :root { --bg: #0E1013; --panel: #16191E; --line: #2A2F37; --text: #ECEEF1; --muted: #A3A9B3; --theme: #9BD14B; }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 Inter, system-ui, sans-serif; }
-  body { background: radial-gradient(130% 60% at 50% -10%, color-mix(in srgb, var(--theme) 22%, transparent), transparent 70%) var(--bg) no-repeat;
+  body { background: radial-gradient(130% 50% at 50% -10%, color-mix(in srgb, var(--theme) 9%, transparent), transparent 70%) var(--bg) no-repeat;
          padding: calc(env(safe-area-inset-top) + 18px) 16px calc(env(safe-area-inset-bottom) + 100px); min-height: 100vh; }
   button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
 
@@ -42,6 +42,7 @@
   .hbtns { display: flex; gap: 8px; align-items: center; flex: none; }
   .acc { padding: 0; border-radius: 50%; }
   .av { display: inline-grid; place-items: center; border-radius: 50%; background: var(--ac); color: #0b0b12; font-weight: 800; flex: none; }
+  .av { position: relative; overflow: hidden; } .av img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .colors { display: flex; gap: 10px; margin: 0 0 12px; flex-wrap: wrap; }
   .colors button { width: 34px; height: 34px; border-radius: 50%; background: var(--ac); border: 3px solid transparent; }
   .colors button.on { border-color: #fff; }
@@ -247,6 +248,56 @@
   .pbar .now { flex: 1; min-width: 0; font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
   .pbar button { background: #23233a; color: #fff; font-weight: 700; font-size: 13px; padding: 8px 12px; border-radius: 10px; flex: none; }
   #player iframe { flex: 1; width: 100%; border: 0; display: block; }
+
+  /* ===== Studio layout (web 23) ===== */
+  #catBtn, #langBtn { display: none !important; }
+  .deck { display: block; overflow: visible; scroll-snap-type: none; margin: 0 0 4px; padding: 0; }
+  .dots { display: none; }
+  .shero { position: relative; border-radius: 20px; background: var(--panel); border: 1px solid var(--line); padding: 16px; overflow: hidden; }
+  body.themed .shero { background: linear-gradient(160deg, color-mix(in srgb, var(--tacc, #9BD14B) 16%, var(--panel)), var(--panel) 70%); }
+  .shero .sh-top { display: flex; align-items: center; gap: 12px; }
+  .shero .txt { flex: 1; min-width: 0; }
+  .shero .kicker { font-family: "Press Start 2P", monospace; font-size: 9px; letter-spacing: 1px; color: var(--theme); }
+  .shero h2 { margin: 8px 0 2px; font-size: 24px; line-height: 1.1; font-weight: 800; }
+  .shero p { margin: 0; color: var(--muted); font-size: 13px; }
+  .shero .sh-k { width: 92px; height: 120px; flex: none; margin: -6px -4px -16px 0; }
+  .shero .sh-prop { position: absolute; width: 40px; left: 10px; bottom: 8px; opacity: .9; }
+  .sh-res { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 14px; padding: 10px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); text-align: left; }
+  .sh-res .cv { width: 56px; height: 56px; flex: none; border-radius: 10px; background: color-mix(in srgb, var(--c) 30%, var(--panel)); display: grid; place-items: center; font-size: 10px; font-weight: 800; overflow: hidden; }
+  .sh-res .cv img { width: 100%; height: 100%; object-fit: cover; }
+  .sh-res .fi small { display: block; font-size: 11px; font-weight: 700; letter-spacing: .6px; color: var(--theme); }
+  .sh-res .go { width: 46px; height: 46px; flex: none; border-radius: 50%; background: var(--theme); color: #0b0b12; display: grid; place-items: center; }
+  .tabs { padding: 14px 0 10px; }
+  .tab { border-radius: 10px; background: var(--panel); }
+  .tab.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 14px 12px; }
+  .card { background: none; border: 0; border-radius: 0; overflow: visible; }
+  .cart { aspect-ratio: 3 / 4; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--c) 26%, var(--panel)); padding: 10px; overflow: hidden; }
+  .cart .label { width: 86%; font-size: 8px; box-shadow: none; }
+  .cart img.cover { inset: 0; width: 100%; height: 100%; object-fit: cover; filter: none; }
+  .cart .sys { top: auto; bottom: 6px; left: 6px; background: var(--bg); }
+  .card .more { display: none; }
+  .meta { padding: 6px 2px 0; }
+  .title { font-size: 12.5px; -webkit-line-clamp: 1; }
+  .sub { font-size: 11px; }
+  .gf-head { height: 150px; margin: -6px -6px 14px; border-radius: 16px; background: color-mix(in srgb, var(--c) 28%, var(--panel)); display: grid; place-items: center; overflow: hidden; border: 1px solid var(--line); }
+  .gf-head img { width: 100%; height: 100%; object-fit: cover; }
+  .gf-head .label { font-family: "Press Start 2P", monospace; font-size: 10px; text-align: center; padding: 16px; line-height: 1.7; }
+  .gf-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+  .gf-meta .chip { border: 1px solid var(--line); border-radius: 6px; padding: 2px 7px; color: var(--text); font-weight: 700; font-size: 12px; }
+  .gf-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .gf-btns button { height: 50px; border-radius: 14px; background: #23272E; font-weight: 700; }
+  .gf-btns button.ok { background: var(--theme); color: #0b0b12; }
+  .gf-btns button:only-child { grid-column: 1 / -1; }
+  .gf-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+  .gf-slots button { height: 62px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+  .gf-slots button b { font-size: 13px; } .gf-slots button span { font-size: 11px; color: var(--muted); }
+  .gf-slots button:disabled { opacity: .45; }
+  .gf-slots button.has { border-color: color-mix(in srgb, var(--theme) 60%, var(--line)); }
+  .gf-list { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .sheet .gf-list .row { border-radius: 0; border-bottom: 1px solid var(--line); padding: 13px 14px; font-weight: 500; }
+  .sheet .gf-list .row:last-child { border-bottom: 0; }
+  .gf-h4 { margin: 0 0 8px 2px; font-size: 12px; font-weight: 700; letter-spacing: .6px; color: var(--muted); }
 </style>
 <script src="themes.js"></script>
 </head>
@@ -309,6 +360,7 @@ const I18N = {
     padOn: "Manette connectée 🎮", other: "Autre",
     getApk: "📱 Télécharger l'appli Android", noApk: "Pas encore de lien vers l'APK",
     resume: "Continuer", 
+    newGame: "Nouvelle partie", gfSaves: "SAUVEGARDES", gfMore: "PLUS", gfNone: "—", 
     bios: "🧩 BIOS", biosMenu: "🧩 BIOS des consoles", biosNeed: (n) => `Cette console a besoin de son BIOS (fichier système copié depuis ta propre console) : ${n}`,
     biosOpt: (n) => `BIOS facultatif (meilleure compatibilité) : ${n}`, biosAdd: "📥 Importer le BIOS", biosHave: (n) => `✅ Installé : ${n}`, biosDel: "Supprimer le BIOS",
     biosLaunch: "Lancer quand même", biosSaved: "BIOS enregistré", biosHint: "Le BIOS reste sur ton téléphone. Utilise uniquement celui de ta propre console.",
@@ -336,6 +388,7 @@ const I18N = {
     padOn: "Controller verbonden 🎮", other: "Andere",
     getApk: "📱 Android-app downloaden", noApk: "Nog geen link naar de APK",
     resume: "Verder spelen", 
+    newGame: "Nieuw spel", gfSaves: "OPSLAGEN", gfMore: "MEER", gfNone: "—", 
     bios: "🧩 BIOS", biosMenu: "🧩 BIOS van consoles", biosNeed: (n) => `Deze console heeft zijn BIOS nodig (systeembestand van je eigen console): ${n}`,
     biosOpt: (n) => `Optionele BIOS (betere compatibiliteit): ${n}`, biosAdd: "📥 BIOS importeren", biosHave: (n) => `✅ Geïnstalleerd: ${n}`, biosDel: "BIOS verwijderen",
     biosLaunch: "Toch starten", biosSaved: "BIOS opgeslagen", biosHint: "De BIOS blijft op je telefoon. Gebruik alleen die van je eigen console.",
@@ -363,6 +416,7 @@ const I18N = {
     padOn: "Controller connected 🎮", other: "Other",
     getApk: "📱 Download the Android app", noApk: "No APK link yet",
     resume: "Continue", 
+    newGame: "New game", gfSaves: "SAVES", gfMore: "MORE", gfNone: "—", 
     bios: "🧩 BIOS", biosMenu: "🧩 Console BIOS files", biosNeed: (n) => `This console needs its BIOS (system file dumped from your own console): ${n}`,
     biosOpt: (n) => `Optional BIOS (better compatibility): ${n}`, biosAdd: "📥 Import BIOS", biosHave: (n) => `✅ Installed: ${n}`, biosDel: "Delete BIOS",
     biosLaunch: "Launch anyway", biosSaved: "BIOS saved", biosHint: "The BIOS stays on your phone. Only use the one from your own console.",
@@ -753,18 +807,53 @@ function askSystem(fileName, prefer, sameExt) {
   });
 }
 
+// save slots of a game, read straight from the emulator page's storage (same keys as play.html)
+function statesDb() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open("kamei-states", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("states");
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+}
+async function gameSlots(g) {
+  const box = $("gfSlots"); if (!box) return;
+  const s = SYSTEMS[g.system] || SYSTEMS.gb, base = (g.saveKey || g.title) + "|" + s.core + "|";
+  const out = {};
+  try {
+    const d = await statesDb();
+    await new Promise((res) => {
+      const tr = d.transaction("states", "readonly"), st = tr.objectStore("states");
+      for (const k of ["auto", "1", "2", "3"]) { const q = st.get(base + k); q.onsuccess = () => { if (q.result) out[k] = q.result.time || 1; }; }
+      tr.oncomplete = res; tr.onerror = res;
+    });
+    d.close();
+  } catch (e) {}
+  if (!Object.keys(out).length || !$("gfSlots")) return;
+  box.innerHTML = `<h4 class="gf-h4">${t("gfSaves")}</h4><div class="gf-slots">${["auto", "1", "2", "3"].map((k) =>
+    `<button data-slot="${k}" class="${out[k] ? "has" : ""}" ${out[k] ? "" : "disabled"}><b>${k === "auto" ? "Auto" : k}</b><span>${out[k] ? ago(out[k]) : t("gfNone")}</span></button>`).join("")}</div>`;
+  box.querySelectorAll("[data-slot]").forEach((b) => b.onclick = () => { closeSheet(); play(g.id, false, b.dataset.slot); });
+}
 function gameMenu(g) {
-  openSheet(`<h3>${esc(g.title)}</h3><p class="hint">${SYSTEMS[g.system].label} · ${fmtSize(g.size)}</p>
-    <button class="row" id="mPlay">${t("play")}</button>
+  const s = SYSTEMS[g.system] || SYSTEMS.gb, src = coverSrc(g);
+  const trade = (g.system === "gba" || g.system === "nds") && window.kameiTrades && (!window.kameiFeature || window.kameiFeature("trades"));
+  openSheet(`<div class="gf-head" style="--c:${s.theme}">${src ? `<img src="${esc(src)}" alt="" onerror="this.remove()">` : `<span class="label">${esc(g.title.slice(0, 40))}</span>`}</div>
+    <h3 style="font-size:22px;margin:0 0 6px">${esc(g.title)}</h3>
+    <div class="gf-meta"><span class="chip">${esc(s.short)}</span><span>${g.lastPlayed ? t("played", ago(g.lastPlayed)) : esc(s.label)}</span><span>· ${fmtSize(g.size)}</span></div>
+    <div class="gf-btns">${g.lastPlayed ? `<button class="ok" id="mResume">▶ ${t("resume")}</button>` : ""}<button class="${g.lastPlayed ? "" : "ok"}" id="mPlay">${g.lastPlayed ? t("newGame") : t("play")}</button></div>
+    <div id="gfSlots"></div>
+    <h4 class="gf-h4">${t("gfMore")}</h4>
+    <div class="gf-list">
+    ${trade ? `<button class="row" id="mTrade">${t("trades")}</button>` : ""}
     <button class="row" id="mRename">${t("rename")}</button>
     <button class="row" id="mFind">${t("findCover")}</button>
     <button class="row" id="mPick">${t("pickCover")}</button>
     ${g.cover || g.coverBlob ? `<button class="row" id="mNoCover">${t("removeCover")}</button>` : ""}
-    ${(g.system === "gba" || g.system === "nds") && window.kameiTrades && (!window.kameiFeature || window.kameiFeature("trades")) ? `<button class="row" id="mTrade">${t("trades")}</button>` : ""}
     ${SYSTEMS[g.system].bios ? `<button class="row" id="mBios">${t("bios")}</button>` : ""}
     <button class="row" id="mSys">${t("changeSys")}</button>
-    <button class="row danger" id="mDel">${t("del")}</button>`);
-  $("mPlay").onclick = () => { closeSheet(); play(g.id); };
+    <button class="row danger" id="mDel">${t("del")}</button></div>`);
+  if ($("mResume")) $("mResume").onclick = () => { closeSheet(); play(g.id, false, "auto"); };
+  gameSlots(g);
+  $("mPlay").onclick = () => { closeSheet(); play(g.id, false, false); };
   if ($("mBios")) $("mBios").onclick = () => biosSheet(g.system);
   if ($("mTrade")) $("mTrade").onclick = () => window.kameiTrades.open();
   $("mRename").onclick = () => {
@@ -857,14 +946,20 @@ function slideHTML(k, counts) {
     ${THEME ? `<svg class="pk" viewBox="0 0 100 92"><use href="#${THEME.prop}"/></svg>` : ""}${scene(k)}</div>`;
 }
 function renderDeck() {
-  const { counts, order } = deckOrder();
-  const lastG = games.reduce((a, g) => ((g.lastPlayed || 0) > ((a && a.lastPlayed) || 0) ? g : a), null);
-  const sig = order.join(",") + "|" + order.map((k) => counts[k] || 0).join(",") + "|" + games.length + "|" + (lastG ? lastG.id : "") + "|" + lang + "|" + ((window.kameiHello && window.kameiHello()) || "") + "|" + heroShown;
+  const last = games.filter((g) => g.lastPlayed).sort((a, b) => b.lastPlayed - a.lastPlayed)[0];
+  const hello = (window.kameiHello && window.kameiHello()) || (THEME ? window.kameiGreeting(lang) : t("hello"));
+  const sig = [games.length, last ? last.id + last.lastPlayed : "", lang, hello, heroShown, THEME ? THEME.hat : ""].join("|");
   if (sig !== deckSig) {
     deckSig = sig; heroShown = "ok";
-    $("deck").innerHTML = order.map((k) => slideHTML(k, counts)).join("");
-    $("dots").innerHTML = order.map((k) => `<i data-f="${k}"></i>`).join("");
-    scrollDeckTo(filter, false);
+    const s = last && (SYSTEMS[last.system] || SYSTEMS.gb), src = last && coverSrc(last);
+    $("deck").innerHTML = `<div class="shero">
+      <div class="sh-top"><div class="txt"><div class="kicker">${hello}</div><h2>${games.length ? t("whatPlay") : t("welcome")}</h2>
+        <p>${games.length ? t("games", games.length) : t("addFirst")}</p></div>
+        <svg class="sh-k" viewBox="0 -70 300 400" aria-hidden="true"><use href="#kHead" x="20" y="0" width="260" height="320"/>${THEME && THEME.hat ? `<use href="#${THEME.hat}" x="78" y="-74" width="200" height="160"/>` : ""}</svg></div>
+      ${last ? `<button class="sh-res" data-resume="${esc(last.id)}" style="--c:${s.theme}"><span class="cv">${src ? `<img src="${esc(src)}" alt="" onerror="this.remove()">` : esc(s.short)}</span>
+        <span class="fi"><small>${t("resume").toUpperCase()}</small><b>${esc(last.title)}</b><span>${esc(s.label)} · ${ago(last.lastPlayed)}</span></span>
+        <span class="go"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg></span></button>` : ""}
+      ${THEME && THEME.prop && !last ? `<svg class="sh-prop" viewBox="0 0 100 92" aria-hidden="true"><use href="#${THEME.prop}"/></svg>` : ""}</div>`;
   }
   markDeck();
 }
@@ -872,7 +967,7 @@ function markDeck() {
   document.querySelectorAll("#deck .slide").forEach((el) => el.classList.toggle("on", el.dataset.f === filter));
   document.querySelectorAll("#dots i").forEach((el) => el.classList.toggle("on", el.dataset.f === filter));
   const sys = SYSTEMS[filter];
-  document.documentElement.style.setProperty("--theme", sys ? sys.theme : (THEME ? THEME.acc : "#8fc63f"));
+  document.documentElement.style.setProperty("--theme", THEME ? THEME.acc : "#9BD14B");
 }
 function scrollDeckTo(k, smooth) {
   const deck = $("deck"), el = deck.querySelector(`.slide[data-f="${k}"]`);
@@ -938,7 +1033,7 @@ function renderGrid() {
     </div>`;
   }).join("");
   if (games.length && !list.length) $("grid").innerHTML = `<div class="empty" style="grid-column:1/-1">${q ? t("noResult") : t("noGame")}</div>`;
-  $("grid").querySelectorAll("[data-play]").forEach((b) => b.onclick = () => play(b.dataset.play));
+  $("grid").querySelectorAll("[data-play]").forEach((b) => b.onclick = () => gameMenu(games.find((g) => g.id === b.dataset.play)));
   $("grid").querySelectorAll("[data-menu]").forEach((b) => b.onclick = () => gameMenu(games.find((g) => g.id === b.dataset.menu)));
 }
 async function load() {
@@ -1111,7 +1206,7 @@ setTimeout(() => { try { if (notifOn() && window.KameiNative && KameiNative.askN
 let current = null;
 const frameWin = () => $("frame").contentWindow;
 async function play(id, force, resume) {
-  if (resume !== undefined) play.resume = !!resume; else if (!force) play.resume = false;
+  if (resume !== undefined) play.resume = resume === true ? "auto" : (resume || false); else if (!force) play.resume = false;
   const g = await getGame(id);
   if (!g) return;
   const sy = SYSTEMS[g.system];
@@ -1133,7 +1228,7 @@ window.addEventListener("message", (e) => {
     const s = SYSTEMS[current.system];
     const go = (bios) => frameWin().postMessage({ type: "load", system: s.core, blob: current.blob, saveKey: current.saveKey || current.title,
                              lang: EJS_LANG[lang], color: s.theme, ext: s.x ? (current.whole || extOf(current.romName || "") || null) : null,
-                             threads: !!s.threads, bios, vibe: vibeOn(), resume: !!play.resume, opts: window.kameiGameOpts ? window.kameiGameOpts.forGame(current) : {} }, "*");
+                             threads: !!s.threads, bios, vibe: vibeOn(), resume: play.resume || false, opts: window.kameiGameOpts ? window.kameiGameOpts.forGame(current) : {} }, "*");
     if (s.bios) getBios(current.system).then((b) => go(b ? biosZip(b.files) : null)).catch(() => go(null)); else go(null);
   }
   if (d.type === "saved") closePlayer();
@@ -1221,6 +1316,7 @@ window.addEventListener("online", scrapeMissing);
 <script src="themeedit.js"></script>
 <script src="admin.js"></script>
 <script src="pet.js"></script>
+<script src="me.js"></script>
 <script src="tour.js"></script>
 <script src="backup.js"></script>
 <script src="gh.js"></script>

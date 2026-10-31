@@ -193,6 +193,7 @@
     }
     paintBtn();
     if ($("petSheet")) draw();
+    try { if (window.kameiNav && window.kameiNav.current() === "me") window.kameiMeView.paintPet(); } catch (e) {}
     nag();
   }
   async function refresh() {
@@ -345,7 +346,7 @@
       if (r.data.xp >= 10) toast(t("petXpGot", r.data.xp), 2200);
     } catch (e) {}
   };
-  window.kameiPet = { open, refresh, friend, get: () => pet, level: cachedLevel };
+  window.kameiPet = { open, refresh, friend, get: () => pet, level: cachedLevel, svg, moodOf, stageOf };
 
   // start: wait for the account, then refresh every 5 min and when the app comes back
   let wasIn = false;

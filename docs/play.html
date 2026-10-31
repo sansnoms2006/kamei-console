@@ -287,7 +287,7 @@
     if (msg.system === "nds") setupTouchToMouse();
     if (msg.vibe) setupVibe();
     const iv = setInterval(() => { if (ready()) { clearInterval(iv); applyOpts(); parent.postMessage({ type: "started" }, "*");
-      if (msg.resume) setTimeout(() => { loadSlot("auto").then((ok) => parent.postMessage({ type: "resumed", ok }, "*"), () => {}); }, 700); } }, 400);
+      if (msg.resume) setTimeout(() => { loadSlot(msg.resume === true ? "auto" : String(msg.resume)).then((ok) => parent.postMessage({ type: "resumed", ok }, "*"), () => {}); }, 700); } }, 400);
   }
 
   /* Short vibration when a virtual (touch) button is pressed */
