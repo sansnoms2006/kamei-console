@@ -355,7 +355,7 @@ const I18N = {
     quit: "✕ Quitter", saves: "💾 Sauvegardes", savesTitle: "Sauvegardes", savesHint: "Les sauvegardes du jeu se font aussi toutes seules toutes les 30 s.",
     slotAuto: "Auto (en quittant)", slot: (n) => `Emplacement ${n}`, emptySlot: "Vide", save: "Sauver", load: "Charger",
     savedOk: "Partie sauvegardée", loadedOk: "Partie chargée", failed: "Ça n'a pas marché, réessaie",
-    coverSearching: "Recherche de la jaquette…", coverFound: "Jaquette trouvée", coverNone: "Pas de jaquette trouvée pour ce nom",
+    coverSearching: "Recherche de la jaquette…", coverFound: "Jaquette trouvée", coverNone: "Pas de jaquette trouvée pour ce nom", coverWeb: "Recherche plus large sur le web…", coverSaving: "Enregistrement de la jaquette…", coverGoogle: "🌐 Chercher sur Google Images", coverGoogleHint: "Enregistre l'image sur ton téléphone, puis reviens et touche « Choisir une image comme jaquette ».",
     storage: "Le stockage n'est pas disponible ici", language: "Langue", foot: "Émulation : EmulatorJS (GPL-3.0) et cœurs libretro. Jaquettes : projet libretro-thumbnails.",
     padOn: "Manette connectée 🎮 · boutons tactiles cachés", padOff: "Boutons tactiles affichés 👆", other: "Autre",
     getApk: "📱 Télécharger l'appli Android", noApk: "Pas encore de lien vers l'APK",
@@ -383,7 +383,7 @@ const I18N = {
     quit: "✕ Stoppen", saves: "💾 Opslaan", savesTitle: "Opgeslagen standen", savesHint: "Het spel bewaart ook zelf elke 30 s.",
     slotAuto: "Auto (bij stoppen)", slot: (n) => `Plaats ${n}`, emptySlot: "Leeg", save: "Opslaan", load: "Laden",
     savedOk: "Spel opgeslagen", loadedOk: "Spel geladen", failed: "Dat lukte niet, probeer opnieuw",
-    coverSearching: "Hoesje zoeken…", coverFound: "Hoesje gevonden", coverNone: "Geen hoesje gevonden voor deze naam",
+    coverSearching: "Hoesje zoeken…", coverFound: "Hoesje gevonden", coverNone: "Geen hoesje gevonden voor deze naam", coverWeb: "Breder zoeken op het web…", coverSaving: "Hoesje opslaan…", coverGoogle: "🌐 Zoeken op Google Afbeeldingen", coverGoogleHint: "Sla de afbeelding op je telefoon op, kom terug en tik op « Afbeelding kiezen als hoesje ».",
     storage: "Opslag is hier niet beschikbaar", language: "Taal", foot: "Emulatie: EmulatorJS (GPL-3.0) en libretro-cores. Hoesjes: libretro-thumbnails.",
     padOn: "Controller verbonden 🎮 · aanraakknoppen verborgen", padOff: "Aanraakknoppen zichtbaar 👆", other: "Andere",
     getApk: "📱 Android-app downloaden", noApk: "Nog geen link naar de APK",
@@ -411,7 +411,7 @@ const I18N = {
     quit: "✕ Quit", saves: "💾 Saves", savesTitle: "Saves", savesHint: "The game also saves by itself every 30 s.",
     slotAuto: "Auto (when quitting)", slot: (n) => `Slot ${n}`, emptySlot: "Empty", save: "Save", load: "Load",
     savedOk: "Game saved", loadedOk: "Game loaded", failed: "That didn't work, try again",
-    coverSearching: "Looking for the cover…", coverFound: "Cover found", coverNone: "No cover found for this name",
+    coverSearching: "Looking for the cover…", coverFound: "Cover found", coverNone: "No cover found for this name", coverWeb: "Searching the web more widely…", coverSaving: "Saving the cover…", coverGoogle: "🌐 Search Google Images", coverGoogleHint: "Save the picture on your phone, then come back and tap « Pick an image as cover ».",
     storage: "Storage isn't available here", language: "Language", foot: "Emulation: EmulatorJS (GPL-3.0) and libretro cores. Covers: libretro-thumbnails project.",
     padOn: "Controller connected 🎮 · touch buttons hidden", padOff: "Touch buttons shown 👆", other: "Other",
     getApk: "📱 Download the Android app", noApk: "No APK link yet",
@@ -753,24 +753,56 @@ async function findCover(g) {
   return null;
 }
 function coverPicker(g) {
+  const sys = SYSTEMS[g.system] || SYSTEMS.gb;
   openSheet(`<h3>${t("findCover")}</h3>
     <div class="addf"><input id="cvQ" value="${esc(g.title)}"><button class="ok" id="cvGo">🔍</button></div>
-    <div class="covgrid" id="cvRes"><p class="hint">…</p></div>`);
+    <div class="covgrid" id="cvRes"><p class="hint">…</p></div>
+    <div id="cvWeb"></div>
+    <button class="row" id="cvGoogle">${t("coverGoogle")}</button>
+    <button class="row" id="cvPick">${t("pickCover")}</button>`);
+  let res = [];
+  const pick = async (c) => {
+    toast(t("coverSaving"));
+    let blob = null;
+    if (c.web && window.kameiSB) {
+      try {
+        const r = await window.kameiSB.functions.invoke("kamei-discord", { body: { action: "img", url: c.url } });
+        if (r.data && r.data.b64) { const bin = atob(r.data.b64), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); blob = new Blob([u8], { type: r.data.type }); }
+      } catch (e) {}
+    }
+    await updateGame(g.id, blob ? { coverBlob: blob, cover: null, coverTried: true } : { cover: c.url, coverBlob: null, coverTried: true });
+    delete coverURLs[g.id]; closeSheet(); toast(t("coverFound")); await load();
+  };
+  const draw = () => {
+    if (!$("cvRes")) return;
+    $("cvRes").innerHTML = res.length ? res.map((c, i) => `<button data-i="${i}"><img src="${esc(c.url)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.remove()"><span>${esc(c.name)}${c.web ? ` · <b>${esc(c.src)}</b>` : ""}</span></button>`).join("")
+      : `<p class="hint">${t("coverNone")}</p>`;
+    $("cvRes").querySelectorAll("[data-i]").forEach((b) => b.onclick = () => pick(res[+b.dataset.i]));
+  };
   const run = async () => {
     const q = $("cvQ").value.trim(); if (!q) return;
+    res = [];
     $("cvRes").innerHTML = `<p class="hint">${t("coverSearching")}</p>`;
-    let res = [];
     try { res = await searchCovers(g.system, q, 12); } catch (e) {}
-    if (!$("cvRes")) return;
-    $("cvRes").innerHTML = res.length ? res.map((c, i) => `<button data-i="${i}"><img src="${esc(c.url)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><span>${esc(c.name)}</span></button>`).join("")
-      : `<p class="hint">${t("coverNone")}</p>`;
-    $("cvRes").querySelectorAll("[data-i]").forEach((b) => b.onclick = async () => {
-      await updateGame(g.id, { cover: res[+b.dataset.i].url, coverBlob: null, coverTried: true });
-      delete coverURLs[g.id]; closeSheet(); toast(t("coverFound")); await load();
-    });
+    draw();
+    // deeper search on the web (itch.io, Wikipédia, images) through the Kamei server
+    if (!window.kameiSB || !(window.kameiMe && window.kameiMe())) return;
+    if ($("cvWeb")) $("cvWeb").innerHTML = `<p class="hint">${t("coverWeb")}</p>`;
+    try {
+      const r = await window.kameiSB.functions.invoke("kamei-discord", { body: { action: "covers", q, sys: sys.label } });
+      const web = (r.data && r.data.results) || [];
+      if ($("cvQ") && $("cvQ").value.trim() === q) { res = res.concat(web.map((x) => Object.assign({ web: true }, x))); draw(); }
+    } catch (e) {}
+    if ($("cvWeb")) $("cvWeb").innerHTML = "";
   };
   $("cvGo").onclick = run;
   $("cvQ").addEventListener("keydown", (e) => { if (e.key === "Enter") run(); });
+  $("cvGoogle").onclick = () => {
+    const url = "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(($("cvQ").value.trim() || g.title) + " " + sys.label + " cover");
+    try { window.KameiNative && window.KameiNative.openUrl ? window.KameiNative.openUrl(url) : window.open(url, "_blank"); } catch (e) {}
+    toast(t("coverGoogleHint"), 6000);
+  };
+  $("cvPick").onclick = () => { closeSheet(); pickingCoverFor = g.id; $("coverFile").click(); };
   run();
 }
 let scraping = false;
