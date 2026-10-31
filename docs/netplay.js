@@ -3,6 +3,7 @@
    the friend's buttons control player 2. Supabase only introduces the two devices (Realtime). */
 (function () {
   Object.assign(I18N.fr, {
+    npWith: "🎮 JOUER EN LIGNE ENSEMBLE", npWithHint: (p) => `Choisis un jeu : il démarre et ${p} reçoit une invitation pour jouer en joueur 2. Le jeu doit avoir un mode 2 joueurs.`, npNo2p: "Tu n'as pas encore de jeu de console de salon (NES, Super Nintendo, Mega Drive, PlayStation…) pour jouer à deux.", npOffline: (p) => `${p} n'est pas en ligne : il recevra l'invitation à sa prochaine connexion.`, 
     npInvite: "👥 Inviter", npTitle: "Jouer ensemble", npPick: "Choisis un ami : il verra ton jeu en direct et jouera en joueur 2.",
     npNoFriends: "Ajoute d'abord des amis (onglet Amis).", npWaiting: (p) => `En attente de ${p}…`, npJoined: (p) => `${p} a rejoint la partie 🎮 (joueur 2)`,
     npLeft: (p) => `${p} a quitté la partie`, npInvited: (p, g) => `${p} t'invite à jouer à ${g} !`, npJoin: "🎮 Rejoindre", npLater: "Plus tard",
@@ -13,6 +14,7 @@
     lvAllow: "📺 Mes amis peuvent me regarder jouer", lvFull: "Trop de spectateurs pour l'instant.",
   });
   Object.assign(I18N.nl, {
+    npWith: "🎮 SAMEN ONLINE SPELEN", npWithHint: (p) => `Kies een spel: het start en ${p} krijgt een uitnodiging om als speler 2 mee te spelen. Het spel moet een 2-spelermodus hebben.`, npNo2p: "Je hebt nog geen spel van een thuisconsole (NES, Super Nintendo, Mega Drive, PlayStation…) om samen te spelen.", npOffline: (p) => `${p} is niet online: de uitnodiging komt bij de volgende keer dat hij inlogt.`, 
     npInvite: "👥 Uitnodigen", npTitle: "Samen spelen", npPick: "Kies een vriend: hij ziet je spel live en speelt als speler 2.",
     npNoFriends: "Voeg eerst vrienden toe (tabblad Vrienden).", npWaiting: (p) => `Wachten op ${p}…`, npJoined: (p) => `${p} doet mee 🎮 (speler 2)`,
     npLeft: (p) => `${p} heeft het spel verlaten`, npInvited: (p, g) => `${p} nodigt je uit om ${g} te spelen!`, npJoin: "🎮 Meedoen", npLater: "Later",
@@ -23,6 +25,7 @@
     lvAllow: "📺 Mijn vrienden mogen meekijken", lvFull: "Te veel kijkers op dit moment.",
   });
   Object.assign(I18N.en, {
+    npWith: "🎮 PLAY ONLINE TOGETHER", npWithHint: (p) => `Pick a game: it starts and ${p} gets an invite to play as player 2. The game needs a 2-player mode.`, npNo2p: "You don't have a home-console game yet (NES, Super Nintendo, Mega Drive, PlayStation…) to play together.", npOffline: (p) => `${p} isn't online: they'll get the invite next time they open the app.`, 
     npInvite: "👥 Invite", npTitle: "Play together", npPick: "Pick a friend: they'll see your game live and play as player 2.",
     npNoFriends: "Add friends first (Friends tab).", npWaiting: (p) => `Waiting for ${p}…`, npJoined: (p) => `${p} joined the game 🎮 (player 2)`,
     npLeft: (p) => `${p} left the game`, npInvited: (p, g) => `${p} invites you to play ${g}!`, npJoin: "🎮 Join", npLater: "Later",
@@ -123,7 +126,7 @@
   window.addEventListener("message", (e) => {
     if (!e.data) return;
     try { if (e.source !== frame()) return; } catch (err) { return; }
-    if (e.data.type === "started") liveStart();
+    if (e.data.type === "started") { liveStart(); if (pendingWith) { const f = pendingWith; pendingWith = null; setTimeout(() => startHosting(f), 800); } }
     if ((e.data.type === "netSig" || e.data.type === "netState") && e.data.peer && e.data.peer !== "p2") return liveFromFrame(e.data);
     if (!host) return;
     if (e.data.type === "netSig") host.ch.send(Object.assign({ from: "host" }, e.data.data));
@@ -164,6 +167,36 @@
     if (d.type === "netSig") live.ch.send(Object.assign({ from: "host", to: d.peer }, d.data));
     if (d.type === "netState" && (d.state === "failed" || d.state === "closed")) delete live.viewers[d.peer];
   }
+
+  /* ---------- From a friend's page: pick a 2-player game, it starts and the friend is invited ---------- */
+  const MULTI = ["nes", "snes", "n64", "sms", "md", "s32x", "segacd", "saturn", "psx", "pce", "pcfx", "a2600", "a7800", "a5200", "jaguar", "coleco", "arcade", "mame", "amiga", "c64", "c128", "vic20", "plus4", "zx", "cpc", "cdi"];
+  let pendingWith = null;
+  function playWith(friend, gameId) {
+    if (!me()) return toast(t("needLogin"));
+    pendingWith = friend;
+    closeSheet();
+    play(gameId);
+    setTimeout(() => { if (pendingWith === friend) pendingWith = null; }, 120000);
+  }
+  function friendGames(friend, el) {
+    if (!el || (window.kameiFeature && !window.kameiFeature("netplay"))) return;
+    const list = games.filter((g) => MULTI.includes(g.system)).sort((a, b) => (b.lastPlayed || 0) - (a.lastPlayed || 0) || a.title.localeCompare(b.title));
+    const online = window.kameiOnline && window.kameiOnline(friend);
+    el.innerHTML = `<h4 class="gf-h4" style="margin-top:14px">${t("npWith")}</h4>
+      <p class="hint">${list.length ? t("npWithHint", esc(friend.pseudo)) + (online ? "" : " " + t("npOffline", esc(friend.pseudo))) : t("npNo2p")}</p>
+      ${list.length ? `<div class="np2list">${list.slice(0, 30).map((g) => { const s = SYSTEMS[g.system], src = coverSrc(g);
+        return `<button class="np2" data-g="${esc(g.id)}" style="--c:${s.theme}"><span class="cv">${src ? `<img src="${esc(src)}" alt="" onerror="this.remove()">` : esc(s.short)}</span>
+          <span class="fi"><b>${esc(g.title)}</b><span>${esc(s.label)}</span></span><span class="go">▶</span></button>`; }).join("")}</div>` : ""}`;
+    el.querySelectorAll("[data-g]").forEach((b) => b.onclick = () => playWith(friend, b.dataset.g));
+  }
+  const st2 = document.createElement("style");
+  st2.textContent = `.np2list { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-bottom: 8px; }
+    .np2 { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--text); text-align: left; font: inherit; }
+    .np2:last-child { border-bottom: 0; }
+    .np2 .cv { width: 44px; height: 44px; flex: none; border-radius: 10px; background: color-mix(in srgb, var(--c) 30%, var(--panel)); display: grid; place-items: center; font-size: 10px; font-weight: 800; overflow: hidden; }
+    .np2 .cv img { width: 100%; height: 100%; object-fit: cover; }
+    .np2 .go { width: 36px; height: 36px; flex: none; border-radius: 50%; background: var(--theme); color: #0b0b12; display: grid; place-items: center; font-size: 13px; }`;
+  document.head.appendChild(st2);
 
   async function inviteSheet() {
     if (host) {
@@ -354,6 +387,6 @@
   setInterval(poll, 12000);
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") setTimeout(poll, 800); });
 
-  window.kameiPlay = { invite: inviteSheet, join, watch, allowWatch, setAllowWatch: (v) => { try { localStorage.setItem("kamei-live", v ? "on" : "off"); } catch (e) {} if (!v) liveStop(); },
+  window.kameiPlay = { invite: inviteSheet, join, watch, playWith, friendGames, allowWatch, setAllowWatch: (v) => { try { localStorage.setItem("kamei-live", v ? "on" : "off"); } catch (e) {} if (!v) liveStop(); },
     stopHost: hostStop, stopGuest: guestStop, poll, state: () => ({ host: !!host, live: !!(host && host.live), guest: !!guest, viewers: live ? Object.keys(live.viewers).length : 0 }) };
 })();

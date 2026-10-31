@@ -5,6 +5,7 @@
     fr: {
       trades: "🔁 Échanges Pokémon", tradesTitle: "Échanges Pokémon", newTrade: "Proposer un échange", received: "Propositions reçues", sent: "Mes propositions",
       noTrades: "Aucun échange en cours.", pickGame: "Avec quel jeu ?", pickMon: "Quel Pokémon ?", pickFriend: "À quel ami ?", noFriends: "Ajoute d'abord des amis.",
+      emptyBoxes: "📦 Aucun Pokémon dans les boîtes du PC. Dans le jeu : va au PC d'un Centre Pokémon, dépose le Pokémon dans une boîte, sauvegarde, puis quitte le jeu et reviens ici.",
       noGames: "Aucun jeu Pokémon compatible trouvé. Il faut avoir joué et sauvegardé au moins une fois dans le jeu.",
       boxOnly: "Seuls les Pokémon rangés dans les boîtes du PC peuvent être échangés.", box: (n) => `Boîte ${n}`, lv: (n) => `N.${n}`,
       offers: (who) => `${who} te propose :`, youGive: "Tu donnes", youGet: "Tu reçois", confirmOffer: "Proposer", accept: "Accepter", decline: "Refuser", cancelT: "Annuler l'échange",
@@ -20,6 +21,7 @@
     nl: {
       trades: "🔁 Pokémon ruilen", tradesTitle: "Pokémon ruilen", newTrade: "Ruil voorstellen", received: "Ontvangen voorstellen", sent: "Mijn voorstellen",
       noTrades: "Geen lopende ruilen.", pickGame: "Met welk spel?", pickMon: "Welke Pokémon?", pickFriend: "Met welke vriend?", noFriends: "Voeg eerst vrienden toe.",
+      emptyBoxes: "📦 Geen Pokémon in de pc-boxen. In het spel: ga naar de pc in een Pokémon Center, zet de Pokémon in een box, sla op, sluit het spel en kom hier terug.",
       noGames: "Geen compatibel Pokémon-spel gevonden. Je moet minstens één keer in het spel hebben opgeslagen.",
       boxOnly: "Alleen Pokémon in de pc-boxen kunnen geruild worden.", box: (n) => `Box ${n}`, lv: (n) => `Lv.${n}`,
       offers: (who) => `${who} stelt voor:`, youGive: "Je geeft", youGet: "Je krijgt", confirmOffer: "Voorstellen", accept: "Aanvaarden", decline: "Weigeren", cancelT: "Ruil annuleren",
@@ -35,6 +37,7 @@
     en: {
       trades: "🔁 Pokémon trades", tradesTitle: "Pokémon trades", newTrade: "Offer a trade", received: "Offers received", sent: "My offers",
       noTrades: "No trades in progress.", pickGame: "Which game?", pickMon: "Which Pokémon?", pickFriend: "Which friend?", noFriends: "Add some friends first.",
+      emptyBoxes: "📦 No Pokémon in the PC boxes. In the game: use the PC in a Pokémon Center, deposit the Pokémon in a box, save, then close the game and come back here.",
       noGames: "No compatible Pokémon game found. You need to have saved in the game at least once.",
       boxOnly: "Only Pokémon stored in PC boxes can be traded.", box: (n) => `Box ${n}`, lv: (n) => `Lv.${n}`,
       offers: (who) => `${who} offers:`, youGive: "You give", youGet: "You get", confirmOffer: "Offer", accept: "Accept", decline: "Decline", cancelT: "Cancel trade",
@@ -221,6 +224,7 @@
     const mons = entry.save.list();
     return new Promise((res) => {
       openSheet(`<h3>${title}</h3><p class="hint">${esc(entry.game.title)} · ${t("boxOnly")}</p>
+        ${mons.length ? "" : `<p class="hint" style="color:var(--text)">${t("emptyBoxes")}</p>`}
         <div class="mongrid">${mons.map((m, i) => `<button data-i="${i}">${monCard(m, " · " + t("box", m.box + 1))}</button>`).join("")}</div>
         <div class="btns"><button id="pmB">←</button></div>`);
       document.querySelectorAll("#sheet .mongrid [data-i]").forEach((b) => b.onclick = () => res(mons[+b.dataset.i]));

@@ -330,7 +330,7 @@
     try {
       const r = await sb.rpc("pet_of", { uid: p.id });
       const fp = r.data;
-      if (r.error || !fp) return;
+      if (r.error || !fp || typeof fp.level !== "number") return;
       el.innerHTML = `<h3>${t("petFriend")}</h3><div class="pet-mini"><div class="pet-stage m-${moodOf(fp)}" style="width:70px;height:80px;margin:0;border-radius:14px;flex:none">${svg(fp, 70, 85)}</div>
         <div><b>${esc(fp.name || "Kamei")}</b> · ${t("petLv", fp.level)}<br><span class="hint">${t("petStage")[stageOf(fp)]} · ${t("petMood")[moodOf(fp)]}</span></div></div>`;
     } catch (e) {}

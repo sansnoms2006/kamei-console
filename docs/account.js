@@ -280,6 +280,7 @@
         : `<p class="hint">${t("nothingYet")}</p>`}
       ${window.kameiPlay && feat("watch") && isOnline(p) && p.now_game ? `<button class="row ok-row" id="dWatch" style="margin-top:12px">${t("lvWatch")} · ${esc(p.now_game)}</button>` : ""}
       ${window.kameiChat && feat("chat") ? `<button class="row ok-row" id="dChat" style="margin-top:12px">${t("chatWith", esc(p.pseudo))}</button>` : ""}
+      <div id="dPlay"></div>
       <div id="dPet"></div>
       <div id="dProfile"></div>
       <button class="row" id="dReport" style="color:var(--muted)">${t("reportUser")}</button>
@@ -294,6 +295,7 @@
     if (document.getElementById("dWatch")) document.getElementById("dWatch").onclick = () => window.kameiPlay.watch(p);
     if (window.kameiProfile && feat("profile")) window.kameiProfile.fill(p, document.getElementById("dProfile"));
     if (window.kameiPet && feat("pet")) window.kameiPet.friend(p, document.getElementById("dPet"));
+    if (window.kameiPlay && window.kameiPlay.friendGames && feat("netplay")) window.kameiPlay.friendGames(p, document.getElementById("dPlay"));
     document.getElementById("dRm").onclick = async () => { await sb.rpc("remove_friend", { other: p.id }); friendsSheet(); };
   }
 
