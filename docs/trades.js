@@ -49,7 +49,7 @@
     },
   };
   for (const l of Object.keys(STR)) Object.assign(I18N[l], STR[l]);
-  const FAM = { fr: { g3: "3e génération (GBA)", g4: "4e génération (DS)", g5: "5e génération (DS)" }, nl: { g3: "3e generatie (GBA)", g4: "4e generatie (DS)", g5: "5e generatie (DS)" }, en: { g3: "Gen 3 (GBA)", g4: "Gen 4 (DS)", g5: "Gen 5 (DS)" } };
+  const FAM = { fr: { g12: "1re / 2e génération (Game Boy)", g3: "3e génération (GBA)", g4: "4e génération (DS)", g5: "5e génération (DS)" }, nl: { g12: "1e / 2e generatie (Game Boy)", g3: "3e generatie (GBA)", g4: "4e generatie (DS)", g5: "5e generatie (DS)" }, en: { g12: "Gen 1 / 2 (Game Boy)", g3: "Gen 3 (GBA)", g4: "Gen 4 (DS)", g5: "Gen 5 (DS)" } };
   const famLabel = (f) => (FAM[lang] || FAM.fr)[f] || f;
   const monName = (sp) => PKX.name(sp, lang === "fr" ? "fr" : "en");
   const monCard = (m, extra = "") => `<span class="mon"><img src="${PKX.sprite(m.species, m.shiny)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><b>${m.egg ? t("egg") : esc(monName(m.species))}${m.shiny ? " ✨" : ""}</b><small>${t("lv", m.level)}${extra}</small></span>`;
@@ -91,7 +91,7 @@
 
   async function pokemonGames() {
     const out = [];
-    for (const g of games.filter((x) => x.system === "gba" || x.system === "nds")) {
+    for (const g of games.filter((x) => ["gb", "gbc", "gba", "nds"].includes(x.system))) {
       try {
         const f = await findSave(g); if (!f) continue;
         const sv = PKX.open(f.bytes); if (!sv) continue;

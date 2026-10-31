@@ -261,7 +261,7 @@
   .shero h2 { margin: 8px 0 2px; font-size: 24px; line-height: 1.1; font-weight: 800; }
   .shero p { margin: 0; color: var(--muted); font-size: 13px; }
   .shero .sh-k { width: 92px; height: 120px; flex: none; margin: -6px -4px -16px 0; }
-  .shero .sh-prop { position: absolute; width: 40px; left: 10px; bottom: 8px; opacity: .9; }
+  .shero .sh-prop { position: absolute; width: 34px; right: 104px; bottom: 10px; opacity: .9; }
   .sh-res { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 14px; padding: 10px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); text-align: left; }
   .sh-res .cv { width: 56px; height: 56px; flex: none; border-radius: 10px; background: color-mix(in srgb, var(--c) 30%, var(--panel)); display: grid; place-items: center; font-size: 10px; font-weight: 800; overflow: hidden; }
   .sh-res .cv img { width: 100%; height: 100%; object-fit: cover; }
@@ -835,7 +835,7 @@ async function gameSlots(g) {
 }
 function gameMenu(g) {
   const s = SYSTEMS[g.system] || SYSTEMS.gb, src = coverSrc(g);
-  const trade = (g.system === "gba" || g.system === "nds") && window.kameiTrades && (!window.kameiFeature || window.kameiFeature("trades"));
+  const trade = ["gb", "gbc", "gba", "nds"].includes(g.system) && window.kameiTrades && (!window.kameiFeature || window.kameiFeature("trades"));
   openSheet(`<div class="gf-head" style="--c:${s.theme}">${src ? `<img src="${esc(src)}" alt="" onerror="this.remove()">` : `<span class="label">${esc(g.title.slice(0, 40))}</span>`}</div>
     <h3 style="font-size:22px;margin:0 0 6px">${esc(g.title)}</h3>
     <div class="gf-meta"><span class="chip">${esc(s.short)}</span><span>${g.lastPlayed ? t("played", ago(g.lastPlayed)) : esc(s.label)}</span><span>· ${fmtSize(g.size)}</span></div>
@@ -1305,6 +1305,7 @@ window.addEventListener("online", scrapeMissing);
 <script src="pkdata.js"></script>
 <script src="pkx.js"></script>
 <script src="pkevo.js"></script>
+<script src="pkg12.js"></script>
 <script src="trades.js"></script>
 <script src="chat.js"></script>
 <script src="requests.js"></script>
