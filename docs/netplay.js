@@ -9,6 +9,8 @@
     npConnecting: "Connexion à la partie…", npEnded: "La partie est terminée.", npFail: "Connexion impossible. Réessaie, ou essayez tous les deux en Wi-Fi.",
     npSound: "🔊 Activer le son", npStop: "Arrêter le jeu en ligne", npP2: (p) => `Joueur 2 · partie de ${p}`, npOff: "Le jeu en ligne n'est pas encore activé.",
     npHint: "Astuce : en Wi-Fi, c'est plus fluide.",
+    lvWatch: "📺 Regarder", lvWatching: (p, g) => `Tu regardes ${p} · ${g}`, lvViewer: (p) => `👀 ${p} te regarde jouer`, lvNotLive: "Ton ami ne joue plus, ou ne partage pas son écran.",
+    lvAllow: "📺 Mes amis peuvent me regarder jouer", lvFull: "Trop de spectateurs pour l'instant.",
   });
   Object.assign(I18N.nl, {
     npInvite: "👥 Uitnodigen", npTitle: "Samen spelen", npPick: "Kies een vriend: hij ziet je spel live en speelt als speler 2.",
@@ -17,6 +19,8 @@
     npConnecting: "Verbinden met het spel…", npEnded: "Het spel is afgelopen.", npFail: "Verbinding mislukt. Probeer opnieuw, of allebei via wifi.",
     npSound: "🔊 Geluid aan", npStop: "Online spelen stoppen", npP2: (p) => `Speler 2 · spel van ${p}`, npOff: "Online spelen is nog niet actief.",
     npHint: "Tip: via wifi is het vlotter.",
+    lvWatch: "📺 Kijken", lvWatching: (p, g) => `Je kijkt naar ${p} · ${g}`, lvViewer: (p) => `👀 ${p} kijkt mee`, lvNotLive: "Je vriend speelt niet meer, of deelt zijn scherm niet.",
+    lvAllow: "📺 Mijn vrienden mogen meekijken", lvFull: "Te veel kijkers op dit moment.",
   });
   Object.assign(I18N.en, {
     npInvite: "👥 Invite", npTitle: "Play together", npPick: "Pick a friend: they'll see your game live and play as player 2.",
@@ -25,11 +29,25 @@
     npConnecting: "Connecting to the game…", npEnded: "The game is over.", npFail: "Couldn't connect. Try again, or both use Wi-Fi.",
     npSound: "🔊 Turn sound on", npStop: "Stop playing online", npP2: (p) => `Player 2 · ${p}'s game`, npOff: "Online play isn't enabled yet.",
     npHint: "Tip: it's smoother on Wi-Fi.",
+    lvWatch: "📺 Watch", lvWatching: (p, g) => `Watching ${p} · ${g}`, lvViewer: (p) => `👀 ${p} is watching you play`, lvNotLive: "Your friend isn't playing anymore, or isn't sharing.",
+    lvAllow: "📺 My friends can watch me play", lvFull: "Too many viewers right now.",
   });
 
   const sb = window.kameiSB, me = () => window.kameiMe && window.kameiMe();
   if (!sb) return;
-  const ICE = [{ urls: ["stun:stun.l.google.com:19302", "stun:stun.cloudflare.com:3478"] }].concat(window.KAMEI_TURN || []);
+  let ICE = [{ urls: ["stun:stun.l.google.com:19302", "stun:stun.cloudflare.com:3478"] }];
+  // free relay (Cloudflare TURN through the "kamei-discord" function) for networks that block direct connections
+  let iceAt = 0;
+  async function refreshIce() {
+    if (Date.now() - iceAt < 3600000 || !me()) return;
+    iceAt = Date.now();
+    try {
+      const r = await sb.functions.invoke("kamei-discord", { body: { action: "ice" } });
+      const extra = (r.data && Array.isArray(r.data.iceServers)) ? r.data.iceServers : [];
+      ICE = [{ urls: ["stun:stun.l.google.com:19302", "stun:stun.cloudflare.com:3478"] }].concat(extra);
+    } catch (e) {}
+  }
+  setTimeout(refreshIce, 10000);
   const frame = () => document.getElementById("frame").contentWindow;
 
   /* ---------- Signalling channel (Supabase Realtime; replaceable for tests) ---------- */
@@ -74,17 +92,18 @@
     if (!host) return;
     try { host.ch.send({ from: "host", kind: "bye" }); } catch (e) {}
     try { host.ch.close(); } catch (e) {}
-    try { frame().postMessage({ type: "netStop" }, "*"); } catch (e) {}
+    try { frame().postMessage({ type: "netStop", peer: "p2" }, "*"); } catch (e) {}
     if (host.invite) sb.rpc("play_invite_status", { inv_id: host.invite, st: "ended" }).then(() => {}, () => {});
     host = null; paintBtn();
     if (!silent) toast(t("npStop"));
   }
   function paintBtn() {
     const b = document.getElementById("npBtn"); if (!b) return;
-    b.textContent = host ? (host.live ? "👥 " + host.friend.pseudo + " 🟢" : "👥 …") : t("npInvite");
+    b.textContent = host ? (host.live ? "👥 " + host.friend.pseudo + " 🟢" : "👥 …") : (innerWidth < 600 ? "👥" : t("npInvite"));
     b.classList.toggle("live", !!(host && host.live));
   }
   async function startHosting(friend) {
+    await refreshIce();
     const g = window.kameiCurrentGame && window.kameiCurrentGame(); if (!g) return;
     const r = await sb.rpc("play_invite", { to_id: friend.id, game_name: g.title, sys: g.system });
     if (r.error || !r.data) { toast(/too_many/.test((r.error || {}).message || "") ? "⏳" : t("npOff"), 3500); return; }
@@ -94,16 +113,19 @@
     host = { friend, live: false, invite: inv.data && inv.data.id };
     host.ch = channel(room, (m) => {
       if (!host || m.from !== "guest") return;
-      if (m.kind === "hello") frame().postMessage({ type: "netHost", ice: ICE }, "*");
-      else if (m.kind === "bye") { toast(t("npLeft", friend.pseudo), 3500); host.live = false; paintBtn(); frame().postMessage({ type: "netStop" }, "*"); }
-      else frame().postMessage({ type: "netSig", data: m }, "*");
+      if (m.kind === "hello") frame().postMessage({ type: "netHost", ice: ICE, peer: "p2", input: true }, "*");
+      else if (m.kind === "bye") { toast(t("npLeft", friend.pseudo), 3500); host.live = false; paintBtn(); frame().postMessage({ type: "netStop", peer: "p2" }, "*"); }
+      else frame().postMessage({ type: "netSig", peer: "p2", data: m }, "*");
     });
     paintBtn();
     toast(t("npWaiting", friend.pseudo) + " " + t("npHint"), 5000);
   }
   window.addEventListener("message", (e) => {
-    if (!host || !e.data) return;
+    if (!e.data) return;
     try { if (e.source !== frame()) return; } catch (err) { return; }
+    if (e.data.type === "started") liveStart();
+    if ((e.data.type === "netSig" || e.data.type === "netState") && e.data.peer && e.data.peer !== "p2") return liveFromFrame(e.data);
+    if (!host) return;
     if (e.data.type === "netSig") host.ch.send(Object.assign({ from: "host" }, e.data.data));
     if (e.data.type === "netState") {
       const was = host.live; host.live = e.data.state === "connected"; paintBtn();
@@ -111,6 +133,38 @@
       if (e.data.state === "failed") toast(t("npFail"), 5000);
     }
   });
+  /* ---------- Live: friends can watch me play (up to 3) ---------- */
+  let live = null;   // { ch, viewers: { peer: pseudo } }
+  const allowWatch = () => { try { return localStorage.getItem("kamei-live") !== "off"; } catch (e) { return true; } };
+  function liveStart() {
+    liveStop();
+    if (!me() || !allowWatch() || (window.kameiFeature && !window.kameiFeature("watch"))) return;
+    live = { viewers: {} };
+    live.ch = channel("live-" + me().id, (m) => {
+      if (!live || m.from !== "viewer" || !m.peer) return;
+      if (m.kind === "hello") {
+        if (!live.viewers[m.peer] && Object.keys(live.viewers).length >= 3) { live.ch.send({ from: "host", to: m.peer, kind: "full" }); return; }
+        const isNew = !live.viewers[m.peer];
+        live.viewers[m.peer] = m.pseudo || "?";
+        const g = window.kameiCurrentGame && window.kameiCurrentGame();
+        live.ch.send({ from: "host", to: m.peer, kind: "info", game: g ? g.title : "" });
+        frame().postMessage({ type: "netHost", ice: ICE, peer: m.peer, input: false }, "*");
+        if (isNew) toast(t("lvViewer", m.pseudo || "?"), 3500);
+      } else if (m.kind === "bye") { delete live.viewers[m.peer]; frame().postMessage({ type: "netStop", peer: m.peer }, "*"); }
+      else frame().postMessage({ type: "netSig", peer: m.peer, data: m }, "*");
+    });
+  }
+  function liveStop() {
+    if (!live) return;
+    try { for (const p of Object.keys(live.viewers)) live.ch.send({ from: "host", to: p, kind: "bye" }); } catch (e) {}
+    const ch = live.ch; live = null; setTimeout(() => { try { ch.close(); } catch (e) {} }, 300);
+  }
+  function liveFromFrame(d) {
+    if (!live) return;
+    if (d.type === "netSig") live.ch.send(Object.assign({ from: "host", to: d.peer }, d.data));
+    if (d.type === "netState" && (d.state === "failed" || d.state === "closed")) delete live.viewers[d.peer];
+  }
+
   async function inviteSheet() {
     if (host) {
       openSheet(`<h3>${t("npTitle")}</h3><p class="hint">${host.live ? t("npJoined", esc(host.friend.pseudo)) : t("npWaiting", esc(host.friend.pseudo))}</p>
@@ -137,7 +191,7 @@
     paintBtn();
   }
   // leaving the game ends the online session
-  document.getElementById("quit").addEventListener("click", () => hostStop(true), true);
+  document.getElementById("quit").addEventListener("click", () => { hostStop(true); liveStop(); }, true);
 
   /* ======================= GUEST ======================= */
   let guest = null;  // { pc, dc, ch, invite, hostName, buttons, axis, timer }
@@ -156,7 +210,7 @@
     let b = 0; for (const [k, on] of Object.entries(guest.buttons)) if (on) b |= 1 << +k;
     guest.dc.send(JSON.stringify({ b, a: guest.axis }));
   }
-  function setKey(k, on) { if (!guest) return; if (!!guest.buttons[k] === on) return; guest.buttons[k] = on; send(); if (on) { try { window.kameiVibe && window.kameiVibe(12); } catch (e) {} } }
+  function setKey(k, on) { if (!guest || !guest.input) return; if (!!guest.buttons[k] === on) return; guest.buttons[k] = on; send(); if (on) { try { window.kameiVibe && window.kameiVibe(12); } catch (e) {} } }
 
   /* touch buttons (multi-touch) */
   const touchBtn = {};
@@ -211,7 +265,7 @@
     if (!guest) return;
     const g = guest; guest = null;
     clearInterval(g.timer);
-    try { g.ch.send({ from: "guest", kind: "bye" }); } catch (e) {}
+    try { g.ch.send(Object.assign({ from: g.who, kind: "bye" }, g.peer ? { peer: g.peer } : {})); } catch (e) {}
     setTimeout(() => { try { g.ch.close(); } catch (e) {} }, 300);
     try { g.dc && g.dc.close(); } catch (e) {} try { g.pc && g.pc.close(); } catch (e) {}
     $w("wVid").srcObject = null; W.classList.remove("on");
@@ -219,16 +273,26 @@
     if (!silent) toast(t("npEnded"));
   }
   async function join(inv) {
+    sb.rpc("play_invite_status", { inv_id: inv.id, st: "joined" }).then(() => {}, () => {});
+    connect({ room: inv.room, title: t("npP2", inv.pseudo || "?") + " · " + inv.game, input: true, peer: null, invite: inv.id });
+  }
+  /* watch a friend play (no controls) */
+  function watch(friend) {
+    const peer = "v" + Math.random().toString(36).slice(2, 10);
+    connect({ room: "live-" + friend.id, title: t("lvWatching", friend.pseudo, friend.now_game || ""), input: false, peer, pseudo: me() && me().pseudo });
+  }
+  async function connect(o) {
+    await refreshIce();
     if (guest) guestStop(true);
     closeSheet();
-    const hostName = inv.pseudo || "?";
-    $w("wQuit").textContent = t("quit"); $w("wTitle").textContent = t("npP2", hostName) + " · " + inv.game;
+    $w("wQuit").textContent = t("quit"); $w("wTitle").textContent = o.title;
     $w("wSound").textContent = t("npSound"); $w("wSound").style.display = "none";
-    $w("wPad").classList.remove("hide");
+    $w("wPad").classList.toggle("hide", !o.input);
     W.classList.add("on"); guestMsg(t("npConnecting"));
-    sb.rpc("play_invite_status", { inv_id: inv.id, st: "joined" }).then(() => {}, () => {});
     const pc = new RTCPeerConnection({ iceServers: ICE });
-    guest = { pc, dc: null, invite: inv.id, buttons: {}, axis: [0, 0], hostName };
+    const who = o.input ? "guest" : "viewer";
+    guest = { pc, dc: null, invite: o.invite || null, buttons: {}, axis: [0, 0], input: o.input, peer: o.peer, who };
+    const out = (m) => guest && guest.ch.send(Object.assign({ from: who }, o.peer ? { peer: o.peer, pseudo: o.pseudo } : {}, m));
     pc.ontrack = (e) => {
       try { e.receiver.playoutDelayHint = 0; e.receiver.jitterBufferTarget = 0; } catch (err) {}
       const v = $w("wVid");
@@ -237,24 +301,27 @@
       v.play().catch(() => { v.muted = true; v.play().catch(() => {}); $w("wSound").style.display = "block"; });
     };
     pc.ondatachannel = (e) => { guest.dc = e.channel; guest.dc.onopen = () => { send(); guestMsg(""); }; };
-    pc.onicecandidate = (e) => { if (e.candidate && guest) guest.ch.send({ from: "guest", kind: "ice", data: e.candidate.toJSON() }); };
+    pc.onicecandidate = (e) => { if (e.candidate && guest) out({ kind: "ice", data: e.candidate.toJSON() }); };
     pc.onconnectionstatechange = () => {
       if (!guest || guest.pc !== pc) return;
-      if (pc.connectionState === "connected") { guestMsg(""); clearInterval(guest.timer); }
+      if (pc.connectionState === "connected") { guestMsg(""); clearInterval(guest.timer); try { window.kameiPetEvent && window.kameiPetEvent(o.input ? "netplay" : "watch"); } catch (e) {} }
       if (pc.connectionState === "failed") guestMsg(t("npFail"));
     };
-    guest.ch = channel(inv.room, async (m) => {
+    guest.ch = channel(o.room, async (m) => {
       if (!guest || m.from !== "host") return;
+      if (o.peer && m.to !== o.peer) return;
       try {
-        if (m.kind === "offer") { await pc.setRemoteDescription(m.data); const a = await pc.createAnswer(); await pc.setLocalDescription(a); guest.ch.send({ from: "guest", kind: "answer", data: pc.localDescription.toJSON() }); }
+        if (m.kind === "offer") { await pc.setRemoteDescription(m.data); const a = await pc.createAnswer(); await pc.setLocalDescription(a); out({ kind: "answer", data: pc.localDescription.toJSON() }); }
         if (m.kind === "ice" && m.data) await pc.addIceCandidate(m.data);
+        if (m.kind === "info" && m.game) $w("wTitle").textContent = o.title.replace(/·\s*$/, "· " + m.game);
+        if (m.kind === "full") { guestStop(true); toast(t("lvFull"), 4000); }
         if (m.kind === "bye") { guestStop(true); toast(t("npEnded"), 4000); }
       } catch (e) {}
     });
     // say hello until the host answers (he may still be loading the game)
-    const hello = () => { if (guest && pc.signalingState === "stable" && !pc.remoteDescription) guest.ch.send({ from: "guest", kind: "hello" }); };
+    const hello = () => { if (guest && pc.signalingState === "stable" && !pc.remoteDescription) out({ kind: "hello" }); };
     hello(); guest.timer = setInterval(hello, 2500);
-    setTimeout(() => { if (guest && guest.pc === pc && pc.connectionState !== "connected") guestMsg(t("npFail")); }, 30000);
+    setTimeout(() => { if (guest && guest.pc === pc && pc.connectionState !== "connected") guestMsg(o.input ? t("npFail") : t("lvNotLive")); }, o.input ? 30000 : 15000);
     requestAnimationFrame(gpLoop);
   }
   $w("wQuit").onclick = () => guestStop();
@@ -263,7 +330,7 @@
   /* ======================= Invitations ======================= */
   let seen = {}; try { seen = JSON.parse(sessionStorage.getItem("kamei-np-seen") || "{}"); } catch (e) {}
   async function poll() {
-    if (!me() || guest || document.visibilityState !== "visible") return;
+    if (!me() || guest || document.visibilityState !== "visible" || (window.kameiFeature && !window.kameiFeature("netplay"))) return;
     try {
       const since = new Date(Date.now() - 10 * 60000).toISOString();
       const r = await sb.from("play_invites").select("id,from_user,game,system,room,created_at,status").eq("to_user", me().id).eq("status", "pending").gt("created_at", since).order("created_at", { ascending: false }).limit(1);
@@ -287,5 +354,6 @@
   setInterval(poll, 12000);
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") setTimeout(poll, 800); });
 
-  window.kameiPlay = { invite: inviteSheet, join, stopHost: hostStop, stopGuest: guestStop, poll, state: () => ({ host: !!host, live: !!(host && host.live), guest: !!guest }) };
+  window.kameiPlay = { invite: inviteSheet, join, watch, allowWatch, setAllowWatch: (v) => { try { localStorage.setItem("kamei-live", v ? "on" : "off"); } catch (e) {} if (!v) liveStop(); },
+    stopHost: hostStop, stopGuest: guestStop, poll, state: () => ({ host: !!host, live: !!(host && host.live), guest: !!guest, viewers: live ? Object.keys(live.viewers).length : 0 }) };
 })();

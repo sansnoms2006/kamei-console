@@ -134,6 +134,21 @@
   let id = null;
   if (choice === "auto") { for (const [k, th] of Object.entries(THEMES)) if (th.when(now)) { id = k; break; } }
   else if (THEMES[choice]) id = choice;
+  // "Perso": the player's own theme (colours, Kamei's hat, decoration, falling particles, font)
+  if (choice === "custom") {
+    let c = {}; try { c = JSON.parse(localStorage.getItem("kamei-theme-custom") || "{}"); } catch (e) {}
+    const acc = c.acc || "#8fc63f", acc2 = c.acc2 || "#22c55e";
+    const MOTION = { "p-bat": "fly", "p-snow": "fall", "p-heart": "rise", "p-flower": "fall", "p-confetti": "fall", "p-spark": "fall" };
+    const SIZE = { "Creepster": 38, "Mountains of Christmas": 38, "Pacifico": 32, "Lilita One": 34, "Press Start 2P": 24 };
+    THEMES.custom = {
+      when: () => false, acc, acc2, font: c.font || "Lilita One", size: SIZE[c.font] || 34, emoji: c.emoji || "🦎",
+      bg: `radial-gradient(120% 45% at 50% -5%, ${acc}38, transparent 65%), radial-gradient(80% 40% at 100% 30%, ${acc2}2e, transparent 70%) #0b0b12`,
+      greet: { fr: "SALUT ! " + (c.emoji || "🦎"), nl: "HALLO! " + (c.emoji || "🦎"), en: "HI! " + (c.emoji || "🦎") },
+      hat: c.hat || "none", prop: c.prop || "none", particle: c.particle || "none", motion: MOTION[c.particle] || "fall", corner: null,
+      icon: "Default", iconBg: ["#0b0b12", acc],
+    };
+    id = "custom";
+  }
 
   window.KAMEI_THEMES = THEMES;
   window.kameiThemeChoice = choice;

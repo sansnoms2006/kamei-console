@@ -1,18 +1,21 @@
 /* Kamei Game Console — chat between friends (Supabase table "messages", see kamei-chat.sql) */
 (function () {
   Object.assign(I18N.fr, {
+    chatReportQ: "Signaler ce message à l'admin ?", chatReported: "Merci, l'admin va regarder 🚩", generalRoom: "🌍 Salon Général", generalHint: "Tout le monde peut lire et écrire ici. Reste sympa 😉", reportUser: "🚩 Signaler ce joueur", reportUserQ: "Signaler ce joueur à l'admin ?",
     chatWith: (p) => `💬 Écrire à ${p}`, chatPh: "Ton message…", chatEmpty: "Pas encore de message. Dis bonjour 👋", chatSend: "Envoyer",
     chatErr: "Message pas envoyé", chatSlow: "Doucement ! Trop de messages d'un coup.", chatBanned: "Ton compte est bloqué.", chatNotFriend: "Vous n'êtes plus amis.",
     chatSetup: "Le chat n'est pas encore activé (l'admin doit lancer kamei-chat.sql dans Supabase).", chatDel: "Effacer ce message ?", chatNew: (p) => `💬 ${p}`,
     chatToday: "Aujourd'hui", chatYesterday: "Hier",
   });
   Object.assign(I18N.nl, {
+    chatReportQ: "Dit bericht melden aan de admin?", chatReported: "Bedankt, de admin kijkt ernaar 🚩", generalRoom: "🌍 Algemene chat", generalHint: "Iedereen kan hier lezen en schrijven. Blijf vriendelijk 😉", reportUser: "🚩 Deze speler melden", reportUserQ: "Deze speler melden aan de admin?",
     chatWith: (p) => `💬 Stuur ${p} een bericht`, chatPh: "Je bericht…", chatEmpty: "Nog geen berichten. Zeg hallo 👋", chatSend: "Versturen",
     chatErr: "Bericht niet verstuurd", chatSlow: "Rustig aan! Te veel berichten tegelijk.", chatBanned: "Je account is geblokkeerd.", chatNotFriend: "Jullie zijn geen vrienden meer.",
     chatSetup: "De chat is nog niet actief (de admin moet kamei-chat.sql in Supabase uitvoeren).", chatDel: "Dit bericht wissen?", chatNew: (p) => `💬 ${p}`,
     chatToday: "Vandaag", chatYesterday: "Gisteren",
   });
   Object.assign(I18N.en, {
+    chatReportQ: "Report this message to the admin?", chatReported: "Thanks, the admin will check 🚩", generalRoom: "🌍 General room", generalHint: "Everyone can read and write here. Be nice 😉", reportUser: "🚩 Report this player", reportUserQ: "Report this player to the admin?",
     chatWith: (p) => `💬 Message ${p}`, chatPh: "Your message…", chatEmpty: "No messages yet. Say hi 👋", chatSend: "Send",
     chatErr: "Message not sent", chatSlow: "Slow down! Too many messages at once.", chatBanned: "Your account is blocked.", chatNotFriend: "You are no longer friends.",
     chatSetup: "Chat isn't enabled yet (the admin must run kamei-chat.sql in Supabase).", chatDel: "Delete this message?", chatNew: (p) => `💬 ${p}`,
@@ -30,6 +33,8 @@
     #chatList { height: 46vh; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding: 8px 2px; background: rgba(0,0,0,.18); border-radius: 14px; }
     .msg { max-width: 78%; padding: 8px 12px; border-radius: 16px; font-size: 15px; line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere; background: #2a2a3c; align-self: flex-start; border-bottom-left-radius: 4px; }
     .msg.me { align-self: flex-end; background: var(--theme, #8fc63f); color: #0b0b12; border-bottom-left-radius: 16px; border-bottom-right-radius: 4px; }
+    .msg.pic { padding: 4px; } .msg.pic img { display: block; max-width: 100%; border-radius: 12px; image-rendering: pixelated; }
+    .msg .who { display: block; font-size: 11px; color: var(--tacc, #8fc63f); margin-bottom: 2px; }
     .msg small { display: block; font-size: 10px; opacity: .6; margin-top: 2px; text-align: right; }
     .msg-day { align-self: center; font-size: 11px; color: var(--muted); padding: 4px 0; }
     .chat-in { display: flex; gap: 8px; margin-top: 10px; }
@@ -71,7 +76,7 @@
           const p = await sb.from("profiles").select("id,pseudo,color").in("id", ids);
           const who = (id) => (p.data || []).find((x) => x.id === id) || { id, pseudo: "?" };
           const last = fresh[fresh.length - 1];
-          window.kameiNotify(t("chatNew", who(last.from_user).pseudo), last.body.slice(0, 120) + (fresh.length > 1 ? ` (+${fresh.length - 1})` : ""), () => open(who(last.from_user)));
+          window.kameiNotify(t("chatNew", who(last.from_user).pseudo), last.body.startsWith("§img:") ? "📸 Photo" : last.body.slice(0, 120) + (fresh.length > 1 ? ` (+${fresh.length - 1})` : ""), () => open(who(last.from_user)));
         }
       }
       lastSeenId = Math.max(lastSeenId || 0, newest);
@@ -92,6 +97,11 @@
   /* ---------- Conversation ---------- */
   async function load(friend) {
     const m = me();
+    if (friend.general) {
+      const g = await sb.from("general_messages").select("id,user_id,body,created_at,profiles(pseudo)").order("id", { ascending: false }).limit(80);
+      if (g.error) throw g.error;
+      return (g.data || []).reverse().map((x) => ({ id: x.id, from_user: x.user_id, body: x.body, created_at: x.created_at, read_at: null, pseudo: x.profiles && x.profiles.pseudo }));
+    }
     const r = await sb.from("messages").select("id,from_user,to_user,body,created_at,read_at")
       .or(`and(from_user.eq.${m.id},to_user.eq.${friend.id}),and(from_user.eq.${friend.id},to_user.eq.${m.id})`)
       .order("id", { ascending: false }).limit(80);
@@ -106,22 +116,33 @@
       const d = new Date(x.created_at), dl = dayLabel(d);
       if (dl !== day) { day = dl; html += `<div class="msg-day">${esc(dl)}</div>`; }
       const mine = x.from_user === me().id;
-      html += `<div class="msg ${mine ? "me" : ""}" data-mid="${x.id}" data-mine="${mine ? 1 : ""}">${esc(x.body)}<small>${hhmm(d)}${mine && x.read_at ? " ✓✓" : ""}</small></div>`;
+      const img = x.body.startsWith("§img:") ? sb.storage.from("shots").getPublicUrl(x.body.slice(5)).data.publicUrl : null;
+      html += `<div class="msg ${mine ? "me" : ""} ${img ? "pic" : ""}" data-mid="${x.id}" data-mine="${mine ? 1 : ""}" data-from="${x.from_user}">${friend.general && !mine ? `<b class="who">${esc(x.pseudo || "?")}</b>` : ""}${img ? `<img src="${esc(img)}" alt="📸" loading="lazy" data-zoom="${esc(img)}">` : esc(x.body)}<small>${hhmm(d)}${mine && x.read_at ? " ✓✓" : ""}</small></div>`;
     }
     box.innerHTML = html || `<p class="hint" style="margin:auto;text-align:center">${t("chatEmpty")}</p>`;
     if (atBottom || !shown.length) box.scrollTop = box.scrollHeight;
     shown = list;
-    box.querySelectorAll('[data-mine="1"]').forEach((el) => {
+    box.querySelectorAll("[data-zoom]").forEach((im) => im.onclick = () => window.open(im.dataset.zoom, "_blank"));
+    // long press: delete my message (or any message for the admin) / report someone else's
+    box.querySelectorAll(".msg[data-mid]").forEach((el) => {
+      const mine = el.dataset.mine === "1", act = () => msgMenu(+el.dataset.mid, el.dataset.from, mine, friend);
       let tm = null;
-      el.addEventListener("touchstart", () => { tm = setTimeout(() => del(+el.dataset.mid, friend), 650); }, { passive: true });
+      el.addEventListener("touchstart", () => { tm = setTimeout(act, 650); }, { passive: true });
       el.addEventListener("touchend", () => clearTimeout(tm)); el.addEventListener("touchmove", () => clearTimeout(tm), { passive: true });
-      el.addEventListener("contextmenu", (e) => { e.preventDefault(); del(+el.dataset.mid, friend); });
+      el.addEventListener("contextmenu", (e) => { e.preventDefault(); act(); });
     });
   }
   async function del(id, friend) {
     if (!confirmBox(t("chatDel"))) return;
-    await sb.rpc("chat_delete", { msg_id: id });
+    await sb.rpc(friend.general ? "general_delete" : "chat_delete", { msg_id: id });
     refresh(friend);
+  }
+  async function msgMenu(id, from, mine, friend) {
+    const admin = !!(me() && me().is_admin);
+    if (mine || (admin && friend.general)) { if (!mine && !confirmBox(t("chatDel"))) return; if (mine) return del(id, friend); await sb.rpc("general_delete", { msg_id: id }); return refresh(friend); }
+    if (!confirmBox(t("chatReportQ"))) return;
+    const r = await sb.rpc("report_create", { target_id: from, k: friend.general ? "general" : "message", ref_id: id, why: "" });
+    toast(r.error ? errText(r.error) : t("chatReported"), 3500);
   }
   function confirmBox(q) { try { return window.confirm(q); } catch (e) { return false; } }
   async function refresh(friend) {
@@ -130,7 +151,7 @@
       const list = await load(friend);
       const sig = list.map((x) => x.id + (x.read_at ? "r" : "")).join(",");
       if (sig !== shown.map((x) => x.id + (x.read_at ? "r" : "")).join(",")) render(list, friend);
-      if (list.some((x) => x.to_user === me().id && !x.read_at)) { await sb.rpc("chat_read", { other: friend.id }); poll(); }
+      if (!friend.general && list.some((x) => x.to_user === me().id && !x.read_at)) { await sb.rpc("chat_read", { other: friend.id }); poll(); }
     } catch (e) {
       const box = document.getElementById("chatList"); if (box && !shown.length) box.innerHTML = `<p class="hint err" style="margin:auto;text-align:center">${esc(errText(e))}</p>`;
     }
@@ -140,7 +161,7 @@
     if (!me() || !friend) return;
     stop();
     openWith = friend.id;
-    openSheet(`<div class="chat-head">${window.kameiAvatar ? window.kameiAvatar(friend, 40) : ""}<h3>${esc(friend.pseudo)}</h3><button class="mini" id="chBack">←</button></div>
+    openSheet(`<div class="chat-head">${friend.general ? `<span style="font-size:30px">🌍</span>` : window.kameiAvatar ? window.kameiAvatar(friend, 40) : ""}<h3>${esc(friend.pseudo)}</h3><button class="mini" id="chBack">←</button></div>
       <div id="chatList"><p class="hint" style="margin:auto">…</p></div>
       <div class="chat-in"><textarea id="chIn" maxlength="500" placeholder="${t("chatPh")}" rows="1"></textarea><button class="ok" id="chSend">➤</button></div>`);
     const inp = document.getElementById("chIn");
@@ -148,9 +169,10 @@
     const send = async () => {
       const v = inp.value.trim(); if (!v) return;
       const b = document.getElementById("chSend"); b.disabled = true;
-      const r = await sb.rpc("chat_send", { to_id: friend.id, msg: v });
+      const r = friend.general ? await sb.rpc("general_send", { msg: v }) : await sb.rpc("chat_send", { to_id: friend.id, msg: v });
       b.disabled = false;
       if (r.error) return toast(errText(r.error), 3500);
+      if (window.kameiPetEvent) window.kameiPetEvent(friend.general ? "general" : "chat");
       inp.value = ""; inp.style.height = "";
       try { window.kameiVibe && window.kameiVibe(12); } catch (e) {}
       refresh(friend);
@@ -164,5 +186,6 @@
   // closing the sheet stops the live refresh
   document.getElementById("sheetBg").addEventListener("click", (e) => { if (e.target.id === "sheetBg") { const was = openWith; stop(); if (was && window.kameiNav) window.kameiNav.refresh(); } });
 
-  window.kameiChat = { open, poll, paintFriends, unreadFrom, unreadCount: () => unread.length };
+  const openGeneral = () => open({ id: "general", pseudo: t("generalRoom"), general: true });
+  window.kameiChat = { openGeneral, open, poll, paintFriends, unreadFrom, unreadCount: () => unread.length };
 })();

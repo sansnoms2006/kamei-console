@@ -9,6 +9,7 @@
       boxOnly: "Seuls les Pokémon rangés dans les boîtes du PC peuvent être échangés.", box: (n) => `Boîte ${n}`, lv: (n) => `N.${n}`,
       offers: (who) => `${who} te propose :`, youGive: "Tu donnes", youGet: "Tu reçois", confirmOffer: "Proposer", accept: "Accepter", decline: "Refuser", cancelT: "Annuler l'échange",
       waiting: "En attente de réponse", accepted: "Accepté ✅", declined: "Refusé", cancelled: "Annulé",
+      evoTitle: "Quoi ? Ton Pokémon évolue !", evoText: (a, b) => `${a} a évolué en ${b} !`, evoBox: "Il t'attend dans ta boîte PC.",
       offered: "Proposition envoyée ! Ton Pokémon est mis de côté en attendant.", doneGet: (n) => `${n} est arrivé dans ta boîte ! 🎉`, doneBack: (n) => `${n} est revenu dans ta boîte.`,
       chooseAnswer: "Choisis ce que tu donnes en échange", sameFamily: (f) => `Il faut un jeu de la même génération : ${f}.`,
       gameRunning: "Ferme le jeu avant d'échanger.", saveBad: "Sauvegarde de ce jeu non reconnue.", boxesFull: "Tes boîtes sont pleines.", tooNew: "Ce Pokémon n'existe pas dans ce jeu.",
@@ -23,6 +24,7 @@
       boxOnly: "Alleen Pokémon in de pc-boxen kunnen geruild worden.", box: (n) => `Box ${n}`, lv: (n) => `Lv.${n}`,
       offers: (who) => `${who} stelt voor:`, youGive: "Je geeft", youGet: "Je krijgt", confirmOffer: "Voorstellen", accept: "Aanvaarden", decline: "Weigeren", cancelT: "Ruil annuleren",
       waiting: "Wacht op antwoord", accepted: "Aanvaard ✅", declined: "Geweigerd", cancelled: "Geannuleerd",
+      evoTitle: "Wat? Je Pokémon evolueert!", evoText: (a, b) => `${a} is geëvolueerd tot ${b}!`, evoBox: "Hij wacht op je in je pc-box.",
       offered: "Voorstel verstuurd! Je Pokémon wordt aan de kant gezet.", doneGet: (n) => `${n} is in je box aangekomen! 🎉`, doneBack: (n) => `${n} is terug in je box.`,
       chooseAnswer: "Kies wat je in ruil geeft", sameFamily: (f) => `Je hebt een spel van dezelfde generatie nodig: ${f}.`,
       gameRunning: "Sluit het spel voor je ruilt.", saveBad: "Opslag van dit spel niet herkend.", boxesFull: "Je boxen zijn vol.", tooNew: "Deze Pokémon bestaat niet in dit spel.",
@@ -37,6 +39,7 @@
       boxOnly: "Only Pokémon stored in PC boxes can be traded.", box: (n) => `Box ${n}`, lv: (n) => `Lv.${n}`,
       offers: (who) => `${who} offers:`, youGive: "You give", youGet: "You get", confirmOffer: "Offer", accept: "Accept", decline: "Decline", cancelT: "Cancel trade",
       waiting: "Waiting for an answer", accepted: "Accepted ✅", declined: "Declined", cancelled: "Cancelled",
+      evoTitle: "What? Your Pokémon is evolving!", evoText: (a, b) => `${a} evolved into ${b}!`, evoBox: "It's waiting for you in your PC box.",
       offered: "Offer sent! Your Pokémon is set aside meanwhile.", doneGet: (n) => `${n} arrived in your box! 🎉`, doneBack: (n) => `${n} is back in your box.`,
       chooseAnswer: "Choose what you give in exchange", sameFamily: (f) => `You need a game of the same generation: ${f}.`,
       gameRunning: "Close the game before trading.", saveBad: "This game's save wasn't recognized.", boxesFull: "Your boxes are full.", tooNew: "This Pokémon doesn't exist in that game.",
@@ -114,6 +117,23 @@
     return m.length < 80 ? m : t("errGeneric");
   }
 
+  /* ---------- Trade evolution: a little celebration ---------- */
+  function evolved(evo) {
+    try { window.kameiVibe && window.kameiVibe(80); } catch (e) {}
+    openSheet(`<div style="text-align:center;padding:6px 0 4px">
+        <p class="hint" style="margin:0 0 6px">${t("evoTitle")}</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px">
+          <img src="${PKX.sprite(evo.from)}" alt="" style="width:88px;image-rendering:pixelated;filter:brightness(1.6) saturate(0)">
+          <span style="font-size:28px">✨➜</span>
+          <img src="${PKX.sprite(evo.to)}" alt="" style="width:110px;image-rendering:pixelated;animation:kevo .9s ease">
+        </div>
+        <h3 style="margin:8px 0 4px">${esc(t("evoText", monName(evo.from), monName(evo.to)))}</h3>
+        <p class="hint">${t("evoBox")}</p></div>
+      <div class="btns"><button class="ok" id="evoOk">${t("ok")}</button></div>
+      <style>@keyframes kevo { 0% { transform: scale(.3); filter: brightness(4); } 70% { transform: scale(1.15); } 100% { transform: scale(1); filter: none; } }</style>`);
+    document.getElementById("evoOk").onclick = () => { closeSheet(); hub(); };
+  }
+
   /* ---------- Finish my trades that got an answer ---------- */
   const doneKey = "kamei-trades-done";
   const localDone = () => { try { return JSON.parse(localStorage.getItem(doneKey) || "[]"); } catch (e) { return []; } };
@@ -138,12 +158,15 @@
           });
         }
         await backup(target.game, target.found.bytes);
-        target.save.put(PKX.fromB64(pk));
+        let got = PKX.fromB64(pk), evo = null;
+        // trade evolution (Kadabra → Alakazam…), only for a Pokémon really received from someone
+        if (!back && PKX.evolve) { try { evo = PKX.evolve(got, tr.family, tr.from_species, target.save.maxSpecies); if (evo) got = evo.bytes; } catch (e) { evo = null; } }
+        target.save.put(got);
         await writeSave(target.found, target.save.bytes());
         const list = localDone(); list.push(tr.id); localStorage.setItem(doneKey, JSON.stringify(list.slice(-200)));
-        toast(back ? t("doneBack", monName(species)) : t("doneGet", monName(species)), 4500);
+        if (evo) evolved(evo); else toast(back ? t("doneBack", monName(species)) : t("doneGet", monName(species)), 4500);
       }
-      await sb.rpc("trade_finish", { trade_id: tr.id });
+      await sb.rpc("trade_finish", { trade_id: tr.id }); try { window.kameiPetEvent && window.kameiPetEvent("trade"); } catch (e) {} 
     }
   }
 
@@ -252,14 +275,17 @@
         const inf = fresh.save.info(incoming);
         if (!inf) throw new Error(t("errGeneric"));
         if (inf.species > fresh.save.maxSpecies) throw new Error(t("tooNew"));
-        fresh.save.put(incoming);
+        let evo = null;
+        if (PKX.evolve) { try { evo = PKX.evolve(incoming, fresh.save.family, m.species, fresh.save.maxSpecies); } catch (e) { evo = null; } }
+        fresh.save.put(evo ? evo.bytes : incoming);
         const bytes = fresh.save.bytes();
         if (!PKX.open(bytes)) throw new Error(t("errGeneric"));
         const r = await sb.rpc("trade_accept", { trade_id: tr.id, game: entry.game.saveKey, pk: PKX.toB64(mine), species: m.species, lvl: m.level, shiny: m.shiny });
         if (r.error) throw r.error;
         await backup(entry.game, original);
         await writeSave(fresh.found, bytes);
-        toast(t("doneGet", monName(tr.from_species)), 4500); hub();
+        if (evo) evolved(evo); else toast(t("doneGet", monName(tr.from_species)), 4500);
+        hub();
       } catch (e) { toast(errText(e), 4500); hub(); }
     };
   }

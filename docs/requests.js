@@ -70,6 +70,7 @@
         if (title.length < 2) return toast(t("rqShort"));
         const b = v.querySelector("#rqSend"); b.disabled = true;
         const r = await sb.functions.invoke("kamei-discord", { body: { action: "request", title, system: v.querySelector("#rqS").value, details: v.querySelector("#rqD").value.trim() } });
+        if (!r.error) { try { window.kameiPetEvent && window.kameiPetEvent("request"); } catch (e) {} }
         b.disabled = false;
         if (r.error || !r.data || !r.data.ok) return toast(await errOf(r), 4000);
         v.querySelector("#rqT").value = ""; v.querySelector("#rqD").value = "";
@@ -100,7 +101,12 @@
       sb.functions.invoke("kamei-discord", { body: { action: "sync", id: +id } }).catch(() => {});   // update the Discord message too
       list(v);
     });
-    box.querySelectorAll("[data-rd]").forEach((b) => b.onclick = async () => { await sb.rpc("request_delete", { rid: +b.dataset.rd }); list(v); });
+    box.querySelectorAll("[data-rd]").forEach((b) => b.onclick = async () => {
+      // through the function so the Discord message is deleted too; plain delete if the function is older
+      const r = await sb.functions.invoke("kamei-discord", { body: { action: "delete", id: +b.dataset.rd } }).catch(() => ({ error: 1 }));
+      if (r.error || !r.data || !r.data.ok) await sb.rpc("request_delete", { rid: +b.dataset.rd });
+      list(v);
+    });
     if (window.kameiNav) window.kameiNav.refresh();
   }
 

@@ -233,6 +233,7 @@
     fromB64: (b64) => { const s = atob(b64), u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; },
     FAMILY_LABEL: { g3: "3e génération (GBA)", g4: "4e génération (DS)", g5: "5e génération (DS)" },
   };
+  api._ = { u16, u32, w16, w32, decrypt3, decrypt45, encrypt45, chk3, chk45, G3_ORDER, g3Index: D.g3Index, g3Natl };
   root.PKX = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

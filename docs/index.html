@@ -76,6 +76,9 @@
            border: 1px solid color-mix(in srgb, var(--c) 45%, var(--line)); transition: transform .3s, opacity .3s; transform: scale(.94); opacity: .6; }
   .slide.on { transform: none; opacity: 1; }
   .slide .txt { position: absolute; left: 20px; right: 20px; top: 18px; z-index: 2; }
+  .slide .resume { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; margin-top: 12px; border: 0; border-radius: 14px; padding: 10px 14px; max-width: 100%;
+    background: linear-gradient(135deg, var(--tacc, #8fc63f), var(--tacc2, #22c55e)); color: #0b0b12; font: 800 12px Inter, sans-serif; text-align: left; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+  .slide .resume b { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px; }
   .slide .kicker { font-family: "Press Start 2P", monospace; font-size: 9px; letter-spacing: 1px; color: var(--c); }
   .slide h2 { margin: 8px 0 4px; font-size: 30px; line-height: 1.05; font-weight: 800; }
   .slide p { margin: 0; color: var(--muted); font-size: 13px; }
@@ -305,6 +308,7 @@ const I18N = {
     storage: "Le stockage n'est pas disponible ici", language: "Langue", foot: "Émulation : EmulatorJS (GPL-3.0) et cœurs libretro. Jaquettes : projet libretro-thumbnails.",
     padOn: "Manette connectée 🎮", other: "Autre",
     getApk: "📱 Télécharger l'appli Android", noApk: "Pas encore de lien vers l'APK",
+    resume: "Continuer", 
     bios: "🧩 BIOS", biosMenu: "🧩 BIOS des consoles", biosNeed: (n) => `Cette console a besoin de son BIOS (fichier système copié depuis ta propre console) : ${n}`,
     biosOpt: (n) => `BIOS facultatif (meilleure compatibilité) : ${n}`, biosAdd: "📥 Importer le BIOS", biosHave: (n) => `✅ Installé : ${n}`, biosDel: "Supprimer le BIOS",
     biosLaunch: "Lancer quand même", biosSaved: "BIOS enregistré", biosHint: "Le BIOS reste sur ton téléphone. Utilise uniquement celui de ta propre console.",
@@ -331,6 +335,7 @@ const I18N = {
     storage: "Opslag is hier niet beschikbaar", language: "Taal", foot: "Emulatie: EmulatorJS (GPL-3.0) en libretro-cores. Hoesjes: libretro-thumbnails.",
     padOn: "Controller verbonden 🎮", other: "Andere",
     getApk: "📱 Android-app downloaden", noApk: "Nog geen link naar de APK",
+    resume: "Verder spelen", 
     bios: "🧩 BIOS", biosMenu: "🧩 BIOS van consoles", biosNeed: (n) => `Deze console heeft zijn BIOS nodig (systeembestand van je eigen console): ${n}`,
     biosOpt: (n) => `Optionele BIOS (betere compatibiliteit): ${n}`, biosAdd: "📥 BIOS importeren", biosHave: (n) => `✅ Geïnstalleerd: ${n}`, biosDel: "BIOS verwijderen",
     biosLaunch: "Toch starten", biosSaved: "BIOS opgeslagen", biosHint: "De BIOS blijft op je telefoon. Gebruik alleen die van je eigen console.",
@@ -357,6 +362,7 @@ const I18N = {
     storage: "Storage isn't available here", language: "Language", foot: "Emulation: EmulatorJS (GPL-3.0) and libretro cores. Covers: libretro-thumbnails project.",
     padOn: "Controller connected 🎮", other: "Other",
     getApk: "📱 Download the Android app", noApk: "No APK link yet",
+    resume: "Continue", 
     bios: "🧩 BIOS", biosMenu: "🧩 Console BIOS files", biosNeed: (n) => `This console needs its BIOS (system file dumped from your own console): ${n}`,
     biosOpt: (n) => `Optional BIOS (better compatibility): ${n}`, biosAdd: "📥 Import BIOS", biosHave: (n) => `✅ Installed: ${n}`, biosDel: "Delete BIOS",
     biosLaunch: "Launch anyway", biosSaved: "BIOS saved", biosHint: "The BIOS stays on your phone. Only use the one from your own console.",
@@ -754,7 +760,7 @@ function gameMenu(g) {
     <button class="row" id="mFind">${t("findCover")}</button>
     <button class="row" id="mPick">${t("pickCover")}</button>
     ${g.cover || g.coverBlob ? `<button class="row" id="mNoCover">${t("removeCover")}</button>` : ""}
-    ${(g.system === "gba" || g.system === "nds") && window.kameiTrades ? `<button class="row" id="mTrade">${t("trades")}</button>` : ""}
+    ${(g.system === "gba" || g.system === "nds") && window.kameiTrades && (!window.kameiFeature || window.kameiFeature("trades")) ? `<button class="row" id="mTrade">${t("trades")}</button>` : ""}
     ${SYSTEMS[g.system].bios ? `<button class="row" id="mBios">${t("bios")}</button>` : ""}
     <button class="row" id="mSys">${t("changeSys")}</button>
     <button class="row danger" id="mDel">${t("del")}</button>`);
@@ -840,7 +846,9 @@ function slideHTML(k, counts) {
     const hello = (window.kameiHello && window.kameiHello()) || (THEME ? window.kameiGreeting(lang) : t("hello"));
     return `<div class="slide" data-f="all" style="--c:${THEME ? THEME.acc : "#8fc63f"}">
       <div class="txt"><div class="kicker">${hello}</div><h2>${games.length ? t("whatPlay") : t("welcome")}</h2>
-      <p>${games.length ? t("choose") : t("addFirst")}</p>${games.length ? `<span class="count">${t("games", games.length)}</span>` : ""}</div>
+      <p>${games.length ? t("choose") : t("addFirst")}</p>${games.length ? `<span class="count">${t("games", games.length)}</span>` : ""}
+      ${(() => { const last = games.filter((g) => g.lastPlayed).sort((a, b) => b.lastPlayed - a.lastPlayed)[0];
+        return last ? `<button class="resume" data-resume="${esc(last.id)}">▶️ ${t("resume")}<b>${esc(last.title)}</b></button>` : ""; })()}</div>
       ${THEME ? `<svg class="pk" viewBox="0 0 100 92"><use href="#${THEME.prop}"/></svg><svg class="pk r" viewBox="0 0 100 92"><use href="#${THEME.prop}"/></svg>` : ""}${scene("all")}</div>`;
   }
   const s = SYSTEMS[k], n = counts[k] || 0;
@@ -850,7 +858,8 @@ function slideHTML(k, counts) {
 }
 function renderDeck() {
   const { counts, order } = deckOrder();
-  const sig = order.join(",") + "|" + order.map((k) => counts[k] || 0).join(",") + "|" + games.length + "|" + lang + "|" + ((window.kameiHello && window.kameiHello()) || "") + "|" + heroShown;
+  const lastG = games.reduce((a, g) => ((g.lastPlayed || 0) > ((a && a.lastPlayed) || 0) ? g : a), null);
+  const sig = order.join(",") + "|" + order.map((k) => counts[k] || 0).join(",") + "|" + games.length + "|" + (lastG ? lastG.id : "") + "|" + lang + "|" + ((window.kameiHello && window.kameiHello()) || "") + "|" + heroShown;
   if (sig !== deckSig) {
     deckSig = sig; heroShown = "ok";
     $("deck").innerHTML = order.map((k) => slideHTML(k, counts)).join("");
@@ -883,6 +892,8 @@ $("deck").addEventListener("scroll", () => {
   }, 90);
 }, { passive: true });
 $("deck").addEventListener("click", (e) => {
+  const rb = e.target.closest("[data-resume]");
+  if (rb) { e.stopPropagation(); play(rb.dataset.resume, false, true); return; }
   const sl = e.target.closest(".slide");
   if (sl && sl.dataset.f !== filter) { filter = sl.dataset.f; renderTabs(); markDeck(); renderGrid(); scrollDeckTo(filter, true); }
 });
@@ -946,7 +957,7 @@ function applyLang() {
   $("search").placeholder = t("search");
   $("add").textContent = THEME ? t("add").replace("+", THEME.emoji) : t("add");
   $("quit").textContent = t("quit");
-  $("savesBtn").textContent = t("saves");
+  $("savesBtn").textContent = innerWidth < 600 ? "💾" : t("saves");
   try { window.kameiNav && window.kameiNav.relabel(); } catch (e) {}
   $("foot").textContent = t("foot");
   heroShown = null; render();
@@ -954,7 +965,8 @@ function applyLang() {
 $("langBtn").onclick = () => {
   const names = { fr: "Français", nl: "Nederlands", en: "English" };
   const tc = window.kameiThemeChoice || "auto";
-  const themeRows = [["auto", t("themeAuto")], ["none", t("themeNone")], ...Object.keys(window.KAMEI_THEMES || {}).map((k) => [k, t("themeNames")[k]])];
+  const themeRows = [["auto", t("themeAuto")], ["none", t("themeNone")], ...Object.keys(window.KAMEI_THEMES || {}).filter((k) => k !== "custom").map((k) => [k, t("themeNames")[k]]),
+    ...(window.kameiThemeEditor ? [["custom", t("themeCustom")]] : [])];
   let iconOn = true; try { iconOn = localStorage.getItem("kamei-theme-icon") !== "off"; } catch (e) {}
   openSheet(`<h3>${t("language")}</h3>` + Object.keys(names).map((k) => `<button class="row ${k === lang ? "on" : ""}" data-l="${k}">${names[k]}</button>`).join("") +
     `<h3 style="margin-top:14px">${t("themeLabel")}</h3>` + themeRows.map(([k, l]) => `<button class="row ${k === tc ? "on" : ""}" data-th="${k}">${l}</button>`).join("") +
@@ -962,7 +974,10 @@ $("langBtn").onclick = () => {
     `<h3 style="margin-top:14px">${t("settings")}</h3>
      <label class="row" style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="stVibe" ${vibeOn() ? "checked" : ""} style="width:auto;margin:0"> ${t("vibe")}</label>
      <label class="row" style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="stNotif" ${notifOn() ? "checked" : ""} style="width:auto;margin:0"> ${t("notifs")}</label>
+     ${window.kameiPlay ? `<label class="row" style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="stLive" ${window.kameiPlay.allowWatch() ? "checked" : ""} style="width:auto;margin:0"> ${t("lvAllow")}</label>` : ""}
      <button class="row" id="stBios">${t("biosMenu")}</button>
+     ${window.kameiBackup ? `<button class="row" id="stBackup">${t("bkMenu")}</button>` : ""}
+     ${window.kameiTour ? `<button class="row" id="stTour">${t("tourAgain")}</button>` : ""}
      ${window.KAMEI_WEB ? `<button class="row" id="stApk">${t("getApk")}</button>` : ""}`);
   if ($("stApk")) $("stApk").onclick = async () => {
     try { const j = window.KameiGH && await KameiGH.readJSON("updates/latest.json"); if (j && j.apk_url) return window.open(j.apk_url, "_blank"); } catch (e) {}
@@ -975,7 +990,10 @@ $("langBtn").onclick = () => {
     try { if (e.target.checked && window.KameiNative && KameiNative.askNotifications) { KameiNative.askNotifications(); if (KameiNative.notificationsAllowed && !KameiNative.notificationsAllowed()) toast(t("notifsAsk"), 4000); } } catch (err) {}
   };
   $("stBios").onclick = biosList;
-  $("sheet").querySelectorAll("[data-th]").forEach((b) => b.onclick = () => window.kameiSetThemeChoice(b.dataset.th));
+  if ($("stBackup")) $("stBackup").onclick = () => window.kameiBackup.open();
+  if ($("stTour")) $("stTour").onclick = () => { closeSheet(); window.kameiTour(); };
+  if ($("stLive")) $("stLive").onchange = (e) => window.kameiPlay.setAllowWatch(e.target.checked);
+  $("sheet").querySelectorAll("[data-th]").forEach((b) => b.onclick = () => (b.dataset.th === "custom" ? window.kameiThemeEditor() : window.kameiSetThemeChoice(b.dataset.th)));
   if ($("thIcon")) $("thIcon").onchange = (e) => { try { localStorage.setItem("kamei-theme-icon", e.target.checked ? "on" : "off"); } catch (err) {} location.reload(); };
   $("sheet").querySelectorAll("[data-l]").forEach((b) => b.onclick = () => {
     lang = b.dataset.l; try { localStorage.setItem("kamei-lang", lang); } catch (e) {}
@@ -1092,7 +1110,8 @@ setTimeout(() => { try { if (notifOn() && window.KameiNative && KameiNative.askN
 /* =================== Player =================== */
 let current = null;
 const frameWin = () => $("frame").contentWindow;
-async function play(id, force) {
+async function play(id, force, resume) {
+  if (resume !== undefined) play.resume = !!resume; else if (!force) play.resume = false;
   const g = await getGame(id);
   if (!g) return;
   const sy = SYSTEMS[g.system];
@@ -1101,6 +1120,7 @@ async function play(id, force) {
   g.lastPlayed = Date.now(); await putGame(g);
   current = g;
   try { window.kameiAccount && window.kameiAccount.startPlaying(g); } catch (e) {}
+  try { window.kameiPetEvent && window.kameiPetEvent("game"); } catch (e) {}
   $("now").textContent = g.title;
   document.documentElement.style.setProperty("--theme", SYSTEMS[g.system].theme);
   $("player").classList.add("on");
@@ -1113,7 +1133,7 @@ window.addEventListener("message", (e) => {
     const s = SYSTEMS[current.system];
     const go = (bios) => frameWin().postMessage({ type: "load", system: s.core, blob: current.blob, saveKey: current.saveKey || current.title,
                              lang: EJS_LANG[lang], color: s.theme, ext: s.x ? (current.whole || extOf(current.romName || "") || null) : null,
-                             threads: !!s.threads, bios, vibe: vibeOn() }, "*");
+                             threads: !!s.threads, bios, vibe: vibeOn(), resume: !!play.resume, opts: window.kameiGameOpts ? window.kameiGameOpts.forGame(current) : {} }, "*");
     if (s.bios) getBios(current.system).then((b) => go(b ? biosZip(b.files) : null)).catch(() => go(null)); else go(null);
   }
   if (d.type === "saved") closePlayer();
@@ -1186,13 +1206,23 @@ window.addEventListener("online", scrapeMissing);
 </script>
 <script src="lib/supabase.js"></script>
 <script src="account.js"></script>
+<script src="config.js"></script>
 <script src="pkdata.js"></script>
 <script src="pkx.js"></script>
+<script src="pkevo.js"></script>
 <script src="trades.js"></script>
 <script src="chat.js"></script>
 <script src="requests.js"></script>
+<script src="tv.js"></script>
 <script src="nav.js"></script>
 <script src="netplay.js"></script>
+<script src="gameopts.js"></script>
+<script src="profile.js"></script>
+<script src="themeedit.js"></script>
+<script src="admin.js"></script>
+<script src="pet.js"></script>
+<script src="tour.js"></script>
+<script src="backup.js"></script>
 <script src="gh.js"></script>
 <script src="catalogue.js"></script>
 <script src="update.js"></script>

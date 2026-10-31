@@ -7,6 +7,12 @@
 <style>
   html, body { margin: 0; height: 100%; background: #0b0b12; overflow: hidden; }
   #game { width: 100%; height: 100%; }
+  #rew { position: fixed; left: 10px; top: 10px; z-index: 30; width: 46px; height: 46px; border-radius: 50%; border: 2px solid rgba(255,255,255,.3);
+         background: rgba(20,20,30,.55); color: #fff; font-size: 20px; display: none; place-items: center; touch-action: none; }
+  #rew.on { background: #8fc63f; }
+  body.lcd #game canvas { filter: contrast(1.05) saturate(.9); }
+  body.lcd #game::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 5;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px); }
   #wait { position: fixed; inset: 0; display: grid; place-items: center; color: #8b8ba7;
           font: 600 14px/1.4 system-ui, sans-serif; }
 </style>
@@ -154,14 +160,18 @@
     setBtn(12, lt > 0.5); setBtn(13, rt > 0.5);
   };
 
-  /* ---------- Jouer ensemble (host): send the picture + sound, receive player 2's buttons ---------- */
-  let pc = null, dc = null, p2 = 0, p2axis = [0, 0];
-  const sig = (data) => parent.postMessage({ type: "netSig", data }, "*");
-  function netStop() {
-    try { dc && dc.close(); } catch (e) {} try { pc && pc.close(); } catch (e) {}
-    pc = null; dc = null;
-    if (ready()) for (let i = 0; i < 20; i++) { try { emu().gameManager.simulateInput(1, i, 0); } catch (e) {} }
-    p2 = 0;
+  /* ---------- Jouer ensemble / regarder en direct (host): picture + sound to each friend; player 2's buttons from the "input" peer ---------- */
+  const peers = {};   // id -> { pc, dc, input }
+  let p2 = 0, p2axis = [0, 0];
+  const sig = (peer, data) => parent.postMessage({ type: "netSig", peer, data }, "*");
+  function releaseP2() { if (ready()) for (let i = 0; i < 20; i++) { try { emu().gameManager.simulateInput(1, i, 0); } catch (e) {} } p2 = 0; p2axis = [0, 0]; }
+  function netStop(peer) {
+    for (const id of Object.keys(peers)) {
+      if (peer && id !== peer) continue;
+      const x = peers[id]; delete peers[id];
+      try { x.dc && x.dc.close(); } catch (e) {} try { x.pc.close(); } catch (e) {}
+      if (x.input) releaseP2();
+    }
   }
   function applyP2(m) {
     if (!ready()) return;
@@ -176,36 +186,76 @@
       p2axis = [x, y];
     }
   }
-  async function netHost(ice) {
-    netStop();
+  let camStream = null;
+  function gameStream() {
+    if (camStream && camStream.getVideoTracks()[0] && camStream.getVideoTracks()[0].readyState === "live") return camStream;
     const canvas = document.querySelector("#game canvas");
-    if (!canvas || !canvas.captureStream) { parent.postMessage({ type: "netState", state: "error", why: "canvas" }, "*"); return; }
-    pc = new RTCPeerConnection({ iceServers: ice });
-    const video = canvas.captureStream(60).getVideoTracks()[0];
-    try { video.contentHint = "motion"; } catch (e) {}
-    const vs = pc.addTrack(video);
+    if (!canvas || !canvas.captureStream) return null;
+    camStream = canvas.captureStream(60);
+    try { camStream.getVideoTracks()[0].contentHint = "motion"; } catch (e) {}
+    return camStream;
+  }
+  async function netHost(ice, peer, input) {
+    peer = peer || "p2";
+    netStop(peer);
+    const cs = gameStream();
+    if (!cs) { parent.postMessage({ type: "netState", peer, state: "error" }, "*"); return; }
+    const pc = new RTCPeerConnection({ iceServers: ice });
+    const x = peers[peer] = { pc, dc: null, input: !!input };
+    const vs = pc.addTrack(cs.getVideoTracks()[0], cs);
     const audio = window.kameiAudioStream && window.kameiAudioStream();
     if (audio && audio.getAudioTracks()[0]) pc.addTrack(audio.getAudioTracks()[0], audio);
-    dc = pc.createDataChannel("p2", { ordered: false, maxRetransmits: 0 });
-    dc.onmessage = (e) => { try { applyP2(JSON.parse(e.data)); } catch (err) {} };
-    pc.onicecandidate = (e) => { if (e.candidate) sig({ kind: "ice", data: e.candidate.toJSON() }); };
+    x.dc = pc.createDataChannel("p2", { ordered: false, maxRetransmits: 0 });
+    if (x.input) x.dc.onmessage = (e) => { try { applyP2(JSON.parse(e.data)); } catch (err) {} };
+    pc.onicecandidate = (e) => { if (e.candidate) sig(peer, { kind: "ice", data: e.candidate.toJSON() }); };
     pc.onconnectionstatechange = () => {
-      parent.postMessage({ type: "netState", state: pc && pc.connectionState }, "*");
-      if (pc && pc.connectionState === "connected") {
+      parent.postMessage({ type: "netState", peer, state: pc.connectionState }, "*");
+      if (pc.connectionState === "connected") {
         try { const prm = vs.getParameters(); prm.encodings = prm.encodings && prm.encodings.length ? prm.encodings : [{}];
-              prm.encodings[0].maxBitrate = 3500000; prm.encodings[0].maxFramerate = 60; prm.degradationPreference = "maintain-framerate"; vs.setParameters(prm); } catch (e) {}
+              prm.encodings[0].maxBitrate = x.input ? 3500000 : 2000000; prm.encodings[0].maxFramerate = 60; prm.degradationPreference = "maintain-framerate"; vs.setParameters(prm); } catch (e) {}
       }
+      if (pc.connectionState === "failed" || pc.connectionState === "closed") { if (peers[peer] === x) netStop(peer); }
     };
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
-    sig({ kind: "offer", data: pc.localDescription.toJSON() });
+    sig(peer, { kind: "offer", data: pc.localDescription.toJSON() });
   }
-  async function netSig(m) {
-    if (!pc) return;
+  async function netSig(peer, m) {
+    const x = peers[peer || "p2"]; if (!x) return;
     try {
-      if (m.kind === "answer") await pc.setRemoteDescription(m.data);
-      if (m.kind === "ice" && m.data) await pc.addIceCandidate(m.data);
+      if (m.kind === "answer") await x.pc.setRemoteDescription(m.data);
+      if (m.kind === "ice" && m.data) await x.pc.addIceCandidate(m.data);
     } catch (e) {}
+  }
+
+  /* ---------- Game options: filter, touch controls, cheats, rewind, screenshot ---------- */
+  let opts = {};
+  function applyOpts(o) {
+    opts = Object.assign(opts, o || {});
+    if (!ready()) return;
+    try { emu().enableShader(opts.shader && opts.shader !== "lcd" ? opts.shader : "disabled"); } catch (e) {}
+    document.body.classList.toggle("lcd", opts.shader === "lcd");
+    const pad = opts.pad || {}, sz = pad.size || 1, op = pad.opacity == null ? 1 : pad.opacity, lift = pad.lift || 0;
+    let st = document.getElementById("padStyle");
+    if (!st) { st = document.createElement("style"); st.id = "padStyle"; document.head.appendChild(st); }
+    st.textContent = `.ejs_virtualGamepad_left { transform: translateY(${-lift}px) scale(${sz}); transform-origin: bottom left; opacity: ${op}; }
+      .ejs_virtualGamepad_right { transform: translateY(${-lift}px) scale(${sz}); transform-origin: bottom right; opacity: ${op}; }
+      .ejs_virtualGamepad_top, .ejs_virtualGamepad_bottom { opacity: ${op}; }`;
+    if (opts.cheats) {
+      try { const gm = emu().gameManager; gm.resetCheat(); opts.cheats.forEach((c, i) => { if (c.on && c.code) gm.setCheat(i, 1, c.code); }); } catch (e) {}
+    }
+    document.getElementById("rew").style.display = opts.rewind ? "grid" : "none";
+  }
+  const rew = document.createElement("button"); rew.id = "rew"; rew.textContent = "⏪";
+  document.body.appendChild(rew);
+  const rewOn = (on) => { try { if (ready()) emu().gameManager.simulateInput(0, 28, on ? 1 : 0); } catch (e) {} rew.classList.toggle("on", on); };
+  rew.addEventListener("pointerdown", (e) => { e.preventDefault(); rew.setPointerCapture(e.pointerId); rewOn(true); });
+  rew.addEventListener("pointerup", () => rewOn(false)); rew.addEventListener("pointercancel", () => rewOn(false));
+  window.addEventListener("keydown", (e) => { if (e.code === "Backspace" && opts.rewind) { e.preventDefault(); rewOn(true); } });
+  window.addEventListener("keyup", (e) => { if (e.code === "Backspace" && opts.rewind) rewOn(false); });
+  async function shot() {
+    try { const png = await emu().gameManager.screenshot(); parent.postMessage({ type: "shot", png }, "*"); }
+    catch (e) { parent.postMessage({ type: "shot", png: null }, "*"); }
   }
 
   /* ---------- Start ---------- */
@@ -228,13 +278,16 @@
     if (msg.bios) window.EJS_biosUrl = msg.bios;
     window.EJS_volume = 1;
     window.EJS_defaultOptions = { "save-save-interval": "30", "melonds_touch_mode": "Touch" };
+    if (msg.opts && msg.opts.rewind) { window.EJS_defaultOptions.rewindEnabled = "enabled"; window.EJS_defaultOptions["rewind-granularity"] = "6"; }
+    opts = msg.opts || {};
     window.EJS_Buttons = { netplay: false, exitEmulation: false, cacheManager: false, contextMenu: false, saveState: false, loadState: false };
     const s = document.createElement("script");
     s.src = "data/loader.js";
     document.body.appendChild(s);
     if (msg.system === "nds") setupTouchToMouse();
     if (msg.vibe) setupVibe();
-    const iv = setInterval(() => { if (ready()) { clearInterval(iv); parent.postMessage({ type: "started" }, "*"); } }, 400);
+    const iv = setInterval(() => { if (ready()) { clearInterval(iv); applyOpts(); parent.postMessage({ type: "started" }, "*");
+      if (msg.resume) setTimeout(() => { loadSlot("auto").then((ok) => parent.postMessage({ type: "resumed", ok }, "*"), () => {}); }, 700); } }, 400);
   }
 
   /* Short vibration when a virtual (touch) button is pressed */
@@ -276,9 +329,11 @@
     }
     if (d.type === "key") window.kameiKey(d.code, d.down);
     if (d.type === "axis") window.kameiAxis(...d.v);
-    if (d.type === "netHost") netHost(d.ice || []);
-    if (d.type === "netSig") netSig(d.data);
-    if (d.type === "netStop") netStop();
+    if (d.type === "netHost") netHost(d.ice || [], d.peer, d.input);
+    if (d.type === "netSig") netSig(d.peer, d.data);
+    if (d.type === "netStop") netStop(d.peer);
+    if (d.type === "opts") applyOpts(d.opts);
+    if (d.type === "shot") shot();
   });
   parent.postMessage({ type: "ready" }, "*");
 })();

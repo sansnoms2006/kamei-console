@@ -211,6 +211,7 @@
   function hideGate() { const g = document.getElementById("gate"); if (g) g.remove(); document.body.classList.remove("gated"); }
   window.kameiShowGate = showGate;
 
+  const feat = (k) => (window.kameiFeature ? window.kameiFeature(k) : true);
   /* ---------- Friends ---------- */
   const isOnline = (p) => p.last_seen && Date.now() - new Date(p.last_seen).getTime() < ONLINE_MS;
   const sysLabel = (s) => (SYSTEMS[s] ? SYSTEMS[s].short : s || "");
@@ -245,11 +246,13 @@
       <div class="addf"><input id="fCode" placeholder="${t("friendCode")}" autocapitalize="characters"><button class="ok" id="fAdd">+</button></div>
       <h3 style="margin-top:6px">${t("friends")}</h3>
       ${friends.length ? friends.map(row).join("") : `<p class="hint">${t("noFriends")}</p>`}
-      <button class="row" id="fTrades">${t("trades")}</button>
+      ${window.kameiProfile && feat("profile") ? `<button class="row" id="fProfile">${t("pfMine")}</button>` : ""}
+      ${feat("trades") ? `<button class="row" id="fTrades">${t("trades")}</button>` : ""}
       ${me.is_admin ? `<button class="row" id="fAdmin">${t("admin")}</button>` : ""}
       <button class="row danger" id="fOut">${t("logout")}</button>`);
     if (me.is_admin) document.getElementById("fAdmin").onclick = () => adminSheet();
-    document.getElementById("fTrades").onclick = () => window.kameiTrades && window.kameiTrades.open();
+    if (document.getElementById("fTrades")) document.getElementById("fTrades").onclick = () => window.kameiTrades && window.kameiTrades.open();
+    if (document.getElementById("fProfile")) document.getElementById("fProfile").onclick = () => window.kameiProfile.mine();
     document.getElementById("fCopy").onclick = async () => { try { await navigator.clipboard.writeText(me.friend_code); toast(t("copied")); } catch (e) { toast(me.friend_code); } };
     document.getElementById("fAdd").onclick = async () => {
       const code = document.getElementById("fCode").value.trim();
@@ -273,10 +276,22 @@
       ${list.length ? list.map((s) => `<div class="sess">${s.cover ? `<img src="${esc(s.cover)}" alt="" onerror="this.remove()">` : `<span class="ph">${esc(sysLabel(s.system))}</span>`}
         <span class="fi"><b>${esc(s.game)}</b><span>${esc(sysLabel(s.system))} · ${ago(new Date(s.started_at).getTime())}${s.minutes ? " · " + t("minutes", s.minutes) : ""}</span></span></div>`).join("")
         : `<p class="hint">${t("nothingYet")}</p>`}
-      ${window.kameiChat ? `<button class="row ok-row" id="dChat" style="margin-top:12px">${t("chatWith", esc(p.pseudo))}</button>` : ""}
+      ${window.kameiPlay && feat("watch") && isOnline(p) && p.now_game ? `<button class="row ok-row" id="dWatch" style="margin-top:12px">${t("lvWatch")} · ${esc(p.now_game)}</button>` : ""}
+      ${window.kameiChat && feat("chat") ? `<button class="row ok-row" id="dChat" style="margin-top:12px">${t("chatWith", esc(p.pseudo))}</button>` : ""}
+      <div id="dPet"></div>
+      <div id="dProfile"></div>
+      <button class="row" id="dReport" style="color:var(--muted)">${t("reportUser")}</button>
       <div class="btns" style="margin-top:12px"><button id="dBack">←</button><button id="dRm" class="danger">${t("removeFriend")}</button></div>`);
     document.getElementById("dBack").onclick = friendsSheet;
+    document.getElementById("dReport").onclick = async () => {
+      if (!window.confirm(t("reportUserQ"))) return;
+      const r = await sb.rpc("report_create", { target_id: p.id, k: "user", ref_id: null, why: "" });
+      toast(r.error ? errMsg(r.error) : t("chatReported"), 3500);
+    };
     if (document.getElementById("dChat")) document.getElementById("dChat").onclick = () => window.kameiChat.open(p);
+    if (document.getElementById("dWatch")) document.getElementById("dWatch").onclick = () => window.kameiPlay.watch(p);
+    if (window.kameiProfile && feat("profile")) window.kameiProfile.fill(p, document.getElementById("dProfile"));
+    if (window.kameiPet && feat("pet")) window.kameiPet.friend(p, document.getElementById("dPet"));
     document.getElementById("dRm").onclick = async () => { await sb.rpc("remove_friend", { other: p.id }); friendsSheet(); };
   }
 
@@ -304,12 +319,15 @@
     };
     openSheet(`<h3>${t("adminTitle")}</h3>
       <div class="stats"><div><b>${users.length}</b><span>${t("accounts")}</span></div><div><b>${online}</b><span>${t("onlineNow")}</span></div><div><b>${t("minutes", mins)}</b><span>${t("playTime")}</span></div></div>
+      ${window.kameiAdmin ? `<div class="adgrid"><button id="adFeat">${t("adFeatures")}</button><button id="adStats">${t("adStats")}</button>
+        <button id="adAnn">${t("adAnnounce")}</button><button id="adRep">${t("adReports")}<span class="unread" id="adRepN"></span></button></div>` : ""}
       <button class="row" id="adPub">${t("publish")}</button>
       <input id="adQ" placeholder="${t("searchUser")}" value="${esc(adminQuery)}"><div id="adList"></div>
       <div class="btns"><button id="adBack">←</button></div>`);
     document.getElementById("adQ").oninput = (e) => { adminQuery = e.target.value.trim(); draw(); };
     document.getElementById("adBack").onclick = friendsSheet;
     document.getElementById("adPub").onclick = () => window.kameiPublishSheet && window.kameiPublishSheet();
+    if (window.kameiAdmin) window.kameiAdmin.wire();
     draw();
   }
   async function adminUser(u) {
@@ -401,7 +419,7 @@
         const game = isOnline(x) && x.now_game ? x.now_game + "|" + (x.now_system || "") : "";
         next[x.id] = game;
         if (friendState && game && friendState[x.id] !== game && window.kameiNotify) {
-          window.kameiNotify("🎮 " + x.pseudo, t("nFriendPlay", x.pseudo, x.now_game + (x.now_system ? " (" + sysLabel(x.now_system) + ")" : "")), () => friendsSheet());
+          window.kameiNotify("🎮 " + x.pseudo, t("nFriendPlay", x.pseudo, x.now_game + (x.now_system ? " (" + sysLabel(x.now_system) + ")" : "")), () => (window.kameiPlay ? window.kameiPlay.watch(x) : friendsSheet()));
         }
       }
       friendState = next;
@@ -439,6 +457,8 @@
   setTimeout(pushSetup, 7000);
   window.kameiPush = { setup: pushSetup, off: pushOff };
 
+  window.kameiAdminSheet = () => adminSheet();
+  window.kameiAdminUser = async (uid) => { const r = await sb.rpc("admin_users"); const u = (r.data || []).find((x) => x.id === uid); if (u) adminUser(u); };
   window.kameiMe = () => me;
   window.kameiAvatar = avatarHTML;
   window.kameiFriendsSheet = (into) => friendsSheet(into);
