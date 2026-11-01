@@ -118,7 +118,7 @@
       if (!sys) sys = await askSystem(x.title, d.prefer);
       if (!sys) { btn.disabled = false; btn.textContent = t("install"); return; }
       await putGame({ id: "cat|" + x.id, catId: x.id, fileName: file.name, romName: d.inner, title: x.title, tags: "", system: sys, whole: d.whole || null,
-        size: blob.size, added: Date.now(), lastPlayed: 0, saveKey: "cat-" + x.id, blob, cover: x.cover ? (x.discord ? null : GH.raw(x.cover)) : null, coverTried: !!x.cover && !x.discord });
+        size: blob.size, added: Date.now(), lastPlayed: 0, saveKey: "cat-" + x.id, blob: window.kameiRomStore ? await window.kameiRomStore(blob) : blob, cover: x.cover ? (x.discord ? null : GH.raw(x.cover)) : null, coverTried: !!x.cover && !x.discord });
       if (x.discord && x.cover) { try { const cr = await fetch(x.cover); if (cr.ok) await updateGame("cat|" + x.id, { coverBlob: await cr.blob(), coverTried: true }); } catch (e) {} }
       await window.kameiReload();
       toast(t("catAdded", x.title), 3500);

@@ -355,7 +355,7 @@ const I18N = {
     quit: "✕ Quitter", saves: "💾 Sauvegardes", savesTitle: "Sauvegardes", savesHint: "Les sauvegardes du jeu se font aussi toutes seules toutes les 30 s.",
     slotAuto: "Auto (en quittant)", slot: (n) => `Emplacement ${n}`, emptySlot: "Vide", save: "Sauver", load: "Charger",
     savedOk: "Partie sauvegardée", loadedOk: "Partie chargée", failed: "Ça n'a pas marché, réessaie",
-    coverSearching: "Recherche de la jaquette…", coverFound: "Jaquette trouvée", coverNone: "Pas de jaquette trouvée pour ce nom", coverWeb: "Recherche plus large sur le web…", coverSaving: "Enregistrement de la jaquette…", coverGoogle: "🌐 Chercher sur Google Images", coverGoogleHint: "Enregistre l'image sur ton téléphone, puis reviens et touche « Choisir une image comme jaquette ».",
+    romBad: "Ce jeu n'a pas pu être lu sur cet appareil. Supprime-le et ajoute-le à nouveau.", coverSearching: "Recherche de la jaquette…", coverFound: "Jaquette trouvée", coverNone: "Pas de jaquette trouvée pour ce nom", coverWeb: "Recherche plus large sur le web…", coverSaving: "Enregistrement de la jaquette…", coverGoogle: "🌐 Chercher sur Google Images", coverGoogleHint: "Enregistre l'image sur ton téléphone, puis reviens et touche « Choisir une image comme jaquette ».",
     storage: "Le stockage n'est pas disponible ici", language: "Langue", foot: "Émulation : EmulatorJS (GPL-3.0) et cœurs libretro. Jaquettes : projet libretro-thumbnails.",
     padOn: "Manette connectée 🎮 · boutons tactiles cachés", padOff: "Boutons tactiles affichés 👆", other: "Autre",
     getApk: "📱 Télécharger l'appli Android", noApk: "Pas encore de lien vers l'APK",
@@ -383,7 +383,7 @@ const I18N = {
     quit: "✕ Stoppen", saves: "💾 Opslaan", savesTitle: "Opgeslagen standen", savesHint: "Het spel bewaart ook zelf elke 30 s.",
     slotAuto: "Auto (bij stoppen)", slot: (n) => `Plaats ${n}`, emptySlot: "Leeg", save: "Opslaan", load: "Laden",
     savedOk: "Spel opgeslagen", loadedOk: "Spel geladen", failed: "Dat lukte niet, probeer opnieuw",
-    coverSearching: "Hoesje zoeken…", coverFound: "Hoesje gevonden", coverNone: "Geen hoesje gevonden voor deze naam", coverWeb: "Breder zoeken op het web…", coverSaving: "Hoesje opslaan…", coverGoogle: "🌐 Zoeken op Google Afbeeldingen", coverGoogleHint: "Sla de afbeelding op je telefoon op, kom terug en tik op « Afbeelding kiezen als hoesje ».",
+    romBad: "Dit spel kon niet worden gelezen op dit toestel. Verwijder het en voeg het opnieuw toe.", coverSearching: "Hoesje zoeken…", coverFound: "Hoesje gevonden", coverNone: "Geen hoesje gevonden voor deze naam", coverWeb: "Breder zoeken op het web…", coverSaving: "Hoesje opslaan…", coverGoogle: "🌐 Zoeken op Google Afbeeldingen", coverGoogleHint: "Sla de afbeelding op je telefoon op, kom terug en tik op « Afbeelding kiezen als hoesje ».",
     storage: "Opslag is hier niet beschikbaar", language: "Taal", foot: "Emulatie: EmulatorJS (GPL-3.0) en libretro-cores. Hoesjes: libretro-thumbnails.",
     padOn: "Controller verbonden 🎮 · aanraakknoppen verborgen", padOff: "Aanraakknoppen zichtbaar 👆", other: "Andere",
     getApk: "📱 Android-app downloaden", noApk: "Nog geen link naar de APK",
@@ -411,7 +411,7 @@ const I18N = {
     quit: "✕ Quit", saves: "💾 Saves", savesTitle: "Saves", savesHint: "The game also saves by itself every 30 s.",
     slotAuto: "Auto (when quitting)", slot: (n) => `Slot ${n}`, emptySlot: "Empty", save: "Save", load: "Load",
     savedOk: "Game saved", loadedOk: "Game loaded", failed: "That didn't work, try again",
-    coverSearching: "Looking for the cover…", coverFound: "Cover found", coverNone: "No cover found for this name", coverWeb: "Searching the web more widely…", coverSaving: "Saving the cover…", coverGoogle: "🌐 Search Google Images", coverGoogleHint: "Save the picture on your phone, then come back and tap « Pick an image as cover ».",
+    romBad: "This game couldn't be read on this device. Delete it and add it again.", coverSearching: "Looking for the cover…", coverFound: "Cover found", coverNone: "No cover found for this name", coverWeb: "Searching the web more widely…", coverSaving: "Saving the cover…", coverGoogle: "🌐 Search Google Images", coverGoogleHint: "Save the picture on your phone, then come back and tap « Pick an image as cover ».",
     storage: "Storage isn't available here", language: "Language", foot: "Emulation: EmulatorJS (GPL-3.0) and libretro cores. Covers: libretro-thumbnails project.",
     padOn: "Controller connected 🎮 · touch buttons hidden", padOff: "Touch buttons shown 👆", other: "Other",
     getApk: "📱 Download the Android app", noApk: "No APK link yet",
@@ -595,6 +595,17 @@ function toast(msg, ms = 2600) {
   const el = $("toast"); el.textContent = msg; el.classList.toggle("on", !!msg);
   clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("on"), ms);
 }
+/* iPhone / iPad: Safari can lose Blobs kept in IndexedDB, so there the games are stored as plain bytes */
+const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) || /^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
+async function romStore(blob) { return IOS ? await blob.arrayBuffer() : blob; }
+async function romBytes(g) {
+  const b = g && g.blob;
+  if (!b) throw new Error("rom");
+  if (b instanceof ArrayBuffer) return b.slice(0);
+  if (ArrayBuffer.isView(b)) return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
+  return await b.arrayBuffer();
+}
+window.kameiRomStore = romStore;
 function extOf(name) { const m = /\.([a-z0-9]+)$/i.exec(name); return m ? m[1].toLowerCase() : ""; }
 function baseName(name) { return name.replace(/\.[a-z0-9]+$/i, ""); }
 function cleanTitle(name) {
@@ -936,9 +947,10 @@ $("file").addEventListener("change", async (e) => {
     }
     if (!system) continue;
     const id = baseName(d.inner) + "|" + d.data.size;
-    const blob = new Blob([await d.data.arrayBuffer()], { type: "application/octet-stream" });
+    const raw = new Blob([await d.data.arrayBuffer()], { type: "application/octet-stream" });
+    const blob = await romStore(raw);
     try {
-      await putGame({ id, fileName: f.name, romName: d.inner, title: cleanTitle(d.inner), tags: tags(d.inner), system, size: blob.size,
+      await putGame({ id, fileName: f.name, romName: d.inner, title: cleanTitle(d.inner), tags: tags(d.inner), system, size: raw.size,
                       added: Date.now(), lastPlayed: 0, saveKey: baseName(d.inner), blob, cover: null, coverTried: false, whole: d.whole || null });
       added++;
     } catch (err) { problems.push(`${f.name} : ${t("noSpace")}`); }
@@ -1258,9 +1270,14 @@ window.addEventListener("message", (e) => {
   const d = e.data;
   if (d.type === "ready" && current) {
     const s = SYSTEMS[current.system];
-    const go = (bios) => frameWin().postMessage({ type: "load", system: s.core, blob: current.blob, saveKey: current.saveKey || current.title,
+    const go = async (bios) => {
+      // the game is handed over as bytes (Safari can't always read a Blob that came out of IndexedDB)
+      let rom;
+      try { rom = await romBytes(current); } catch (err) { toast(t("romBad"), 6000); closePlayer(); return; }
+      frameWin().postMessage({ type: "load", system: s.core, blob: rom, saveKey: current.saveKey || current.title,
                              lang: EJS_LANG[lang], color: s.theme, ext: s.x ? (current.whole || extOf(current.romName || "") || null) : null,
-                             threads: !!s.threads, bios, vibe: vibeOn(), resume: play.resume || false, opts: window.kameiGameOpts ? window.kameiGameOpts.forGame(current) : {} }, "*");
+                             threads: !!s.threads, bios, vibe: vibeOn(), resume: play.resume || false, opts: window.kameiGameOpts ? window.kameiGameOpts.forGame(current) : {} }, "*", [rom]);
+    };
     if (s.bios) getBios(current.system).then((b) => go(b ? biosZip(b.files) : null)).catch(() => go(null)); else go(null);
   }
   if (d.type === "pad") toast(d.controller ? t("padOn") : t("padOff"));

@@ -94,6 +94,7 @@ class EmulatorJS {
             const data = this.toData(path); //check other data types
             if (data) {
                 data.then((game) => {
+                    if (!game && opts.method !== "HEAD") { cb(-1); return; }
                     if (opts.method === "HEAD") {
                         cb({ headers: {} });
                     } else {
@@ -168,7 +169,7 @@ class EmulatorJS {
             } else if (data instanceof Uint8Array) {
                 resolve(data);
             } else if (data instanceof Blob) {
-                resolve(new Uint8Array(await data.arrayBuffer()));
+                try { resolve(new Uint8Array(await data.arrayBuffer())); } catch (e) { console.warn("Kamei: unreadable game data", e); resolve(null); }
             }
             resolve();
         })

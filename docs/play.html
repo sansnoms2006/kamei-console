@@ -155,7 +155,32 @@
     try { if (touchCapable) emu().touch = true; emu().toggleVirtualGamepad && emu().toggleVirtualGamepad(want); } catch (e) {}
     if (shownPad !== null && shownPad !== want) parent.postMessage({ type: "pad", controller: !want }, "*");
     shownPad = want;
+    fitSoon();
   }
+  /* In portrait, shrink the game picture so it ends ABOVE the touch buttons
+     (otherwise the buttons cover the bottom of the screen, e.g. the DS touch screen). */
+  function fitAbovePad() {
+    if (!ready()) return;
+    const cv = emu().canvas; if (!cv) return;
+    const vp = document.querySelector(".ejs_virtualGamepad_parent");
+    const portrait = innerHeight > innerWidth * 1.15;
+    let h = "";
+    if (portrait && vp && getComputedStyle(vp).display !== "none" && vp.style.opacity !== "0") {
+      let top = Infinity;
+      vp.querySelectorAll("*").forEach((el) => {
+        if (el.closest(".ejs_virtualGamepad_open")) return;
+        const r = el.getBoundingClientRect();
+        if (r.width > 4 && r.height > 4 && r.top > innerHeight * 0.25) top = Math.min(top, r.top);
+      });
+      const ct = cv.getBoundingClientRect().top;
+      if (top < Infinity) h = Math.round(Math.max(innerHeight * 0.38, top - ct - 6)) + "px";
+    }
+    if (cv.style.height !== h) { cv.style.height = h; try { window.dispatchEvent(new Event("resize")); } catch (e) {} }
+  }
+  let fitT = null;
+  const fitSoon = () => { clearTimeout(fitT); fitT = setTimeout(fitAbovePad, 120); };
+  window.addEventListener("resize", () => { if (!fitAbovePad.busy) { fitAbovePad.busy = true; fitSoon(); setTimeout(() => (fitAbovePad.busy = false), 300); } });
+  window.addEventListener("orientationchange", () => setTimeout(fitAbovePad, 400));
   function padSeen() { if (!padActive) { padActive = true; syncPad(); } }
   window.addEventListener("gamepadconnected", () => setTimeout(syncPad, 50));
   window.addEventListener("gamepaddisconnected", () => setTimeout(() => { if (!anyGamepad()) { padActive = false; syncPad(); } }, 50));
@@ -275,6 +300,7 @@
       try { const gm = emu().gameManager; gm.resetCheat(); opts.cheats.forEach((c, i) => { if (c.on && c.code) gm.setCheat(i, 1, c.code); }); } catch (e) {}
     }
     document.getElementById("rew").style.display = opts.rewind ? "grid" : "none";
+    try { fitSoon(); } catch (e) {}
   }
   const rew = document.createElement("button"); rew.id = "rew"; rew.textContent = "⏪";
   document.body.appendChild(rew);
