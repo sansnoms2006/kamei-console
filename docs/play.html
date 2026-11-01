@@ -13,6 +13,7 @@
   body.lcd #game canvas { filter: contrast(1.05) saturate(.9); }
   body.lcd #game::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 5;
     background: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px); }
+  .ejs_start_button { font-size: 22px !important; padding: 16px 30px !important; border-radius: 16px !important; }
   #wait { position: fixed; inset: 0; display: grid; place-items: center; color: #8b8ba7;
           font: 600 14px/1.4 system-ui, sans-serif; }
 </style>
@@ -300,7 +301,12 @@
     window.EJS_DEBUG_XX = true;
     window.EJS_language = msg.lang || "fr-FR";
     window.EJS_color = msg.color || "#8fc63f";
-    window.EJS_startOnLoaded = true;
+    // iPhone / iPad / Safari only allow sound (and so the game loop) after a tap INSIDE the game:
+    // there we let the player press the emulator's own "Start" button instead of starting automatically.
+    const safari = window.__kameiTapStart || /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) || /^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
+    window.EJS_startOnLoaded = !safari;
+    if (safari) window.EJS_alignStartButton = "center";
+    if (safari) window.EJS_startButtonName = msg.lang && /^fr/.test(msg.lang) ? "▶ Toucher pour jouer" : msg.lang && /^nl/.test(msg.lang) ? "▶ Tik om te spelen" : "▶ Tap to play";
     window.EJS_backgroundColor = "#0b0b12";
     window.EJS_threads = !!msg.threads && typeof SharedArrayBuffer === "function";
     if (msg.ext) window.EJS_kameiExt = msg.ext;
