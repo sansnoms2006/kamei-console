@@ -3,6 +3,7 @@
 (function () {
   const L = {
     fr: {
+      gpDeck: "🎮 Choisir dans ma console", gpFile: "📁 Choisir le fichier du jeu", gpNone: "Aucun jeu choisi : prends-le dans ta console ou choisis son fichier, l'appli le reconnaît toute seule.", gpEmpty: "Ta console est vide.", gpReading: "Lecture du jeu…", gpOk: "✅ Jeu reconnu : le nom, la console, la jaquette et la version sont enregistrés.",
       evLobby: "🎮 Aller dans la salle de départ", evShare: "🎥 Partager mon jeu avec la régie", evRegie: "🎬 Ouvrir la régie (PC)", evBoard: "⏱️ Classement en direct", evRunning: "en course", evDnf: "abandon", evRomBad: "version différente",
       navEvents: "Events", evTitle: "Kamei Events", evNone: "Pas encore de tournoi ce mois-ci. Reviens bientôt 👀", evCreate: "＋ Créer un event",
       evDays: ["L", "M", "M", "J", "V", "S", "D"],
@@ -52,6 +53,7 @@
       pmNoBadge: "Pas de badge pour l'instant", pmHist: "Historique", pmPlace: (p) => (p ? `${p}${p === 1 ? "er" : "e"}` : "—"),
     },
     nl: {
+      gpDeck: "🎮 Kiezen uit mijn console", gpFile: "📁 Spelbestand kiezen", gpNone: "Nog geen spel gekozen: neem het uit je console of kies het bestand, de app herkent het vanzelf.", gpEmpty: "Je console is leeg.", gpReading: "Spel lezen…", gpOk: "✅ Spel herkend: naam, console, hoes en versie zijn opgeslagen.",
       evLobby: "🎮 Naar de startruimte", evShare: "🎥 Mijn spel delen met de regie", evRegie: "🎬 Regie openen (pc)", evBoard: "⏱️ Live klassement", evRunning: "bezig", evDnf: "opgegeven", evRomBad: "andere versie",
       navEvents: "Events", evTitle: "Kamei Events", evNone: "Nog geen toernooi deze maand. Kom snel terug 👀", evCreate: "＋ Event maken",
       evDays: ["M", "D", "W", "D", "V", "Z", "Z"],
@@ -99,6 +101,7 @@
       pmNoBadge: "Nog geen badge", pmHist: "Geschiedenis", pmPlace: (p) => (p ? `${p}e` : "—"),
     },
     en: {
+      gpDeck: "🎮 Pick from my console", gpFile: "📁 Pick the game file", gpNone: "No game picked yet: take it from your console or pick its file, the app recognises it.", gpEmpty: "Your console is empty.", gpReading: "Reading the game…", gpOk: "✅ Game recognised: name, console, cover and version are saved.",
       evLobby: "🎮 Go to the start room", evShare: "🎥 Share my game with the control room", evRegie: "🎬 Open the control room (PC)", evBoard: "⏱️ Live ranking", evRunning: "running", evDnf: "gave up", evRomBad: "different version",
       navEvents: "Events", evTitle: "Kamei Events", evNone: "No tournament this month yet. Check back soon 👀", evCreate: "＋ Create an event",
       evDays: ["M", "T", "W", "T", "F", "S", "S"],
@@ -154,6 +157,8 @@
   const BR_POINTS = { win: 10, top5: 7, top10: 5, top25: 2, kill: 1 };
   const LOCALE = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
   const avatar = (p, n) => (window.kameiAvatar ? window.kameiAvatar(p, n) : "");
+  const coverUrl = (ref) => { const c = ref && ref.cover; if (!c) return ""; return /^(https?:|blob:)/.test(c) ? c : sb.storage.from("posters").getPublicUrl(c).data.publicUrl; };
+  window.kameiEvCover = coverUrl;
   const posterUrl = (p) => (p ? (p.startsWith("blob:") ? p : sb.storage.from("posters").getPublicUrl(p).data.publicUrl) : "");
   const sysLabel = (s) => (typeof SYSTEMS !== "undefined" && SYSTEMS[s] ? SYSTEMS[s].label : s || "");
   const errMsg = (e) => { const m = String((e && e.message) || e || ""); const k = Object.keys(T().err).find((x) => m.includes(x)); return k ? T().err[k] : m; };
@@ -181,6 +186,16 @@
   .evc .pfake .pt { font-family: "Press Start 2P", monospace; font-size: clamp(16px, 5.4vw, 26px); line-height: 1.5; text-shadow: 3px 3px 0 rgba(0,0,0,.45); }
   .evc .pfake .pg { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; font-weight: 800; opacity: .85; }
   .evc .pfake .pe { font-size: 84px; filter: drop-shadow(0 6px 10px rgba(0,0,0,.4)); }
+  .evc .pfake .pcov { width: 52%; max-height: 62%; object-fit: contain; border-radius: 10px; filter: drop-shadow(0 14px 22px rgba(0,0,0,.55)); }
+  .evd .info .gcov { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; vertical-align: middle; margin-right: 8px; }
+  .gpick { margin-top: 8px; border: 1px solid var(--line); border-radius: 14px; padding: 10px; background: rgba(255,255,255,.03); }
+  .gpick .sel { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+  .gpick .sel img, .gpick .sel .nc { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; background: #23233a; display: grid; place-items: center; font: 800 10px Inter, sans-serif; color: var(--muted); flex: none; }
+  .gpick .sel b { display: block; } .gpick .sel small { color: var(--muted); }
+  .gpick .two button { width: 100%; }
+  .gpick .deck { max-height: 260px; overflow: auto; margin-top: 8px; display: grid; gap: 6px; }
+  .gpick .deck button { display: flex; gap: 10px; align-items: center; text-align: left; padding: 6px; border-radius: 10px; border: 1px solid var(--line); background: #0f1115; color: var(--text); font: 600 13.5px Inter, sans-serif; }
+  .gpick .deck img, .gpick .deck .nc { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; background: #23233a; display: grid; place-items: center; font: 800 9px Inter, sans-serif; color: var(--muted); flex: none; }
   .pf-speedrun { background: radial-gradient(circle at 30% 20%, #3b82f6, transparent 60%), linear-gradient(160deg, #0f2a5c, #0b0f1e); }
   .pf-combat { background: radial-gradient(circle at 70% 20%, #ef4444, transparent 60%), linear-gradient(160deg, #5c0f1a, #12080b); }
   .pf-br { background: radial-gradient(circle at 50% 10%, #a855f7, transparent 60%), linear-gradient(160deg, #3b0f5c, #0d0817); }
@@ -303,7 +318,7 @@
   function poster(e, cls) {
     const X = T(), p = phaseOf(e);
     const img = e.poster ? `<img class="pimg" src="${esc(posterUrl(e.poster))}" alt="" loading="lazy">`
-      : `<div class="pfake pf-${esc(e.kind)}"><div class="pe">${{ speedrun: "⏱️", combat: "🥊", br: "🪂", other: "🏆" }[e.kind] || "🏆"}</div></div>`;
+      : `<div class="pfake pf-${esc(e.kind)}">${coverUrl(e.game_ref) ? `<img class="pcov" src="${esc(coverUrl(e.game_ref))}" alt="" onerror="this.remove()">` : `<div class="pe">${{ speedrun: "⏱️", combat: "🥊", br: "🪂", other: "🏆" }[e.kind] || "🏆"}</div>`}</div>`;
     const chip = { live: "live", reg: "reg", checkin: "check" }[p] || "";
     const defs = (e.defenders || []).slice(0, 4).map((d) => `<span>🛡️ ${esc(X.defends(d.pseudo, MEDAL[d.rank]))}</span>`).join("");
     const n = e.count || 0, pct = Math.min(100, Math.round((n / e.slots) * 100));
@@ -411,7 +426,7 @@
     openSheet(`<div class="evd">${poster(e)}
       <div class="info"><b>${X.evGame} :</b> ${esc(e.game)} · ${esc(X.kinds[e.kind] || e.kind)}${e.team_size > 1 ? " · " + X.teams[e.team_size - 1] : ""}${e.kind === "combat" && e.best_of > 1 ? " · BO" + e.best_of : ""}</div>
       <div class="info"><b>${X.evWhen} :</b> ${esc(fmtDate(e.starts_at))}</div>
-      <div class="info">${e.platform === "app" ? esc(X.evAppGame(ref.title || e.game, ref.system ? sysLabel(ref.system) : "")) : X.evExt}</div>
+      <div class="info">${e.platform === "app" && coverUrl(ref) ? `<img class="gcov" src="${esc(coverUrl(ref))}" alt="" onerror="this.remove()">` : ""}${e.platform === "app" ? esc(X.evAppGame(ref.title || e.game, ref.system ? sysLabel(ref.system) : "")) : X.evExt}</div>
       ${u && !haveGame && e.status !== "done" ? `<div class="hint">${X.evMissing}</div>` : ""}
       <div class="evact">${acts}</div>
       <div id="eBoard"></div>${resultsHTML}${stake}
@@ -531,7 +546,7 @@
     } finally { URL.revokeObjectURL(url); }
   }
 
-  function form(e, keepBlob) {
+  function form(e, keepBlob, preselect) {
     const X = T(), editing = !!(e && e.id);
     const d = Object.assign({ title: "", game: "", kind: "speedrun", platform: "app", team_size: 1, slots: 16, best_of: 3, checkin_min: 30, rules: "", points: BR_POINTS }, e || {});
     if (!editing) {
@@ -546,6 +561,7 @@
       <label>${X.fName}</label><input id="fTitle" maxlength="80" placeholder="${esc(X.fNamePh)}" value="${esc(d.title)}">
       <label>${X.fPlat}</label><select id="fPlat">${opt("app", d.platform, X.fPlatApp)}${opt("ext", d.platform, X.fPlatExt)}</select>
       <label>${X.fGame}</label><input id="fGame" maxlength="60" list="fGames" placeholder="${esc(X.fGamePh)}" value="${esc(d.game)}">
+      <div class="gpick" id="fPickBox"></div><input type="file" id="fRom" hidden>
       <datalist id="fGames">${titles.concat(["Fortnite", "Call of Duty: Warzone", "Call of Duty: Black Ops"]).map((x) => `<option value="${esc(x)}">`).join("")}</datalist>
       <div class="two"><div><label>${X.fKind}</label><select id="fKind">${Object.keys(X.kinds).map((k) => opt(k, d.kind, X.kinds[k])).join("")}</select></div>
         <div><label>${X.fTeam}</label><select id="fTeam">${X.teams.map((n, i) => opt(i + 1, d.team_size, n)).join("")}</select></div></div>
@@ -574,7 +590,50 @@
       if (!r.value.trim() || r.value === X.rulesDef[lastKind]) r.value = X.rulesDef[k] || "";
       lastKind = k; sync();
     };
-    $s("fPlat").onchange = sync; sync();
+    // in-app game: picked from the console or from its file → name, console, cover and version filled in automatically
+    let pick = d.platform === "app" && d.game_ref && d.game_ref.system ? Object.assign({}, d.game_ref) : null, deckOpen = false;
+    const sysName = (k) => (typeof SYSTEMS !== "undefined" && SYSTEMS[k] ? SYSTEMS[k].label : k || "");
+    const sysShort = (k) => (typeof SYSTEMS !== "undefined" && SYSTEMS[k] ? SYSTEMS[k].short || k : k || "");
+    const thumb = (g) => { const u = typeof coverSrc === "function" ? coverSrc(g) : null; return u ? `<img src="${esc(u)}" alt="" onerror="this.outerHTML='<span class=nc>${esc(sysShort(g.system))}</span>'">` : `<span class="nc">${esc(sysShort(g.system))}</span>`; };
+    const paintPick = () => {
+      const box = $s("fPickBox"); if (!box) return;
+      box.style.display = $s("fPlat").value === "app" ? "" : "none";
+      const list = typeof games !== "undefined" ? games : [];
+      const cov = pick && (pick.coverPreview || coverUrl(pick));
+      box.innerHTML = (pick ? `<div class="sel">${cov ? `<img src="${esc(cov)}" alt="">` : `<span class="nc">${esc(sysShort(pick.system))}</span>`}<div><b>${esc(pick.title)}</b><small>${esc(sysName(pick.system))}</small>
+          <div class="hint" style="margin:3px 0 0">${pick.busy ? X.gpReading : X.gpOk}</div></div></div>` : `<p class="hint" style="margin:0 0 10px">${X.gpNone}</p>`) +
+        `<div class="two"><button class="row" type="button" id="gpDeck">${X.gpDeck}</button><button class="row" type="button" id="gpFile">${X.gpFile}</button></div>` +
+        (deckOpen ? `<div class="deck">${list.length ? list.slice().sort((a, b) => a.title.localeCompare(b.title)).map((g) => `<button type="button" data-g="${esc(g.id)}">${thumb(g)}<span>${esc(g.title)}<br><small style="color:var(--muted)">${esc(sysName(g.system))}</small></span></button>`).join("") : `<p class="hint">${X.gpEmpty}</p>`}</div>` : "");
+      box.querySelector("#gpDeck").onclick = () => { deckOpen = !deckOpen; paintPick(); };
+      box.querySelector("#gpFile").onclick = () => $s("fRom").click();
+      box.querySelectorAll("[data-g]").forEach((b) => b.onclick = () => { deckOpen = false; choose(b.dataset.g); });
+    };
+    async function choose(id) {
+      const g = (typeof games !== "undefined" ? games : []).find((x) => x.id === id); if (!g) return;
+      pick = { id, title: g.title, system: g.system, busy: true };
+      $s("fGame").value = g.title;
+      if (!$s("fTitle").value.trim()) $s("fTitle").value = g.title + " — Kamei Cup";
+      paintPick();
+      const p = pick;
+      try { p.hash = await window.kameiRomHash(id); } catch (err) {}
+      try {
+        const c = window.kameiCoverOf ? await window.kameiCoverOf(id) : null;
+        if (c && c.url) p.cover = c.url;
+        if (c && c.blob) { p.coverBlob = c.blob; p.coverPreview = URL.createObjectURL(c.blob); }
+      } catch (err) {}
+      p.busy = false;
+      if (pick === p && document.getElementById("fPickBox")) paintPick();
+    }
+    $s("fRom").onchange = async (ev) => {
+      const files = [...(ev.target.files || [])]; ev.target.value = "";
+      if (!files.length || !window.kameiImportFiles) return;
+      const snap = collect();
+      const ids = await window.kameiImportFiles(files);
+      // the import may have asked something in the sheet: the form comes back with the new game picked
+      form(Object.assign({}, e || {}, snap, { id: e ? e.id : null, poster: e ? e.poster : null, game_ref: pick }), posterBlob, ids[0] || null);
+    };
+    $s("fPlat").onchange = () => { sync(); paintPick(); }; sync(); paintPick();
+    if (preselect) choose(preselect);
     if (editing && admin()) sb.rpc("event_admin_key", { eid: e.id }).then((r) => { if (r.data && $s("fKey")) $s("fKey").value = r.data; });
     $s("fPick").onclick = () => $s("fFile").click();
     $s("fFile").onchange = async (ev) => {
@@ -587,15 +646,23 @@
       } catch (err) { $s("fErr").textContent = String(err.message || err); }
     };
     $s("fCancel").onclick = () => (editing ? detail(e.id) : closeSheet());
-    $s("fPrevBtn").onclick = async () => {
-      const g = $s("fGame").value.trim(), data = {
-        id: editing ? e.id : null, title: $s("fTitle").value.trim(), game: g, kind: $s("fKind").value, platform: $s("fPlat").value,
+    function collect() {
+      const data = {
+        id: editing ? e.id : null, title: $s("fTitle").value.trim(), game: $s("fGame").value.trim(), kind: $s("fKind").value, platform: $s("fPlat").value,
         team_size: +$s("fTeam").value, slots: Math.max(2, Math.min(500, +$s("fSlots").value || 16)), best_of: +$s("fBest").value,
         checkin_min: +$s("fCheck").value, rules: $s("fRules").value.trim(), starts_at: fromLocalInput($s("fStart").value), reg_end: fromLocalInput($s("fEnd").value),
         match_key: $s("fKey").value.trim(), poster: editing ? e.poster : null,
       };
       if ($s("fKind").value === "br") { data.points = {}; document.querySelectorAll("[data-pt]").forEach((x) => (data.points[x.dataset.pt] = Math.max(0, +x.value || 0))); }
-      if (data.platform === "app" && typeof games !== "undefined") {
+      return data;
+    }
+    $s("fPrevBtn").onclick = async () => {
+      const g = $s("fGame").value.trim(), data = collect();
+      if (data.platform === "app" && pick) {
+        if (pick.busy) { $s("fErr").textContent = X.gpReading; return; }
+        data.game_ref = { title: pick.title, system: pick.system, hash: pick.hash || null, cover: pick.coverBlob ? pick.coverPreview : pick.cover || null };
+        data._coverBlob = pick.coverBlob || null;
+      } else if (data.platform === "app" && typeof games !== "undefined") {
         const m = games.find((x) => x.title.toLowerCase() === g.toLowerCase());
         data.game_ref = m ? { title: m.title, system: m.system } : { title: g };
         if (m && window.kameiRomHash) { try { data.game_ref.hash = await window.kameiRomHash(m.id); } catch (err) {} }
@@ -609,9 +676,9 @@
 
   function preview(data, blob, prevUrl, orig) {
     const X = T();
-    draftPreview = Object.assign({}, data, { id: "draft", status: orig ? orig.status : "open", count: orig ? orig.count : 0, waiting: 0, defenders: orig ? orig.defenders : [],
+    draftPreview = Object.assign({}, data, { id: "draft", status: orig && orig.status ? orig.status : "open", count: orig ? orig.count : 0, waiting: 0, defenders: orig ? orig.defenders : [],
       poster: prevUrl ? (blob ? prevUrl : data.poster) : null });
-    const isDraft = !orig || orig.status === "draft";
+    const isDraft = !orig || !orig.id || !orig.status || orig.status === "draft";
     openSheet(`<h3>${X.fPreview}</h3><div class="evd">${poster(draftPreview)}
       ${data.rules ? `<h4>${X.evRules}</h4><div class="rules">${esc(data.rules)}</div>` : ""}</div>
       <p class="hint" id="pSt"></p>
@@ -620,12 +687,20 @@
     // the preview card shows the countdown as if it were published
     startTicker();
     const $s = (x) => document.getElementById(x);
-    $s("pBack").onclick = () => form(Object.assign({}, orig || {}, data, { id: orig ? orig.id : null, poster: orig ? orig.poster : null }), blob);
+    $s("pBack").onclick = () => form(Object.assign({}, orig || {}, data, { id: orig ? orig.id : null, poster: orig ? orig.poster : null,
+      game_ref: data.game_ref ? Object.assign({}, data.game_ref, data._coverBlob ? { coverBlob: data._coverBlob, coverPreview: data.game_ref.cover } : {}) : null }), blob);
     const save = async (pub) => {
       $s("pSt").textContent = X.fSaving;
       document.querySelectorAll("#sheet .btns button").forEach((b) => (b.disabled = true));
       try {
         const d = Object.assign({}, data);
+        const cb = d._coverBlob; delete d._coverBlob;
+        if (cb && d.game_ref) {
+          const cpath = `cover-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.jpg`;
+          let cblob = cb; try { cblob = await compressPoster(new File([cb], "c", { type: cb.type || "image/png" })); } catch (err) {}
+          const cu = await sb.storage.from("posters").upload(cpath, cblob, { contentType: "image/jpeg", upsert: false });
+          if (!cu.error) d.game_ref = Object.assign({}, d.game_ref, { cover: cpath }); else d.game_ref = Object.assign({}, d.game_ref, { cover: null });
+        }
         let oldPoster = null;
         if (blob) {
           const path = `ev-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.jpg`;

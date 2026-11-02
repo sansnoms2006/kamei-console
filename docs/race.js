@@ -279,7 +279,8 @@
     else if (b && (b.players || []).some((p) => p.status === "running") && !(run && run.status === "running")) state = X.lobbyNotIn;
     const cd = R.goAt && nowS() < R.goAt ? `<div class="big">${Math.ceil((R.goAt - nowS()) / 1000)}</div>` : "";
     lobbyEl.innerHTML = `<h2>${X.lobby}</h2><p class="rt">${esc(R.e.title)}</p>
-      <div class="box"><b>${X.lobbyGame} :</b> ${esc((R.e.game_ref && R.e.game_ref.title) || R.e.game)}<br>${gameLine}</div>
+      <div class="box" style="display:flex;gap:12px;align-items:center">${window.kameiEvCover && window.kameiEvCover(R.e.game_ref) ? `<img src="${esc(window.kameiEvCover(R.e.game_ref))}" alt="" style="width:64px;height:64px;border-radius:10px;object-fit:cover;flex:none" onerror="this.remove()">` : ""}
+        <div><b>${X.lobbyGame} :</b> ${esc((R.e.game_ref && R.e.game_ref.title) || R.e.game)}<br>${gameLine}</div></div>
       <div class="box">${cd}${state}${n ? `<br><small style="color:var(--muted)">${X.lobbyPlayers(n)}</small>` : ""}</div>
       <div class="box" style="font-size:13px;color:var(--muted)">${X.lobbyRules}</div>
       <button class="leave" id="rlLeave">${X.lobbyLeave}</button>`;

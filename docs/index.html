@@ -930,8 +930,12 @@ $("coverFile").addEventListener("change", async (e) => {
 $("add").onclick = () => $("file").click();
 $("file").addEventListener("change", async (e) => {
   const files = [...e.target.files]; e.target.value = "";
-  if (!files.length) return;
-  let added = 0; const problems = []; const batch = {};
+  await importFiles(files);
+});
+// also used by Kamei Events (the admin picks the game file of a tournament): returns the ids of the games added
+async function importFiles(files) {
+  if (!files.length) return [];
+  let added = 0; const problems = []; const batch = {}; const ids = [];
   try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (_) {}
   toast(t("importing"), 60000);
   for (const f of files) {
@@ -952,7 +956,7 @@ $("file").addEventListener("change", async (e) => {
     try {
       await putGame({ id, fileName: f.name, romName: d.inner, title: cleanTitle(d.inner), tags: tags(d.inner), system, size: raw.size,
                       added: Date.now(), lastPlayed: 0, saveKey: baseName(d.inner), blob, cover: null, coverTried: false, whole: d.whole || null });
-      added++;
+      added++; ids.push(id);
     } catch (err) { problems.push(`${f.name} : ${t("noSpace")}`); }
   }
   await load();
@@ -963,7 +967,18 @@ $("file").addEventListener("change", async (e) => {
     $("pOk").onclick = closeSheet;
   } else if (added) toast(t("added", added));
   scrapeMissing();
-});
+  return ids;
+}
+window.kameiImportFiles = importFiles;
+window.kameiCoverOf = async (id) => {
+  const g = await getGame(id); if (!g) return null;
+  if (g.coverBlob) return { blob: g.coverBlob };
+  if (g.cover) return { url: g.cover };
+  if (g.coverTried || !navigator.onLine) return null;
+  const url = await findCover(g);
+  await updateGame(id, url ? { cover: url, coverTried: true } : { coverTried: true });
+  return url ? { url } : null;
+};
 
 /* =================== Library =================== */
 let heroShown = null;   // kept for account.js (forces a refresh when set to null)
