@@ -10,21 +10,21 @@
   let EID = +P.get("e") || 0, KEY = P.get("k") || "";
   const lang = (() => { try { return localStorage.getItem("kamei-lang") || "fr"; } catch (e) { return "fr"; } })();
   const L = {
-    fr: { title: "Régie", search: "🔎 Pseudo → à l'antenne (Entrée)", all: "Tous", running: "En course", done: "Fini", top3: "Top 3", badges: "Badges", follow: "Suivre le leader", duel: "Duel",
+    fr: { title: "Régie", light: "⚡ Mode léger", lightT: "Moins de calcul pour ton PC : petites images dans la régie, l'image HD seulement dans OBS", search: "🔎 Pseudo → à l'antenne (Entrée)", all: "Tous", running: "En course", done: "Fini", top3: "Top 3", badges: "Badges", follow: "Suivre le leader", duel: "Duel",
       go: "▶ Départ 3-2-1", obs: "📺 Sortie OBS", preview: "APERÇU", air: "À L'ANTENNE", ranking: "Classement", noAdmin: "La régie est réservée à l'admin. Connecte-toi d'abord dans Kamei Console (version web), sur ce PC.",
       pick: "Choisis le tournoi", none: "Aucun tournoi en cours ou à venir.", offline: "pas en jeu", wait: "en attente", dnf: "abandon",
       goQ: (n, s) => `Départ dans 12 secondes pour ${n} joueur${n > 1 ? "s" : ""}${s ? " (série sélectionnée)" : " (tous les présents)"} ?`, goOk: "Départ lancé ! 3-2-1…",
       obsHint: "Dans OBS : Sources → + → Navigateur → colle ce lien (largeur 1920, hauteur 1080). Garde ce lien pour toi.", copy: "Copier", copied: "Copié ✅", close: "Fermer",
       reset: "↺ Relancer son chrono", resetQ: (p) => `Effacer le chrono de ${p} ? Il pourra repartir au prochain départ.`, help: "Clic : aperçu · Double-clic : antenne · 1-8 : aperçu · Espace : aperçu → antenne · Ctrl+clic : série · ←/→ : pages · Échap : vider l'antenne",
       standby: "Kamei Events", series: (n) => `Série : ${n}`, clearSel: "Vider", empty: "Personne d'inscrit pour l'instant.", romBad: "⚠️ version différente", screen: "🎥 écran partagé" },
-    nl: { title: "Regie", search: "🔎 Pseudo → in beeld (Enter)", all: "Alle", running: "Bezig", done: "Klaar", top3: "Top 3", badges: "Badges", follow: "Leider volgen", duel: "Duel",
+    nl: { title: "Regie", light: "⚡ Lichte modus", lightT: "Minder werk voor je pc: kleine beelden in de regie, HD alleen in OBS", search: "🔎 Pseudo → in beeld (Enter)", all: "Alle", running: "Bezig", done: "Klaar", top3: "Top 3", badges: "Badges", follow: "Leider volgen", duel: "Duel",
       go: "▶ Start 3-2-1", obs: "📺 OBS-uitgang", preview: "VOORBEELD", air: "IN BEELD", ranking: "Klassement", noAdmin: "De regie is voor de admin. Log eerst in bij Kamei Console (webversie) op deze pc.",
       pick: "Kies het toernooi", none: "Geen lopend of komend toernooi.", offline: "niet in spel", wait: "wacht", dnf: "opgegeven",
       goQ: (n, s) => `Start over 12 seconden voor ${n} speler${n > 1 ? "s" : ""}${s ? " (gekozen reeks)" : " (alle aanwezigen)"}?`, goOk: "Start gegeven! 3-2-1…",
       obsHint: "In OBS: Bronnen → + → Browser → plak deze link (breedte 1920, hoogte 1080). Hou deze link voor jezelf.", copy: "Kopiëren", copied: "Gekopieerd ✅", close: "Sluiten",
       reset: "↺ Chrono herstarten", resetQ: (p) => `Chrono van ${p} wissen?`, help: "Klik: voorbeeld · Dubbelklik: in beeld · 1-8: voorbeeld · Spatie: voorbeeld → beeld · Ctrl+klik: reeks · ←/→: pagina's · Esc: beeld leegmaken",
       standby: "Kamei Events", series: (n) => `Reeks: ${n}`, clearSel: "Leegmaken", empty: "Nog niemand ingeschreven.", romBad: "⚠️ andere versie", screen: "🎥 scherm gedeeld" },
-    en: { title: "Control room", search: "🔎 Player name → on air (Enter)", all: "All", running: "Running", done: "Done", top3: "Top 3", badges: "Badges", follow: "Follow the leader", duel: "Duel",
+    en: { title: "Control room", light: "⚡ Light mode", lightT: "Less work for your PC: small pictures in the control room, HD only in OBS", search: "🔎 Player name → on air (Enter)", all: "All", running: "Running", done: "Done", top3: "Top 3", badges: "Badges", follow: "Follow the leader", duel: "Duel",
       go: "▶ Start 3-2-1", obs: "📺 OBS output", preview: "PREVIEW", air: "ON AIR", ranking: "Ranking", noAdmin: "The control room is for the admin. Log in to Kamei Console (web version) on this PC first.",
       pick: "Pick the tournament", none: "No live or upcoming tournament.", offline: "not in game", wait: "waiting", dnf: "gave up",
       goQ: (n, s) => `Start in 12 seconds for ${n} player${n > 1 ? "s" : ""}${s ? " (selected heat)" : " (everyone present)"}?`, goOk: "Start launched! 3-2-1…",
@@ -79,8 +79,12 @@
   const leader = () => players().filter((x) => x.status === "done").sort((a, b) => a.ms - b.ms)[0];
 
   /* ---------- WebRTC: one connection per player we want to see ---------- */
-  const wantQ = (uid) => (MODE === "obs" || uid === preview || air.includes(uid) ? "high" : "low");
+  // ⚡ light mode (default): the régie only receives small pictures — the big HD picture is decoded only by OBS,
+  // and nothing is received while the régie tab is in the background (so your PC keeps its power for the game + the stream)
+  let light = (() => { try { return localStorage.getItem("kamei-regie-light") !== "off"; } catch (e) { return true; } })();
+  const wantQ = (uid) => (MODE === "obs" ? "high" : !light && (uid === preview || air.includes(uid)) ? "high" : "low");
   function desired() {
+    if (MODE === "regie" && document.hidden) return [];
     const d = new Set(air);
     if (MODE === "regie") { if (preview) d.add(preview); for (const p of visible()) d.add(p.id); }
     return [...d].filter((u) => present[u] && present[u].live);
@@ -177,13 +181,16 @@
       <header><b class="logo">KAMEI<i>.</i>RÉGIE</b><span id="evName"></span>
         <div class="srch"><input id="q" list="qList" placeholder="${esc(X.search)}" autocomplete="off"><datalist id="qList"></datalist></div>
         <div class="chips" id="filters">${["all", "running", "done", "top3", "badges"].map((k) => `<button data-f="${k}">${X[k]}</button>`).join("")}</div>
-        <label class="tg"><input type="checkbox" id="follow"> ${X.follow}</label><label class="tg"><input type="checkbox" id="duel"> ${X.duel}</label>
+        <label class="tg"><input type="checkbox" id="follow"> ${X.follow}</label><label class="tg"><input type="checkbox" id="duel"> ${X.duel}</label><label class="tg" title="${esc(X.lightT)}"><input type="checkbox" id="light"> ${X.light}</label>
         <span id="selBox"></span><button class="go" id="goBtn">${X.go}</button><button id="obsBtn">${X.obs}</button></header>
       <main><section id="mos"><div id="tiles"></div><div class="pager"><button id="pPrev">‹</button><span id="pNum"></span><button id="pNext">›</button><small>${esc(X.help)}</small></div></section>
         <aside><div class="mon pv"><div class="lab">${X.preview} <span id="pvName"></span><button id="pvReset" title="${esc(X.reset)}">↺</button></div><video id="pvVid" autoplay muted playsinline></video></div>
           <div class="mon air"><div class="lab">🔴 ${X.air} <span id="airName"></span></div><div class="airv" id="airVids"></div></div>
           <h3>${X.ranking}</h3><div id="rank"></div></aside></main><div id="modal"></div>`;
     document.querySelectorAll("#filters [data-f]").forEach((b) => b.onclick = () => { filter = b.dataset.f; page = 0; paint(); reconcile(); });
+    $("light").checked = light;
+    $("light").onchange = () => { light = $("light").checked; try { localStorage.setItem("kamei-regie-light", light ? "on" : "off"); } catch (e) {} reconcile(); };
+    document.addEventListener("visibilitychange", () => setTimeout(reconcile, document.hidden ? 4000 : 0));
     $("follow").onchange = () => { follow = $("follow").checked; loadBoard(); };
     $("duel").onchange = () => { duel = $("duel").checked; if (!duel && air.length > 1) setAir([air[0]]); else if (duel && preview && !air.includes(preview)) setAir([air[0], preview]); };
     $("pPrev").onclick = () => { page--; paint(); reconcile(); };
