@@ -81,7 +81,7 @@
       ])}
       ${grp(t("meSettings"), [row("meLang", t("meLang"), lang.toUpperCase()), row("meApp", t("meApp")), window.kameiTour ? row("meTour", t("meTour")) : ""])}
       ${grp(t("meData"), [row("meBios", t("meBios")), window.kameiBackup ? row("meBackup", t("meBackup")) : ""])}
-      ${grp(t("meAccount"), [u.is_admin ? row("meAdmin", t("meAdmin")) : "", `<button id="meOut" class="danger"><span>${t("meLogout")}</span></button>`])}`;
+      ${grp(t("meAccount"), [window.kameiSecure ? row("meSecure", t("secure")) : "", u.is_admin ? row("meAdmin", t("meAdmin")) : "", `<button id="meOut" class="danger"><span>${t("meLogout")}</span></button>`])}`;
     const on = (id, fn) => { const b = v.querySelector("#" + id); if (b) b.onclick = fn; };
     on("mePhoto", photoSheet);
     on("meCopy", async () => { try { await navigator.clipboard.writeText(u.friend_code); toast(t("copied")); } catch (e) { toast(u.friend_code); } });
@@ -94,6 +94,13 @@
     on("meBios", () => biosList());
     on("meBackup", () => window.kameiBackup.open());
     on("meAdmin", () => window.kameiAdminSheet());
+    on("meSecure", () => window.kameiSecure());
+    if (window.kameiSecureInfo && v.querySelector("#meSecure")) window.kameiSecureInfo().then((i) => {
+      const b = v.querySelector("#meSecure"); if (!b) return;
+      const val = b.querySelector(".v");
+      if (i.hasPass) val.insertAdjacentHTML("afterbegin", "✅");
+      else { val.insertAdjacentHTML("afterbegin", "⚠️"); b.insertAdjacentHTML("afterend", `<p class="hint" style="margin:0;padding:8px 16px;color:#f59e0b">${t("secureWarn")}</p>`); }
+    }, () => {});
     on("meOut", () => window.kameiLogout && window.kameiLogout());
     paintPet();
   }

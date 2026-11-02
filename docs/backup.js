@@ -175,7 +175,7 @@
       d.close();
     }
     for (const k in man.ls) { if (!SKIP_LS.test(k)) try { localStorage.setItem(k, man.ls[k]); } catch (e) {} }
-    try { localStorage.setItem("kamei-tour-done", "1"); } catch (e) {}
+    try { localStorage.setItem("kamei-tour-done", "2"); } catch (e) {}
   }
 
   /* ---------- sheet ---------- */

@@ -6,6 +6,12 @@
   const COLORS = ["#8fc63f", "#f87171", "#60a5fa", "#a855f7", "#f59e0b", "#14b8a6", "#ec4899", "#e5e7eb"];
 
   Object.assign(I18N.fr, {
+    tabNew: "Créer mon joueur", tabLogin: "J'ai déjà un compte", pseudoFree: "✅ Ce pseudo est libre", pseudoUsed: "❌ Ce pseudo est déjà pris", pseudoShort: "2 caractères minimum",
+    newHint: "Juste un pseudo et une couleur : pas besoin d'e-mail.", idLogin: "Ton pseudo (ou ton e-mail)", loginPass: "Mot de passe",
+    noPass: "Ce pseudo n'existe pas, ou il n'a pas encore de mot de passe (Moi → 🔐 Mot de passe).", anonOff: "La création par pseudo n'est pas encore activée sur le serveur. Réessaie plus tard.",
+    secure: "🔐 Mot de passe (pour changer de téléphone)", secureOn: "Mot de passe activé ✅", secureHint: "Ton compte est rangé sur ce téléphone. Choisis un mot de passe : tu pourras te connecter avec ton pseudo + ce mot de passe sur un autre téléphone ou sur le site.",
+    secureHint2: "Tu as déjà un mot de passe. Tu peux le changer ici.", secureP1: "Nouveau mot de passe (6 caractères min.)", secureP2: "Répète le mot de passe", secureDiff: "Les 2 mots de passe sont différents", secureOk: "Mot de passe enregistré ✅ Connecte-toi avec ton pseudo sur ton autre téléphone.",
+    secureWarn: "⚠️ Sans mot de passe, si tu effaces l'appli tu perds ton compte.",
     gateHello: "Bienvenue sur la console Kamei", gateSub: "Connecte-toi ou crée ton compte pour jouer avec tes amis.", gateOffline: "Pas de connexion internet : il en faut une pour la première connexion.",
     finishProfile: "Choisis ton pseudo", finishHint: "Il ne manque plus que ton pseudo et ta couleur.", go: "C'est parti !", retry: "Réessayer",
     admin: "🛡️ Admin", adminTitle: "Gestion des comptes", accounts: "comptes", onlineNow: "en ligne", playTime: "de jeu",
@@ -17,7 +23,7 @@
     account: "Compte", friends: "Amis", signup: "Créer un compte", login: "Se connecter", logout: "Se déconnecter",
     email: "E-mail", password: "Mot de passe (6 caractères min.)", pseudo: "Pseudo", haveAccount: "J'ai déjà un compte", noAccount: "Je n'ai pas de compte",
     accHint: "Un compte permet à tes amis de voir à quoi tu joues. Tes ROMs ne sont jamais envoyées.",
-    pseudoTaken: "Ce pseudo est déjà pris", badLogin: "E-mail ou mot de passe incorrect", weakPass: "Mot de passe trop court (6 caractères min.)",
+    pseudoTaken: "Ce pseudo est déjà pris", badLoginP: "Pseudo ou mot de passe incorrect", badLogin: "E-mail ou mot de passe incorrect", weakPass: "Mot de passe trop court (6 caractères min.)",
     emailTaken: "Cet e-mail a déjà un compte", netErr: "Pas de connexion au serveur", welcomeName: (n) => `Bienvenue ${n} !`,
     myCode: "Ton code ami", copy: "Copier", copied: "Copié !", addFriend: "Ajouter un ami", friendCode: "Code de ton ami (ex. KAMEI-4821)",
     friendAdded: (n) => `${n} est maintenant ton ami`, codeNotFound: "Ce code n'existe pas", ownCode: "C'est ton propre code 😄",
@@ -27,6 +33,12 @@
     offline: "Les comptes ne marchent qu'avec internet", accountsOff: "Les comptes ne sont disponibles que dans l'app Android",
   });
   Object.assign(I18N.nl, {
+    tabNew: "Mijn speler maken", tabLogin: "Ik heb al een account", pseudoFree: "✅ Deze naam is vrij", pseudoUsed: "❌ Deze naam is al bezet", pseudoShort: "Minstens 2 tekens",
+    newHint: "Alleen een naam en een kleur: geen e-mail nodig.", idLogin: "Je naam (of je e-mail)", loginPass: "Wachtwoord",
+    noPass: "Deze naam bestaat niet, of heeft nog geen wachtwoord (Ik → 🔐 Wachtwoord).", anonOff: "Aanmaken met een naam is nog niet actief op de server. Probeer later opnieuw.",
+    secure: "🔐 Wachtwoord (om van telefoon te wisselen)", secureOn: "Wachtwoord actief ✅", secureHint: "Je account staat op deze telefoon. Kies een wachtwoord: dan log je in met je naam + dit wachtwoord op een andere telefoon of op de site.",
+    secureHint2: "Je hebt al een wachtwoord. Je kunt het hier wijzigen.", secureP1: "Nieuw wachtwoord (min. 6 tekens)", secureP2: "Herhaal het wachtwoord", secureDiff: "De 2 wachtwoorden verschillen", secureOk: "Wachtwoord opgeslagen ✅ Log in met je naam op je andere telefoon.",
+    secureWarn: "⚠️ Zonder wachtwoord verlies je je account als je de app wist.",
     gateHello: "Welkom op de Kamei-console", gateSub: "Log in of maak een account om met je vrienden te spelen.", gateOffline: "Geen internetverbinding: die is nodig om de eerste keer in te loggen.",
     finishProfile: "Kies je gebruikersnaam", finishHint: "Alleen je naam en kleur ontbreken nog.", go: "Let's go!", retry: "Opnieuw proberen",
     admin: "🛡️ Admin", adminTitle: "Accounts beheren", accounts: "accounts", onlineNow: "online", playTime: "speeltijd",
@@ -38,7 +50,7 @@
     account: "Account", friends: "Vrienden", signup: "Account maken", login: "Inloggen", logout: "Uitloggen",
     email: "E-mail", password: "Wachtwoord (min. 6 tekens)", pseudo: "Gebruikersnaam", haveAccount: "Ik heb al een account", noAccount: "Ik heb nog geen account",
     accHint: "Met een account zien je vrienden wat je speelt. Je ROMs worden nooit verstuurd.",
-    pseudoTaken: "Deze naam is al bezet", badLogin: "E-mail of wachtwoord fout", weakPass: "Wachtwoord te kort (min. 6 tekens)",
+    pseudoTaken: "Deze naam is al bezet", badLoginP: "Naam of wachtwoord fout", badLogin: "E-mail of wachtwoord fout", weakPass: "Wachtwoord te kort (min. 6 tekens)",
     emailTaken: "Dit e-mailadres heeft al een account", netErr: "Geen verbinding met de server", welcomeName: (n) => `Welkom ${n}!`,
     myCode: "Jouw vriendencode", copy: "Kopiëren", copied: "Gekopieerd!", addFriend: "Vriend toevoegen", friendCode: "Code van je vriend (bv. KAMEI-4821)",
     friendAdded: (n) => `${n} is nu je vriend`, codeNotFound: "Deze code bestaat niet", ownCode: "Dat is je eigen code 😄",
@@ -48,6 +60,12 @@
     offline: "Accounts werken alleen met internet", accountsOff: "Accounts zijn alleen beschikbaar in de Android-app",
   });
   Object.assign(I18N.en, {
+    tabNew: "Create my player", tabLogin: "I already have an account", pseudoFree: "✅ This username is free", pseudoUsed: "❌ This username is taken", pseudoShort: "2 characters minimum",
+    newHint: "Just a username and a color: no email needed.", idLogin: "Your username (or your email)", loginPass: "Password",
+    noPass: "This username doesn't exist, or has no password yet (Me → 🔐 Password).", anonOff: "Creating a player with a username isn't enabled on the server yet. Try again later.",
+    secure: "🔐 Password (to switch phones)", secureOn: "Password set ✅", secureHint: "Your account lives on this phone. Pick a password: you'll log in with your username + this password on another phone or on the website.",
+    secureHint2: "You already have a password. You can change it here.", secureP1: "New password (6+ characters)", secureP2: "Repeat the password", secureDiff: "The 2 passwords are different", secureOk: "Password saved ✅ Log in with your username on your other phone.",
+    secureWarn: "⚠️ Without a password, deleting the app means losing your account.",
     gateHello: "Welcome to the Kamei console", gateSub: "Log in or create your account to play with your friends.", gateOffline: "No internet connection: you need it to log in the first time.",
     finishProfile: "Pick your username", finishHint: "Only your username and color are missing.", go: "Let's go!", retry: "Retry",
     admin: "🛡️ Admin", adminTitle: "Manage accounts", accounts: "accounts", onlineNow: "online", playTime: "played",
@@ -59,7 +77,7 @@
     account: "Account", friends: "Friends", signup: "Create account", login: "Log in", logout: "Log out",
     email: "Email", password: "Password (6+ characters)", pseudo: "Username", haveAccount: "I already have an account", noAccount: "I don't have an account",
     accHint: "With an account your friends can see what you play. Your ROMs are never uploaded.",
-    pseudoTaken: "This username is taken", badLogin: "Wrong email or password", weakPass: "Password too short (6+ characters)",
+    pseudoTaken: "This username is taken", badLoginP: "Wrong username or password", badLogin: "Wrong email or password", weakPass: "Password too short (6+ characters)",
     emailTaken: "This email already has an account", netErr: "Can't reach the server", welcomeName: (n) => `Welcome ${n}!`,
     myCode: "Your friend code", copy: "Copy", copied: "Copied!", addFriend: "Add a friend", friendCode: "Your friend's code (e.g. KAMEI-4821)",
     friendAdded: (n) => `${n} is now your friend`, codeNotFound: "This code doesn't exist", ownCode: "That's your own code 😄",
@@ -137,46 +155,65 @@
   window.kameiHello = () => me ? t("hi", me.pseudo) : null;
 
   /* ---------- Sign up / log in ---------- */
+  const PSEUDO_MAIL = "@joueur.kamei.app";
+  const mailLabel = (m) => (!m ? "👤 pseudo seul" : m.endsWith(PSEUDO_MAIL) ? "👤🔐 pseudo + mot de passe" : m);
   function authForm(box, mode, inGate) {
     let color = COLORS[0];
-    const head = inGate ? "" : `<h3>${mode === "signup" ? t("signup") : mode === "profile" ? t("finishProfile") : t("login")}</h3><p class="hint">${mode === "profile" ? t("finishHint") : t("accHint")}</p>`;
+    const head = inGate ? "" : `<h3>${mode === "signup" ? t("tabNew") : mode === "profile" ? t("finishProfile") : t("tabLogin")}</h3><p class="hint">${mode === "profile" ? t("finishHint") : mode === "signup" ? t("newHint") : t("accHint")}</p>`;
     box.innerHTML = head + `
-      ${mode !== "login" ? `<input id="aPseudo" placeholder="${t("pseudo")}" maxlength="20" autocomplete="nickname">
+      ${mode !== "login" ? `<input id="aPseudo" placeholder="${t("pseudo")}" maxlength="20" autocomplete="nickname"><p class="hint" id="aAvail" style="margin:-4px 0 8px;min-height:18px"></p>
         <div class="colors" id="aColors">${COLORS.map((c, i) => `<button type="button" style="--ac:${c}" class="${i ? "" : "on"}" data-c="${c}"></button>`).join("")}</div>` : ""}
-      ${mode !== "profile" ? `<input id="aEmail" type="email" placeholder="${t("email")}" autocomplete="email">
-      <input id="aPass" type="password" placeholder="${t("password")}" autocomplete="${mode === "signup" ? "new-password" : "current-password"}">` : ""}
+      ${mode === "login" ? `<input id="aId" placeholder="${t("idLogin")}" autocomplete="username" autocapitalize="none">
+      <input id="aPass" type="password" placeholder="${t("loginPass")}" autocomplete="current-password">` : ""}
       <p class="hint err" id="aErr"></p>
-      <div class="btns">${mode === "profile" || inGate ? "" : `<button id="aSwitch">${mode === "signup" ? t("haveAccount") : t("noAccount")}</button>`}
-        <button class="ok" id="aGo">${mode === "signup" ? t("signup") : mode === "profile" ? t("go") : t("login")}</button></div>`;
+      <div class="btns">${mode === "profile" || inGate ? "" : `<button id="aSwitch">${mode === "signup" ? t("tabLogin") : t("tabNew")}</button>`}
+        <button class="ok" id="aGo">${mode === "login" ? t("login") : t("go")}</button></div>`;
     const colors = box.querySelector("#aColors");
     if (colors) colors.querySelectorAll("button").forEach((b) => b.onclick = () => { colors.querySelectorAll("button").forEach((x) => x.classList.remove("on")); b.classList.add("on"); color = b.dataset.c; });
     const sw = box.querySelector("#aSwitch"); if (sw) sw.onclick = () => authSheet(mode === "signup" ? "login" : "signup");
+    // the app checks while you type that nobody already has this username
+    const pin = box.querySelector("#aPseudo"), av = box.querySelector("#aAvail");
+    let free = null, checkT = null, checkN = 0;
+    async function check() {
+      const p = pin.value.trim(), n = ++checkN;
+      if (p.length < 2) { free = null; av.textContent = p ? t("pseudoShort") : ""; av.className = "hint"; return null; }
+      const r = await sb.rpc("pseudo_available", { p });
+      if (n !== checkN) return free;
+      if (r.error) { free = null; av.textContent = ""; return null; }
+      free = !!r.data;
+      av.textContent = free ? t("pseudoFree") : t("pseudoUsed"); av.className = "hint " + (free ? "" : "err");
+      av.style.color = free ? "var(--tacc, #8fc63f)" : "";
+      return free;
+    }
+    if (pin) pin.oninput = () => { clearTimeout(checkT); free = null; box.querySelector("#aErr").textContent = ""; checkT = setTimeout(check, 350); };
     box.querySelector("#aGo").onclick = async () => {
       const go = box.querySelector("#aGo"), err = box.querySelector("#aErr");
       err.textContent = ""; go.disabled = true;
       try {
-        if (mode === "profile") {
-          const pseudo = box.querySelector("#aPseudo").value.trim();
-          if (pseudo.length < 2) throw new Error(t("pseudo") + " ?");
-          const { data } = await sb.auth.getSession();
-          await createProfile(data.session.user.id, pseudo, color);
-        } else {
-          const email = box.querySelector("#aEmail").value.trim(), pass = box.querySelector("#aPass").value;
+        if (mode === "profile" || mode === "signup") {
+          const pseudo = pin.value.trim();
+          if (pseudo.length < 2) throw new Error(t("pseudoShort"));
+          if ((await check()) === false) throw new Error(t("pseudoTaken"));
           if (mode === "signup") {
-            const pseudo = box.querySelector("#aPseudo").value.trim();
-            if (pseudo.length < 2) throw new Error(t("pseudo") + " ?");
-            const av = await sb.rpc("pseudo_available", { p: pseudo });
-            if (av.error) throw av.error;
-            if (!av.data) throw new Error(t("pseudoTaken"));
             localStorage.setItem("kamei-pending-pseudo", pseudo); localStorage.setItem("kamei-pending-color", color);
-            const r = await sb.auth.signUp({ email, password: pass });
-            if (r.error) throw r.error;
-            if (!r.data.session) throw new Error("Confirm email");
+            const r = await sb.auth.signInAnonymously();
+            if (r.error) throw (/anonymous/i.test(r.error.message || "") ? new Error(t("anonOff")) : r.error);
             await createProfile(r.data.user.id, pseudo, color);
           } else {
-            const r = await sb.auth.signInWithPassword({ email, password: pass });
-            if (r.error) throw r.error;
+            const { data } = await sb.auth.getSession();
+            await createProfile(data.session.user.id, pseudo, color);
           }
+        } else {
+          let id = box.querySelector("#aId").value.trim();
+          const pass = box.querySelector("#aPass").value;
+          if (!id.includes("@")) {
+            const r = await sb.rpc("login_email", { p: id });
+            if (r.error) throw r.error;
+            if (!r.data) throw new Error(t("noPass"));
+            id = r.data;
+          }
+          const r = await sb.auth.signInWithPassword({ email: id, password: pass });
+          if (r.error) throw (/Invalid login/i.test(r.error.message || "") && !box.querySelector("#aId").value.includes("@") ? new Error(t("badLoginP")) : r.error);
         }
         await loadMe(); setTimeout(pushSetup, 1500);
         if (!inGate) closeSheet();
@@ -184,6 +221,35 @@
       } catch (e) { err.textContent = errMsg(e); go.disabled = false; }
     };
   }
+  // a player who only has a username sets a password → can log in on another phone (username + password)
+  async function secureSheet() {
+    const s0 = (await sb.auth.getSession()).data.session;
+    const mail = (s0 && s0.user && s0.user.email) || "";
+    const real = mail && !mail.endsWith(PSEUDO_MAIL);
+    const has = mail.endsWith(PSEUDO_MAIL);
+    openSheet(`<h3>${t("secure")}</h3><p class="hint">${has ? t("secureHint2") : t("secureHint")}</p>
+      <input id="sP1" type="password" placeholder="${t("secureP1")}" autocomplete="new-password"><input id="sP2" type="password" placeholder="${t("secureP2")}" autocomplete="new-password">
+      <p class="hint err" id="sErr"></p><div class="btns"><button id="sBack">←</button><button class="ok" id="sGo">${t("save") || "OK"}</button></div>`);
+    document.getElementById("sBack").onclick = closeSheet;
+    document.getElementById("sGo").onclick = async () => {
+      const a = document.getElementById("sP1").value, b = document.getElementById("sP2").value, er = document.getElementById("sErr");
+      er.textContent = "";
+      if (a.length < 6) { er.textContent = t("weakPass"); return; }
+      if (a !== b) { er.textContent = t("secureDiff"); return; }
+      try {
+        if (real) { const r = await sb.auth.updateUser({ password: a }); if (r.error) throw r.error; }
+        else {
+          const r = await sb.functions.invoke("kamei-discord", { body: { action: "secure", password: a } });
+          if (r.error || !r.data || !r.data.ok) throw new Error((r.data && r.data.error) || (r.error && r.error.message) || "error");
+          try { await sb.auth.refreshSession(); } catch (e) {}
+        }
+        closeSheet(); toast(t("secureOk"), 5000);
+        if (window.kameiNav) window.kameiNav.rerender();
+      } catch (e) { er.textContent = errMsg(e); }
+    };
+  }
+  window.kameiSecureInfo = async () => { const se = sb && (await sb.auth.getSession()).data.session; const m = (se && se.user && se.user.email) || ""; return { anon: !m, hasPass: !!m }; };
+  window.kameiSecure = secureSheet;
   function authSheet(mode) {
     if (!sb) { toast(t("accountsOff"), 3500); return; }
     openSheet(""); authForm(document.getElementById("sheet"), mode, false);
@@ -197,13 +263,13 @@
     if (!g) { g = document.createElement("div"); g.id = "gate"; document.body.appendChild(g); }
     document.body.classList.add("gated");
     const th = window.kameiTheme;
-    const tabs = gateMode === "profile" ? "" : `<div class="gtabs"><button data-gm="signup" class="${gateMode === "signup" ? "on" : ""}">${t("signup")}</button><button data-gm="login" class="${gateMode === "login" ? "on" : ""}">${t("login")}</button></div>`;
+    const tabs = gateMode === "profile" ? "" : `<div class="gtabs"><button data-gm="signup" class="${gateMode === "signup" ? "on" : ""}">${t("tabNew")}</button><button data-gm="login" class="${gateMode === "login" ? "on" : ""}">${t("tabLogin")}</button></div>`;
     g.innerHTML = `<div class="gwrap">
       <div class="glang">${["fr", "nl", "en"].map((l) => `<button data-gl="${l}" class="${l === lang ? "on" : ""}">${l.toUpperCase()}</button>`).join("")}</div>
       <svg class="gart" viewBox="0 -70 240 526" aria-hidden="true"><use href="#kFull" width="240" height="456"/>${th ? `<use href="#${th.hat}" x="40" y="-78" width="170" height="136"/>` : ""}</svg>
       <div class="logo">KAMEI<span>.</span>PRODUCTIONS<small>GAME CONSOLE</small></div>
       <h2>${gateMode === "profile" ? t("finishProfile") : t("gateHello")}</h2>
-      <p class="hint">${msg ? esc(msg) : gateMode === "profile" ? t("finishHint") : (navigator.onLine ? t("gateSub") : t("gateOffline"))}</p>
+      <p class="hint">${msg ? esc(msg) : gateMode === "profile" ? t("finishHint") : (navigator.onLine ? (gateMode === "signup" ? t("newHint") : t("gateSub")) : t("gateOffline"))}</p>
       ${tabs}<div id="gateForm"></div></div>`;
     g.querySelectorAll("[data-gm]").forEach((b) => b.onclick = () => showGate(b.dataset.gm));
     g.querySelectorAll("[data-gl]").forEach((b) => b.onclick = () => { lang = b.dataset.gl; try { localStorage.setItem("kamei-lang", lang); } catch (e) {} applyLang(); showGate(); });
@@ -319,7 +385,7 @@
         const status = u.banned ? `<span class="badge ban">${t("banned")}</span>` : on && u.now_game ? `<span class="playing">${t("playing", esc(u.now_game), sysLabel(u.now_system))}</span>`
           : `<span>${on ? t("online") : t("seen", u.last_seen ? ago(new Date(u.last_seen).getTime()) : t("never"))}</span>`;
         return `<button class="friend" data-u="${u.id}">${avatarHTML(u, 42)}<span class="dot ${on ? "on" : ""}"></span>
-          <span class="fi"><b>${esc(u.pseudo)} ${u.is_admin ? `<span class="badge">${t("isAdmin")}</span>` : ""}</b><span>${esc(u.email || "")}</span>${status}</span></button>`;
+          <span class="fi"><b>${esc(u.pseudo)} ${u.is_admin ? `<span class="badge">${t("isAdmin")}</span>` : ""}</b><span>${esc(mailLabel(u.email))}</span>${status}</span></button>`;
       }).join("") || `<p class="hint">${t("noResult")}</p>`;
       document.querySelectorAll("[data-u]").forEach((b) => b.onclick = () => adminUser(users.find((u) => u.id === b.dataset.u)));
     };
@@ -341,7 +407,7 @@
     const list = r.data || [];
     const self = u.id === me.id;
     openSheet(`<div class="acc-head">${avatarHTML(u, 48)}<div><h3>${esc(u.pseudo)} ${u.is_admin ? `<span class="badge">${t("isAdmin")}</span>` : ""} ${u.banned ? `<span class="badge ban">${t("banned")}</span>` : ""}</h3>
-        <p class="hint" style="margin:0">${esc(u.email || "")}</p></div></div>
+        <p class="hint" style="margin:0">${esc(mailLabel(u.email))}</p></div></div>
       <p class="hint">${t("created", ago(new Date(u.created_at).getTime()))} · ${t("friendsN", Number(u.friends))} · ${t("gamesN", Number(u.games))} · ${t("minutes", Number(u.minutes || 0))}<br>
         ${t("myCode").replace(/^Ton |^Jouw |^Your /, "")} : <b class="code">${esc(u.friend_code)}</b></p>
       <button class="row" id="uRename">${t("renameUser")}</button>
