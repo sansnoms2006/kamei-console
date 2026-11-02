@@ -1,10 +1,10 @@
 /* Kamei Game Console — admin tools: features on/off, dashboard, announcement, reports */
 (function () {
-  const FEATS = ["events", "tv", "chat", "general", "sessions", "requests", "catalogue", "trades", "netplay", "watch", "profile", "pet"];
+  const FEATS = ["events", "tv", "radio", "chat", "general", "sessions", "requests", "catalogue", "trades", "netplay", "watch", "profile", "pet"];
   Object.assign(I18N.fr, {
     adFcm: "🔔 Notifications instantanées", adFcmHint: "Pour l'appli Android v10 : les notifications arrivent en quelques secondes. Firebase → Paramètres du projet → ton appli Android → télécharge google-services.json, ouvre-le et colle tout son contenu ici.", adFcmPh: "Colle ici le contenu de google-services.json", adFcmOn: (p) => `✅ Activé (projet ${p})`, adFcmOff: "Pas encore activé", adFcmBad: "Ce n'est pas un google-services.json valide (il doit contenir com.kamei.gameconsole)", adFcmSave: "Enregistrer", adFcmDel: "Désactiver", adFeatures: "🎛️ Fonctions", adStats: "📊 Tableau de bord", adAnnounce: "📢 Annonce", adReports: "🚩 Signalements",
     adFeatHint: "Une fonction désactivée disparaît pour tout le monde… sauf pour toi (tu peux la préparer tranquille).", adSaved: "Enregistré ✅",
-    adF: { events: "🏆 Kamei Events", tv: "📺 Kamei TV", chat: "💬 Chat entre amis", general: "🌍 Salon Général", sessions: "🕹️ Sessions", requests: "📨 Demandes de jeux", catalogue: "📚 Catalogue",
+    adF: { events: "🏆 Kamei Events", tv: "📺 Kamei TV", radio: "🎵 Kamei Radio", chat: "💬 Chat entre amis", general: "🌍 Salon Général", sessions: "🕹️ Sessions", requests: "📨 Demandes de jeux", catalogue: "📚 Catalogue",
            trades: "🔁 Échanges Pokémon", netplay: "👥 Jouer ensemble", watch: "📺 Regarder un ami", profile: "🏅 Profils & badges", pet: "🦎 Kamei Tamagotchi" },
     adS: { users: "Joueurs", new7: "Nouveaux (7 j)", online: "En ligne", today: "Actifs aujourd'hui", playing: "En train de jouer", sessions7: "Parties (7 j)", minutes7: "Temps de jeu (7 j)",
            messages7: "Messages (7 j)", trades7: "Échanges (7 j)", requests: "Demandes en attente", reports: "Signalements ouverts" },
@@ -16,7 +16,7 @@
   Object.assign(I18N.nl, {
     adFcm: "🔔 Directe meldingen", adFcmHint: "Voor de Android-app v10: meldingen komen binnen enkele seconden. Firebase → Projectinstellingen → je Android-app → download google-services.json, open het en plak de hele inhoud hier.", adFcmPh: "Plak hier de inhoud van google-services.json", adFcmOn: (p) => `✅ Actief (project ${p})`, adFcmOff: "Nog niet actief", adFcmBad: "Dit is geen geldige google-services.json (com.kamei.gameconsole ontbreekt)", adFcmSave: "Opslaan", adFcmDel: "Uitschakelen", adFeatures: "🎛️ Functies", adStats: "📊 Dashboard", adAnnounce: "📢 Aankondiging", adReports: "🚩 Meldingen",
     adFeatHint: "Een uitgeschakelde functie verdwijnt voor iedereen… behalve voor jou.", adSaved: "Opgeslagen ✅",
-    adF: { events: "🏆 Kamei Events", tv: "📺 Kamei TV", chat: "💬 Chat met vrienden", general: "🌍 Algemene chat", sessions: "🕹️ Sessies", requests: "📨 Spelaanvragen", catalogue: "📚 Catalogus",
+    adF: { events: "🏆 Kamei Events", tv: "📺 Kamei TV", radio: "🎵 Kamei Radio", chat: "💬 Chat met vrienden", general: "🌍 Algemene chat", sessions: "🕹️ Sessies", requests: "📨 Spelaanvragen", catalogue: "📚 Catalogus",
            trades: "🔁 Pokémon ruilen", netplay: "👥 Samen spelen", watch: "📺 Meekijken", profile: "🏅 Profielen & badges", pet: "🦎 Kamei Tamagotchi" },
     adS: { users: "Spelers", new7: "Nieuw (7 d)", online: "Online", today: "Actief vandaag", playing: "Aan het spelen", sessions7: "Sessies (7 d)", minutes7: "Speeltijd (7 d)",
            messages7: "Berichten (7 d)", trades7: "Ruilen (7 d)", requests: "Open aanvragen", reports: "Open meldingen" },
@@ -28,7 +28,7 @@
   Object.assign(I18N.en, {
     adFcm: "🔔 Instant notifications", adFcmHint: "For the Android app v10: notifications arrive within seconds. Firebase → Project settings → your Android app → download google-services.json, open it and paste its whole content here.", adFcmPh: "Paste the content of google-services.json here", adFcmOn: (p) => `✅ On (project ${p})`, adFcmOff: "Not set up yet", adFcmBad: "This isn't a valid google-services.json (it must contain com.kamei.gameconsole)", adFcmSave: "Save", adFcmDel: "Turn off", adFeatures: "🎛️ Features", adStats: "📊 Dashboard", adAnnounce: "📢 Announcement", adReports: "🚩 Reports",
     adFeatHint: "A disabled feature disappears for everyone… except you (so you can prepare it).", adSaved: "Saved ✅",
-    adF: { events: "🏆 Kamei Events", tv: "📺 Kamei TV", chat: "💬 Chat with friends", general: "🌍 General room", sessions: "🕹️ Sessions", requests: "📨 Game requests", catalogue: "📚 Catalogue",
+    adF: { events: "🏆 Kamei Events", tv: "📺 Kamei TV", radio: "🎵 Kamei Radio", chat: "💬 Chat with friends", general: "🌍 General room", sessions: "🕹️ Sessions", requests: "📨 Game requests", catalogue: "📚 Catalogue",
            trades: "🔁 Pokémon trades", netplay: "👥 Play together", watch: "📺 Watch a friend", profile: "🏅 Profiles & badges", pet: "🦎 Kamei Tamagotchi" },
     adS: { users: "Players", new7: "New (7 d)", online: "Online", today: "Active today", playing: "Playing now", sessions7: "Sessions (7 d)", minutes7: "Play time (7 d)",
            messages7: "Messages (7 d)", trades7: "Trades (7 d)", requests: "Pending requests", reports: "Open reports" },

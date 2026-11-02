@@ -75,7 +75,7 @@
   };
   const icon = (k) => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
   const tabs = [["consoles", "navPlay"], ["discover", "navDiscover"], ["events", "navEvents"], ["social", "navSocial"], ["me", "navMe"]];
-  const SUBS = { discover: [["catalogue", "navCat"], ["requests", "navRequests"], ["tv", "navTV"]], social: [["chat", "navChat"], ["friends", "navFriends"], ["sessions", "navSessions"]] };
+  const SUBS = { discover: [["catalogue", "navCat"], ["requests", "navRequests"], ["tv", "navTV"], ["radio", "navRadio"]], social: [["chat", "navChat"], ["friends", "navFriends"], ["sessions", "navSessions"]] };
   const parentOf = (k) => Object.keys(SUBS).find((p) => SUBS[p].some(([s]) => s === k));
   const nav = document.createElement("nav"); nav.className = "bnav"; nav.setAttribute("aria-label", "Navigation");
   document.body.appendChild(nav);
@@ -156,6 +156,7 @@
     if (k === "sessions") return renderSessions(v);
     if (k === "requests" && window.kameiRequests) return window.kameiRequests.render(v);
     if (k === "tv" && window.kameiTV) return window.kameiTV.render(v);
+    if (k === "radio" && window.kameiRadio) return window.kameiRadio.render(v);
   }
 
   /* ---------- Chat: list of conversations ---------- */

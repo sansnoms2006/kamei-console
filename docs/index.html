@@ -1290,6 +1290,7 @@ async function play(id, force, resume) {
   if (resume !== undefined) play.resume = resume === true ? "auto" : (resume || false); else if (!force) play.resume = false;
   const g = await getGame(id);
   if (!g) return;
+  if (window.kameiRadio) window.kameiRadio.pause();
   if (g.system === "3ds") { if (window.kamei3ds) window.kamei3ds.launch(g); return; }
   const sy = SYSTEMS[g.system];
   if (!force && sy.bios && sy.bios.need && !(await getBios(g.system))) return biosSheet(g.system, g.id);
@@ -1416,6 +1417,7 @@ window.addEventListener("online", scrapeMissing);
 <script src="tour.js"></script>
 <script src="backup.js"></script>
 <script src="gh.js"></script>
+<script src="radio.js"></script>
 <script src="catalogue.js"></script>
 <script src="update.js"></script>
 </body>
