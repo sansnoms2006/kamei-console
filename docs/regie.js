@@ -11,21 +11,21 @@
   const lang = (() => { try { return localStorage.getItem("kamei-lang") || "fr"; } catch (e) { return "fr"; } })();
   const L = {
     fr: { title: "Régie", light: "⚡ Mode léger", lightT: "Moins de calcul pour ton PC : petites images dans la régie, l'image HD seulement dans OBS", search: "🔎 Pseudo → à l'antenne (Entrée)", all: "Tous", running: "En course", done: "Fini", top3: "Top 3", badges: "Badges", follow: "Suivre le leader", duel: "Duel",
-      go: "▶ Départ 3-2-1", obs: "📺 Sortie OBS", preview: "APERÇU", air: "À L'ANTENNE", ranking: "Classement", noAdmin: "La régie est réservée à l'admin. Connecte-toi d'abord dans Kamei Console (version web), sur ce PC.",
+      go: "▶ Départ 3-2-1", obs: "📺 Sortie OBS", preview: "APERÇU", air: "À L'ANTENNE", ranking: "Classement", noAdmin: "La régie est réservée à l'admin et aux responsables Kamei TV / événements. Connecte-toi d'abord dans Kamei Console (version web), sur ce PC.",
       pick: "Choisis le tournoi", none: "Aucun tournoi en cours ou à venir.", offline: "pas en jeu", wait: "en attente", dnf: "abandon",
       goQ: (n, s) => `Départ dans 12 secondes pour ${n} joueur${n > 1 ? "s" : ""}${s ? " (série sélectionnée)" : " (tous les présents)"} ?`, goOk: "Départ lancé ! 3-2-1…",
       obsHint: "Dans OBS : Sources → + → Navigateur → colle ce lien (largeur 1920, hauteur 1080). Garde ce lien pour toi.", copy: "Copier", copied: "Copié ✅", close: "Fermer",
       reset: "↺ Relancer son chrono", resetQ: (p) => `Effacer le chrono de ${p} ? Il pourra repartir au prochain départ.`, help: "Clic : aperçu · Double-clic : antenne · 1-8 : aperçu · Espace : aperçu → antenne · Ctrl+clic : série · ←/→ : pages · Échap : vider l'antenne",
       standby: "Kamei Events", series: (n) => `Série : ${n}`, clearSel: "Vider", empty: "Personne d'inscrit pour l'instant.", romBad: "⚠️ version différente", screen: "🎥 écran partagé" },
     nl: { title: "Regie", light: "⚡ Lichte modus", lightT: "Minder werk voor je pc: kleine beelden in de regie, HD alleen in OBS", search: "🔎 Pseudo → in beeld (Enter)", all: "Alle", running: "Bezig", done: "Klaar", top3: "Top 3", badges: "Badges", follow: "Leider volgen", duel: "Duel",
-      go: "▶ Start 3-2-1", obs: "📺 OBS-uitgang", preview: "VOORBEELD", air: "IN BEELD", ranking: "Klassement", noAdmin: "De regie is voor de admin. Log eerst in bij Kamei Console (webversie) op deze pc.",
+      go: "▶ Start 3-2-1", obs: "📺 OBS-uitgang", preview: "VOORBEELD", air: "IN BEELD", ranking: "Klassement", noAdmin: "De regie is voor de admin en de verantwoordelijken Kamei TV / evenementen. Log eerst in bij Kamei Console (webversie) op deze pc.",
       pick: "Kies het toernooi", none: "Geen lopend of komend toernooi.", offline: "niet in spel", wait: "wacht", dnf: "opgegeven",
       goQ: (n, s) => `Start over 12 seconden voor ${n} speler${n > 1 ? "s" : ""}${s ? " (gekozen reeks)" : " (alle aanwezigen)"}?`, goOk: "Start gegeven! 3-2-1…",
       obsHint: "In OBS: Bronnen → + → Browser → plak deze link (breedte 1920, hoogte 1080). Hou deze link voor jezelf.", copy: "Kopiëren", copied: "Gekopieerd ✅", close: "Sluiten",
       reset: "↺ Chrono herstarten", resetQ: (p) => `Chrono van ${p} wissen?`, help: "Klik: voorbeeld · Dubbelklik: in beeld · 1-8: voorbeeld · Spatie: voorbeeld → beeld · Ctrl+klik: reeks · ←/→: pagina's · Esc: beeld leegmaken",
       standby: "Kamei Events", series: (n) => `Reeks: ${n}`, clearSel: "Leegmaken", empty: "Nog niemand ingeschreven.", romBad: "⚠️ andere versie", screen: "🎥 scherm gedeeld" },
     en: { title: "Control room", light: "⚡ Light mode", lightT: "Less work for your PC: small pictures in the control room, HD only in OBS", search: "🔎 Player name → on air (Enter)", all: "All", running: "Running", done: "Done", top3: "Top 3", badges: "Badges", follow: "Follow the leader", duel: "Duel",
-      go: "▶ Start 3-2-1", obs: "📺 OBS output", preview: "PREVIEW", air: "ON AIR", ranking: "Ranking", noAdmin: "The control room is for the admin. Log in to Kamei Console (web version) on this PC first.",
+      go: "▶ Start 3-2-1", obs: "📺 OBS output", preview: "PREVIEW", air: "ON AIR", ranking: "Ranking", noAdmin: "The control room is for the admin and the Kamei TV / events managers. Log in to Kamei Console (web version) on this PC first.",
       pick: "Pick the tournament", none: "No live or upcoming tournament.", offline: "not in game", wait: "waiting", dnf: "gave up",
       goQ: (n, s) => `Start in 12 seconds for ${n} player${n > 1 ? "s" : ""}${s ? " (selected heat)" : " (everyone present)"}?`, goOk: "Start launched! 3-2-1…",
       obsHint: "In OBS: Sources → + → Browser → paste this link (width 1920, height 1080). Keep this link to yourself.", copy: "Copy", copied: "Copied ✅", close: "Close",
@@ -335,8 +335,9 @@
     if (MODE === "regie") {
       const s = await sb.auth.getSession();
       const uid = s.data && s.data.session && s.data.session.user && s.data.session.user.id;
-      const prof = uid ? await sb.from("profiles").select("is_admin").eq("id", uid).maybeSingle() : null;
-      if (!prof || !prof.data || !prof.data.is_admin) { document.body.innerHTML = `<div class="pick"><b class="logo">KAMEI<i>.</i>RÉGIE</b><p>${esc(X.noAdmin)}</p><a href="index.html">Kamei Console →</a></div>`; return; }
+      const prof = uid ? await sb.from("profiles").select("is_admin,roles,banned").eq("id", uid).maybeSingle() : null;
+      const pd = prof && prof.data, ok = pd && !pd.banned && (pd.is_admin || (pd.roles || []).some((r) => r === "tv" || r === "events"));
+      if (!ok) { document.body.innerHTML = `<div class="pick"><b class="logo">KAMEI<i>.</i>RÉGIE</b><p>${esc(X.noAdmin)}</p><a href="index.html">Kamei Console →</a></div>`; return; }
       if (!EID) return pickEvent();
       const k = await sb.rpc("event_rx_key", { eid: EID });
       if (k.error) { document.body.textContent = k.error.message; return; }

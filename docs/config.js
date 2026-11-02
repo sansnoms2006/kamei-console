@@ -8,8 +8,12 @@
   let cfg = {}; try { cfg = JSON.parse(localStorage.getItem("kamei-cfg") || "{}"); } catch (e) {}
   const DEFAULT_OFF = ["tv", "events", "radio"];   // features hidden until the admin turns them on
 
+  // jobs the admin hands out: music, requests, events, tv (+ régie)
+  const ROLE_OF = { radio: "music", requests: "requests", events: "events", tv: "tv" };
+  window.kameiCan = (role) => { const u = me(); return !!(u && !u.banned && (u.is_admin || (Array.isArray(u.roles) && u.roles.includes(role)))); };
   window.kameiFeature = (k) => {
     if (me() && me().is_admin) return true;
+    if (ROLE_OF[k] && window.kameiCan(ROLE_OF[k])) return true;
     const f = cfg.features || {};
     if (k in f) return f[k] !== false;
     return !DEFAULT_OFF.includes(k);

@@ -17,7 +17,7 @@
     finishProfile: "Choisis ton pseudo", finishHint: "Il ne manque plus que ton pseudo et ta couleur.", go: "C'est parti !", retry: "Réessayer",
     admin: "🛡️ Admin", adminTitle: "Gestion des comptes", accounts: "comptes", onlineNow: "en ligne", playTime: "de jeu",
     clearPhoto: "🖼️ Retirer sa photo de profil", searchUser: "Rechercher un joueur…", banned: "Banni", isAdmin: "Admin", created: (a) => `Inscrit ${a}`,
-    renameUser: "Renommer", ban: "Bannir", unban: "Débannir", makeAdmin: "Rendre admin", removeAdmin: "Retirer admin",
+    renameUser: "Renommer", ban: "Bannir", unban: "Débannir", makeAdmin: "Rendre admin", roles: "🧑‍💼 Postes", rolesHint: "Ce joueur gère seulement ce que tu coches. Il ne devient pas admin.", roleNames: { music: "🎵 Musique (Kamei Radio)", requests: "📨 Demandes de jeux", events: "🏆 Événements", tv: "📺 Kamei TV + régie" }, myRoles: "Mes postes", removeAdmin: "Retirer admin",
     newCode: "Nouveau code ami", deleteUser: "Supprimer le compte", deleteUserQ: (n) => `Supprimer définitivement le compte de ${n} ?`,
     deleteUserHint: "Son profil, ses amis et son historique seront effacés. Ça ne peut pas être annulé.", done: "C'est fait",
     youBanned: "Ce compte a été banni", notYourself: "Tu ne peux pas faire ça sur ton propre compte", friendsN: (n) => `${n} ami${n > 1 ? "s" : ""}`, gamesN: (n) => `${n} partie${n > 1 ? "s" : ""}`,
@@ -45,7 +45,7 @@
     finishProfile: "Kies je gebruikersnaam", finishHint: "Alleen je naam en kleur ontbreken nog.", go: "Let's go!", retry: "Opnieuw proberen",
     admin: "🛡️ Admin", adminTitle: "Accounts beheren", accounts: "accounts", onlineNow: "online", playTime: "speeltijd",
     clearPhoto: "🖼️ Profielfoto verwijderen", searchUser: "Zoek een speler…", banned: "Verbannen", isAdmin: "Admin", created: (a) => `Ingeschreven ${a}`,
-    renameUser: "Naam wijzigen", ban: "Verbannen", unban: "Verbanning opheffen", makeAdmin: "Admin maken", removeAdmin: "Admin afnemen",
+    renameUser: "Naam wijzigen", ban: "Verbannen", unban: "Verbanning opheffen", makeAdmin: "Admin maken", roles: "🧑‍💼 Functies", rolesHint: "Deze speler beheert alleen wat je aanvinkt. Hij wordt geen admin.", roleNames: { music: "🎵 Muziek (Kamei Radio)", requests: "📨 Spelaanvragen", events: "🏆 Evenementen", tv: "📺 Kamei TV + regie" }, myRoles: "Mijn functies", removeAdmin: "Admin afnemen",
     newCode: "Nieuwe vriendencode", deleteUser: "Account verwijderen", deleteUserQ: (n) => `Account van ${n} definitief verwijderen?`,
     deleteUserHint: "Profiel, vrienden en geschiedenis worden gewist. Dit kan niet ongedaan worden.", done: "Gedaan",
     youBanned: "Dit account is verbannen", notYourself: "Dat kan niet op je eigen account", friendsN: (n) => `${n} vriend${n > 1 ? "en" : ""}`, gamesN: (n) => `${n} spel${n > 1 ? "len" : ""}`,
@@ -73,7 +73,7 @@
     finishProfile: "Pick your username", finishHint: "Only your username and color are missing.", go: "Let's go!", retry: "Retry",
     admin: "🛡️ Admin", adminTitle: "Manage accounts", accounts: "accounts", onlineNow: "online", playTime: "played",
     clearPhoto: "🖼️ Remove profile photo", searchUser: "Search a player…", banned: "Banned", isAdmin: "Admin", created: (a) => `Joined ${a}`,
-    renameUser: "Rename", ban: "Ban", unban: "Unban", makeAdmin: "Make admin", removeAdmin: "Remove admin",
+    renameUser: "Rename", ban: "Ban", unban: "Unban", makeAdmin: "Make admin", roles: "🧑‍💼 Jobs", rolesHint: "This player only manages what you tick. They do not become admin.", roleNames: { music: "🎵 Music (Kamei Radio)", requests: "📨 Game requests", events: "🏆 Events", tv: "📺 Kamei TV + control room" }, myRoles: "My jobs", removeAdmin: "Remove admin",
     newCode: "New friend code", deleteUser: "Delete account", deleteUserQ: (n) => `Permanently delete ${n}'s account?`,
     deleteUserHint: "Profile, friends and history will be erased. This can't be undone.", done: "Done",
     youBanned: "This account has been banned", notYourself: "You can't do that to your own account", friendsN: (n) => `${n} friend${n > 1 ? "s" : ""}`, gamesN: (n) => `${n} game${n > 1 ? "s" : ""}`,
@@ -372,6 +372,8 @@
 
 
   /* ---------- Admin ---------- */
+const ROLE_ICON = { music: "🎵", requests: "📨", events: "🏆", tv: "📺" };
+  const roleIcons = (u) => (u.roles || []).map((r) => ROLE_ICON[r] || "").join("");
   let adminQuery = "";
   async function adminSheet() {
     openSheet(`<h3>${t("adminTitle")}</h3><p class="hint">…</p>`);
@@ -388,7 +390,7 @@
         const status = u.banned ? `<span class="badge ban">${t("banned")}</span>` : on && u.now_game ? `<span class="playing">${t("playing", esc(u.now_game), sysLabel(u.now_system))}</span>`
           : `<span>${on ? t("online") : t("seen", u.last_seen ? ago(new Date(u.last_seen).getTime()) : t("never"))}</span>`;
         return `<button class="friend" data-u="${u.id}">${avatarHTML(u, 42)}<span class="dot ${on ? "on" : ""}"></span>
-          <span class="fi"><b>${esc(u.pseudo)} ${u.is_admin ? `<span class="badge">${t("isAdmin")}</span>` : ""}</b><span>${esc(mailLabel(u.email))}</span>${status}</span></button>`;
+          <span class="fi"><b>${esc(u.pseudo)} ${u.is_admin ? `<span class="badge">${t("isAdmin")}</span>` : ""}${!u.is_admin && (u.roles || []).length ? ` <span class="badge" style="background:rgba(255,255,255,.1)">${roleIcons(u)}</span>` : ""}</b><span>${esc(mailLabel(u.email))}</span>${status}</span></button>`;
       }).join("") || `<p class="hint">${t("noResult")}</p>`;
       document.querySelectorAll("[data-u]").forEach((b) => b.onclick = () => adminUser(users.find((u) => u.id === b.dataset.u)));
     };
@@ -415,6 +417,9 @@
         ${t("myCode").replace(/^Ton |^Jouw |^Your /, "")} : <b class="code">${esc(u.friend_code)}</b></p>
       <button class="row" id="uRename">${t("renameUser")}</button>
       <button class="row" id="uCode">${t("newCode")}</button>
+      ${self || u.is_admin ? "" : `<h3 style="margin:14px 0 4px">${t("roles")}</h3><p class="hint" style="margin:0 0 6px">${t("rolesHint")}</p>
+        ${Object.entries(t("roleNames")).map(([k, lb]) => `<label class="row" style="display:flex;gap:10px;align-items:center"><span style="flex:1">${lb}</span>
+          <input type="checkbox" data-role="${k}" ${(u.roles || []).includes(k) ? "checked" : ""} style="width:22px;height:22px;margin:0;accent-color:var(--tacc,#8fc63f)"></label>`).join("")}`}
       ${self ? "" : `<button class="row" id="uAdmin">${u.is_admin ? t("removeAdmin") : t("makeAdmin")}</button>
       <button class="row" id="uPhoto">${t("clearPhoto")}</button>
       <button class="row danger" id="uBan">${u.banned ? t("unban") : t("ban")}</button>
@@ -436,6 +441,12 @@
       };
     };
     document.getElementById("uCode").onclick = async () => { const res = await sb.rpc("admin_new_code", { uid: u.id }); if (res.error) return toast(errMsg(res.error)); u.friend_code = res.data; if (self) me.friend_code = res.data; toast(t("done")); adminUser(u); };
+    document.querySelectorAll("#sheet input[data-role]").forEach((x) => x.onchange = async () => {
+      const want = [...document.querySelectorAll("#sheet input[data-role]")].filter((y) => y.checked).map((y) => y.dataset.role);
+      const res = await sb.rpc("admin_set_roles", { uid: u.id, value: want });
+      if (res.error) { x.checked = !x.checked; return toast(errMsg(res.error), 3000); }
+      u.roles = res.data || want; toast(t("done"));
+    });
     if (!self) {
       document.getElementById("uAdmin").onclick = async () => { if (await act("admin_set_admin", { uid: u.id, value: !u.is_admin })) { u.is_admin = !u.is_admin; adminUser(u); } };
       document.getElementById("uBan").onclick = async () => { if (await act("admin_set_banned", { uid: u.id, value: !u.banned })) { u.banned = !u.banned; adminUser(u); } };

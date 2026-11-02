@@ -87,7 +87,8 @@
     v.innerHTML = `<div class="mhead"><div class="mav">${window.kameiAvatar(u, 72)}<button class="cam" id="mePhoto" aria-label="${t("mePhoto")}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button></div>
         <div style="min-width:0"><p class="mname">${esc(u.pseudo)} ${u.is_admin ? `<span class="badge">Admin</span>` : ""}</p>
-        <div class="mcode"><span>${esc(u.friend_code || "")}</span><button class="mini" id="meCopy">${t("meCopy")}</button></div></div></div>
+        <div class="mcode"><span>${esc(u.friend_code || "")}</span><button class="mini" id="meCopy">${t("meCopy")}</button></div>
+        ${!u.is_admin && (u.roles || []).length && t("roleNames") ? `<p class="hint" style="margin:6px 0 0;font-size:12.5px">${t("myRoles")} : ${u.roles.map((r) => esc(t("roleNames")[r] || r)).join(" · ")}</p>` : ""}</div></div>
       <div id="mePetBox"></div>
       ${grp(t("meProfile"), [
         window.kameiEvents && F("events") ? row("mePalm", t("navPalm")) : "",

@@ -57,7 +57,7 @@
 
   async function render(v) {
     if (!sb || !me()) return;
-    const admin = !!me().is_admin;
+    const admin = window.kameiCan("requests");
     if (!v.querySelector(".rqform")) {
       v.innerHTML = `<h2>${t("rqTitle")}</h2><p class="hint">${t("rqHint")}</p>
         <div class="rqform"><input id="rqT" maxlength="80" placeholder="${t("rqName")}">
@@ -82,7 +82,7 @@
     list(v);
   }
   async function list(v) {
-    const admin = !!me().is_admin;
+    const admin = window.kameiCan("requests");
     const r = await sb.from("game_requests").select("*,profiles(pseudo)").order("created_at", { ascending: false }).limit(100);
     const box = v.querySelector("#rqList"); if (!box) return;
     if (r.error) { box.innerHTML = `<p class="hint">${t("rqOff")}</p>`; return; }
@@ -128,9 +128,9 @@
         window.kameiNotify("📨 " + x.title, t("rqNotif")[x.status], () => window.kameiNav && window.kameiNav.go("requests"));
       }
       known = known || {}; remember(mine);
-      newCount = me().is_admin ? r.data.filter((x) => x.status === "new").length : 0;
+      newCount = window.kameiCan("requests") ? r.data.filter((x) => x.status === "new").length : 0;
       // admin: a player just sent a request
-      if (me().is_admin) {
+      if (window.kameiCan("requests")) {
         let seenId = 0; try { seenId = +localStorage.getItem("kamei-req-admin") || 0; } catch (e) {}
         const top = r.data.reduce((a, x) => Math.max(a, x.id), 0);
         const fresh = r.data.filter((x) => x.id > seenId && x.status === "new" && x.user_id !== me().id);

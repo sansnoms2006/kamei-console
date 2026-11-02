@@ -4,19 +4,19 @@
     navTV: "TV", tvTitle: "Kamei TV", tvLive: "🔴 EN DIRECT", tvOff: "⚫ Hors ligne", tvSoon: "Kamei TV arrive bientôt ! Les lives de Kamei Production seront ici, en direct dans l'appli.",
     tvNext: (x) => `📅 Prochain live : ${x}`, tvChat: "💬 Chat du live", tvOpen: "↗ Ouvrir sur Twitch", tvLiveNow: "Kamei est en live ! Viens regarder 🔴",
     tvAdmin: "🛠️ Réglages Kamei TV (toi seul)", tvChannel: "Nom de ta chaîne Twitch (ex. kameiprod)", tvNextPh: "Prochain live (ex. vendredi 20h)", tvTitlePh: "Titre du live (optionnel)",
-    tvSave: "Enregistrer", tvGoLive: "🔴 Je lance mon live", tvStop: "⏹️ Fin du live", tvStyle: "Rendu de la TV", tvStyles: { crt: "📺 TV bombée (rétro)", flat: "🖥️ TV écran plat", none: "▭ Sans cadre" }, tvOffScreen: "Pas de live pour l'instant", tvSaved: "Kamei TV mis à jour", tvNotified: "C'est parti ! Tout le monde est prévenu 🔴",
+    tvSave: "Enregistrer", tvRegie: "Ouvrir la régie (tournois)", tvGoLive: "🔴 Je lance mon live", tvStop: "⏹️ Fin du live", tvStyle: "Rendu de la TV", tvStyles: { crt: "📺 TV bombée (rétro)", flat: "🖥️ TV écran plat", none: "▭ Sans cadre" }, tvOffScreen: "Pas de live pour l'instant", tvSaved: "Kamei TV mis à jour", tvNotified: "C'est parti ! Tout le monde est prévenu 🔴",
   });
   Object.assign(I18N.nl, {
     navTV: "TV", tvTitle: "Kamei TV", tvLive: "🔴 LIVE", tvOff: "⚫ Offline", tvSoon: "Kamei TV komt eraan! De livestreams van Kamei Production komen hier, live in de app.",
     tvNext: (x) => `📅 Volgende live: ${x}`, tvChat: "💬 Livechat", tvOpen: "↗ Openen op Twitch", tvLiveNow: "Kamei is live! Kom kijken 🔴",
     tvAdmin: "🛠️ Kamei TV-instellingen (alleen jij)", tvChannel: "Naam van je Twitch-kanaal (bv. kameiprod)", tvNextPh: "Volgende live (bv. vrijdag 20u)", tvTitlePh: "Titel van de live (optioneel)",
-    tvSave: "Opslaan", tvGoLive: "🔴 Ik ga live", tvStop: "⏹️ Live stoppen", tvStyle: "Weergave van de tv", tvStyles: { crt: "📺 Bolle tv (retro)", flat: "🖥️ Platte tv", none: "▭ Zonder kader" }, tvOffScreen: "Nu geen live", tvSaved: "Kamei TV bijgewerkt", tvNotified: "Daar gaan we! Iedereen is verwittigd 🔴",
+    tvSave: "Opslaan", tvRegie: "Regie openen (toernooien)", tvGoLive: "🔴 Ik ga live", tvStop: "⏹️ Live stoppen", tvStyle: "Weergave van de tv", tvStyles: { crt: "📺 Bolle tv (retro)", flat: "🖥️ Platte tv", none: "▭ Zonder kader" }, tvOffScreen: "Nu geen live", tvSaved: "Kamei TV bijgewerkt", tvNotified: "Daar gaan we! Iedereen is verwittigd 🔴",
   });
   Object.assign(I18N.en, {
     navTV: "TV", tvTitle: "Kamei TV", tvLive: "🔴 LIVE", tvOff: "⚫ Offline", tvSoon: "Kamei TV is coming soon! Kamei Production's lives will be here, live in the app.",
     tvNext: (x) => `📅 Next live: ${x}`, tvChat: "💬 Live chat", tvOpen: "↗ Open on Twitch", tvLiveNow: "Kamei is live! Come watch 🔴",
     tvAdmin: "🛠️ Kamei TV settings (only you)", tvChannel: "Your Twitch channel name (e.g. kameiprod)", tvNextPh: "Next live (e.g. Friday 8pm)", tvTitlePh: "Live title (optional)",
-    tvSave: "Save", tvGoLive: "🔴 I'm going live", tvStop: "⏹️ End the live", tvStyle: "TV look", tvStyles: { crt: "📺 Curved CRT TV (retro)", flat: "🖥️ Flat-screen TV", none: "▭ No frame" }, tvOffScreen: "No live right now", tvSaved: "Kamei TV updated", tvNotified: "Here we go! Everyone has been told 🔴",
+    tvSave: "Save", tvRegie: "Open the control room (tournaments)", tvGoLive: "🔴 I'm going live", tvStop: "⏹️ End the live", tvStyle: "TV look", tvStyles: { crt: "📺 Curved CRT TV (retro)", flat: "🖥️ Flat-screen TV", none: "▭ No frame" }, tvOffScreen: "No live right now", tvSaved: "Kamei TV updated", tvNotified: "Here we go! Everyone has been told 🔴",
   });
   const sb = window.kameiSB, me = () => window.kameiMe && window.kameiMe();
   const st = document.createElement("style");
@@ -107,25 +107,26 @@
       <div class="tvhead"><span class="tvchip ${live ? "live" : ""}">${live ? t("tvLive") : t("tvOff")}</span>${live && c.tv_title ? `<b>${esc(c.tv_title)}</b>` : ""}</div>
       ${!live && c.tv_next ? `<p class="hint" style="font-size:14px">${esc(t("tvNext", c.tv_next))}</p>` : ""}
       ${body}
-      ${me() && me().is_admin ? `<div class="tvadm"><h4 style="margin-top:0">${t("tvAdmin")}</h4>
+      ${window.kameiCan && window.kameiCan("tv") ? `<div class="tvadm"><h4 style="margin-top:0">${t("tvAdmin")}</h4>
         <input id="tvCh" placeholder="${t("tvChannel")}" value="${esc(c.twitch || "")}" autocapitalize="none">
         <input id="tvNx" placeholder="${t("tvNextPh")}" value="${esc(c.tv_next || "")}" maxlength="80">
         <input id="tvTi" placeholder="${t("tvTitlePh")}" value="${esc(c.tv_title || "")}" maxlength="100">
         <label class="hint" style="display:block;margin:2px 0 4px">${t("tvStyle")}</label><select id="tvSt">${Object.entries(t("tvStyles")).map(([k, lb]) => `<option value="${k}" ${k === style ? "selected" : ""}>${lb}</option>`).join("")}</select>
-        <div class="tvbtns"><button id="tvSave">${t("tvSave")}</button>${live ? `<button id="tvStop">${t("tvStop")}</button>` : `<button class="go" id="tvGo">${t("tvGoLive")}</button>`}</div></div>` : ""}`;
+        <div class="tvbtns"><button id="tvSave">${t("tvSave")}</button>${live ? `<button id="tvStop">${t("tvStop")}</button>` : `<button class="go" id="tvGo">${t("tvGoLive")}</button>`}</div>
+        <button class="row" id="tvRegie" style="margin-top:8px">🎛️ ${t("tvRegie")}</button></div>` : ""}`;
     const $v = (id) => v.querySelector("#" + id);
     if ($v("tvChatB")) $v("tvChatB").onclick = () => { chatOn = !chatOn; render(v); };
     if ($v("tvOpenB")) $v("tvOpenB").onclick = () => openUrl("https://twitch.tv/" + tw);
     const save = async (extra) => {
-      const patch = Object.assign({ twitch: $v("tvCh").value.trim().replace(/^https?:\/\/(www\.)?twitch\.tv\//i, "").replace(/\/.*$/, "") || null,
-        tv_next: $v("tvNx").value.trim() || null, tv_title: $v("tvTi").value.trim() || null,
-        features: Object.assign({}, c.features || {}, { tv_style: $v("tvSt").value }) }, extra || {});
-      const r = await sb.from("app_config").update(patch).eq("id", 1);
+      const patch = Object.assign({ twitch: $v("tvCh").value.trim().replace(/^https?:\/\/(www\.)?twitch\.tv\//i, "").replace(/\/.*$/, "") || "",
+        tv_next: $v("tvNx").value.trim(), tv_title: $v("tvTi").value.trim(), tv_style: $v("tvSt").value }, extra || {});
+      const r = await sb.rpc("tv_save", { p: patch });
       if (r.error) return toast(r.error.message, 4000);
       toast(extra && extra.tv_live ? t("tvNotified") : t("tvSaved"), 4000);
       render(v); poll();
     };
     if ($v("tvSave")) $v("tvSave").onclick = () => save();
+    if ($v("tvRegie")) $v("tvRegie").onclick = () => { const w = window.open("regie.html", "_blank"); if (!w) location.href = "regie.html"; };
     if ($v("tvSt")) $v("tvSt").onchange = () => save();
     if ($v("tvGo")) $v("tvGo").onclick = () => save({ tv_live: true, tv_live_at: new Date().toISOString() });
     if ($v("tvStop")) $v("tvStop").onclick = () => save({ tv_live: false });

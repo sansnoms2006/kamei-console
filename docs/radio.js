@@ -7,23 +7,24 @@
       fTitle: "Titre du morceau", fArtist: "Artiste", fMp3: "🎵 Fichier MP3", fCover: "🖼️ Pochette (carrée de préférence)", fLinks: "Liens de l'artiste (facultatif)",
       fOk: "L'artiste a composé ce morceau et m'a donné son accord pour le diffuser dans Kamei.", fGo: "Publier", fNeed: "Il faut le titre, l'artiste, le MP3 et l'accord de l'artiste.",
       fBig: "Le MP3 est trop gros (40 Mo maximum).", fSend: (p) => `Envoi sur GitHub… ${p}`, fDone: "Morceau publié 🎉 Il arrive pour tout le monde dans 1 à 2 minutes.", noKey: "Ajoute d'abord ta clé GitHub (📦 Publier → 🔑).",
-      paused: "Musique en pause pendant le jeu ⏸️", autoAdm: "▶️ Lancer la musique à l'ouverture de l'appli (pour tout le monde)", autoMe: "🎶 Musique au démarrage", autoOn: "Musique au démarrage activée", autoOff: "Plus de musique au démarrage", soon: "Le morceau arrive (encore 1 à 2 minutes)…" },
+      paused: "Musique en pause pendant le jeu ⏸️", autoAdm: "▶️ Lancer la musique à l'ouverture de l'appli (pour tout le monde)", autoMe: "🎶 Musique au démarrage", autoOn: "Musique au démarrage activée", autoOff: "Plus de musique au démarrage", up: "Envoi du morceau…", noGh: "Le serveur n'a pas encore de clé GitHub : demande à l'admin de l'ajouter (secret GITHUB_TOKEN).", soon: "Le morceau arrive (encore 1 à 2 minutes)…" },
     nl: { navRadio: "Radio", title: "🎵 Kamei Radio", none: "Nog geen muziek. Binnenkort de nummers van Kamei-artiesten hier 🎧", add: "＋ Nummer toevoegen",
       shuffle: "Shuffle", repeat: "Herhalen", listen: "Luister ook op", tracks: (n) => `${n} nummer${n > 1 ? "s" : ""}`, del: "Verwijderen", delQ: (t) => `« ${t} » uit Kamei Radio verwijderen?`,
       fTitle: "Titel van het nummer", fArtist: "Artiest", fMp3: "🎵 MP3-bestand", fCover: "🖼️ Hoes (liefst vierkant)", fLinks: "Links van de artiest (optioneel)",
       fOk: "De artiest heeft dit nummer gemaakt en geeft toestemming om het in Kamei te laten horen.", fGo: "Publiceren", fNeed: "Titel, artiest, MP3 en toestemming van de artiest zijn nodig.",
       fBig: "De MP3 is te groot (max. 40 MB).", fSend: (p) => `Naar GitHub sturen… ${p}`, fDone: "Nummer gepubliceerd 🎉 Over 1 à 2 minuten voor iedereen beschikbaar.", noKey: "Voeg eerst je GitHub-sleutel toe (📦 Publiceren → 🔑).",
-      paused: "Muziek gepauzeerd tijdens het spel ⏸️", autoAdm: "▶️ Muziek starten bij het openen van de app (voor iedereen)", autoMe: "🎶 Muziek bij het opstarten", autoOn: "Muziek bij het opstarten aan", autoOff: "Geen muziek meer bij het opstarten", soon: "Het nummer komt eraan (nog 1 à 2 minuten)…" },
+      paused: "Muziek gepauzeerd tijdens het spel ⏸️", autoAdm: "▶️ Muziek starten bij het openen van de app (voor iedereen)", autoMe: "🎶 Muziek bij het opstarten", autoOn: "Muziek bij het opstarten aan", autoOff: "Geen muziek meer bij het opstarten", up: "Nummer wordt verstuurd…", noGh: "De server heeft nog geen GitHub-sleutel: vraag de admin om die toe te voegen (secret GITHUB_TOKEN).", soon: "Het nummer komt eraan (nog 1 à 2 minuten)…" },
     en: { navRadio: "Radio", title: "🎵 Kamei Radio", none: "No music yet. Songs by Kamei artists coming soon 🎧", add: "＋ Add a song",
       shuffle: "Shuffle", repeat: "Repeat", listen: "Also listen on", tracks: (n) => `${n} song${n > 1 ? "s" : ""}`, del: "Remove", delQ: (t) => `Remove « ${t} » from Kamei Radio?`,
       fTitle: "Song title", fArtist: "Artist", fMp3: "🎵 MP3 file", fCover: "🖼️ Cover (square is best)", fLinks: "Artist links (optional)",
       fOk: "The artist made this song and agreed to have it played in Kamei.", fGo: "Publish", fNeed: "Title, artist, MP3 and the artist's agreement are needed.",
       fBig: "The MP3 is too big (40 MB max).", fSend: (p) => `Sending to GitHub… ${p}`, fDone: "Song published 🎉 Everyone gets it in 1 to 2 minutes.", noKey: "Add your GitHub key first (📦 Publish → 🔑).",
-      paused: "Music paused while playing ⏸️", autoAdm: "▶️ Start the music when the app opens (for everyone)", autoMe: "🎶 Music on startup", autoOn: "Music on startup turned on", autoOff: "No more music on startup", soon: "The song is on its way (1 to 2 more minutes)…" },
+      paused: "Music paused while playing ⏸️", autoAdm: "▶️ Start the music when the app opens (for everyone)", autoMe: "🎶 Music on startup", autoOn: "Music on startup turned on", autoOff: "No more music on startup", up: "Sending the song…", noGh: "The server has no GitHub key yet: ask the admin to add it (secret GITHUB_TOKEN).", soon: "The song is on its way (1 to 2 more minutes)…" },
   };
   for (const k in L) Object.assign(I18N[k], { navRadio: L[k].navRadio });
   const X = () => L[lang] || L.fr;
   const GH = window.KameiGH, me = () => window.kameiMe && window.kameiMe();
+  const canM = () => !!(window.kameiCan && window.kameiCan("music"));
   const PL = "docs/music/playlist.json";
   const fileUrl = (f) => (GH ? GH.site : "") + "music/" + encodeURIComponent(f);
   const LINKS = [["spotify", "Spotify", "#1DB954"], ["deezer", "Deezer", "#A238FF"], ["youtube", "YouTube", "#FF0033"], ["soundcloud", "SoundCloud", "#FF5500"], ["instagram", "Instagram", "#E1306C"], ["tiktok", "TikTok", "#25F4EE"]];
@@ -143,7 +144,7 @@
     const v = view; if (!v || !v.isConnected) return;
     const x = X(), t = cur() || list[0], u = me();
     const links = t && t.links ? LINKS.filter(([k]) => t.links[k]).map(([k, n, c]) => `<a href="${esc(t.links[k])}" target="_blank" rel="noopener" data-ext="${esc(t.links[k])}" style="background:${c}">${n}</a>`).join("") : "";
-    v.innerHTML = `${u && u.is_admin ? `<div style="text-align:right;margin:-4px 0 10px"><button class="mini" id="rAdd">${x.add}</button></div>` : ""}
+    v.innerHTML = `${canM() ? `<div style="text-align:right;margin:-4px 0 10px"><button class="mini" id="rAdd">${x.add}</button></div>` : ""}
       ${list.length ? `<div class="rnow ${!audio.paused ? "on" : ""}">${t && t.cover ? `<img class="cv" src="${esc(cover(t))}" alt="">` : `<div class="cv">🎵</div>`}
         <div><small>${x.title}</small><b>${esc(t.title)}</b><small>${esc(t.artist)}</small>
           <div class="rbar" id="rBar"><i data-rprog></i></div><div class="rtime"><span id="rT1">0:00</span><span id="rT2">${fmt(t.dur)}</span></div></div>
@@ -153,10 +154,10 @@
       <h4 style="margin:4px 0 8px;font-size:12px;color:var(--muted);letter-spacing:.5px">${x.tracks(list.length).toUpperCase()}</h4>
       <div class="rlist">${list.map((s, i) => `<button class="rtrk ${i === idx ? "cur" : ""}" data-i="${i}">${s.cover ? `<img src="${esc(cover(s))}" alt="" loading="lazy">` : `<span class="ph">🎵</span>`}
         <span><b>${i === idx && !audio.paused ? "🔊 " : ""}${esc(s.title)}</b><small>${esc(s.artist)}</small></span><em>${fmt(s.dur)}</em>
-        ${u && u.is_admin ? `<em data-del="${i}" style="padding:6px">🗑️</em>` : ""}</button>`).join("")}</div>`
+        ${canM() ? `<em data-del="${i}" style="padding:6px">🗑️</em>` : ""}</button>`).join("")}</div>`
       : `<div class="vlogin"><p>${x.none}</p></div><div class="rlist"></div>`}
       ${autoAdmin() && list.length ? `<label class="rauto"><span>${x.autoMe}</span><input type="checkbox" id="rAutoMe" ${autoMine() ? "checked" : ""}></label>` : ""}
-      ${u && u.is_admin ? `<label class="rauto"><span>${x.autoAdm}</span><input type="checkbox" id="rAutoAdm" ${autoAdmin() ? "checked" : ""}></label>` : ""}`;
+      ${canM() ? `<label class="rauto"><span>${x.autoAdm}</span><input type="checkbox" id="rAutoAdm" ${autoAdmin() ? "checked" : ""}></label>` : ""}`;
     const on = (id, fn) => { const b = v.querySelector("#" + id); if (b) b.onclick = fn; };
     on("rAdd", addForm); on("rPl", toggle); on("rNx", next); on("rPv", prev);
     on("rSh", () => { shuffle = !shuffle; try { localStorage.setItem("kamei-radio-shuffle", shuffle ? "1" : "0"); } catch (e) {} paint(); });
@@ -169,7 +170,7 @@
     if (aa) aa.onchange = async () => {
       const sb = window.kameiSB, c = (window.kameiConfig && window.kameiConfig()) || {};
       const f = Object.assign({}, c.features || {}, { radio_auto: aa.checked });
-      const r = sb ? await sb.from("app_config").update({ features: f }).eq("id", 1) : { error: null };
+      const r = sb ? await sb.rpc("radio_auto_set", { v: aa.checked }) : { error: null };
       if (r.error) { aa.checked = !aa.checked; return toast(r.error.message, 4000); }
       c.features = f; try { localStorage.setItem("kamei-cfg", JSON.stringify(c)); } catch (e) {}
       toast(aa.checked ? x.autoOn : x.autoOff); paint();
@@ -196,9 +197,26 @@
     try { localStorage.setItem("kamei-radio-pl", JSON.stringify(pl)); } catch (e) {}
     list = tracks;
   }
+  // no GitHub key on this phone (a player in charge of the music): the server publishes on GitHub
+  const direct = () => !!(GH && GH.token());
+  async function server(body) {
+    const r = await window.kameiSB.functions.invoke("kamei-discord", { body });
+    let err = r.error ? (r.data && r.data.error) || r.error.message : r.data && r.data.error;
+    if (r.error && r.error.context && typeof r.error.context.json === "function") { try { err = (await r.error.context.json()).error || err; } catch (e) {} }
+    if (err) throw new Error(err === "no_github" ? X().noGh : err);
+    const pl = r.data.playlist;
+    try { localStorage.setItem("kamei-radio-pl", JSON.stringify(pl)); } catch (e) {}
+    list = pl.tracks || [];
+  }
+  async function toInbox(blob, ext, type) {
+    const path = `${me().id}/${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const r = await window.kameiSB.storage.from("radio-inbox").upload(path, blob, { contentType: type, upsert: false });
+    if (r.error) throw new Error(r.error.message);
+    return path;
+  }
   function addForm() {
     const x = X();
-    if (!GH || !GH.token()) return toast(x.noKey, 4000);
+    if (!direct() && !window.kameiSB) return toast(x.noKey, 4000);
     openSheet(`<h3>${x.add}</h3><div class="rform">
       <label>${x.fTitle}</label><input id="raT" maxlength="80"><label>${x.fArtist}</label><input id="raA" maxlength="60">
       <label>${x.fMp3}</label><input type="file" id="raF" accept="audio/mpeg,audio/mp3,.mp3,audio/*">
@@ -222,6 +240,13 @@
         if (c) { const jb = await squareJpg(c, 600); coverName = id + ".jpg"; files.push({ path: `docs/music/${coverName}`, load: () => GH.toB64(jb) }); }
         const links = {}; for (const [k] of LINKS) { const u = $s("raL-" + k).value.trim(); if (/^https?:\/\//.test(u)) links[k] = u; }
         const track = { id, title, artist, file: id + ".mp3", cover: coverName, dur: await duration(f), links, added: new Date().toISOString() };
+        if (!direct()) {
+          $s("raE").textContent = x.up;
+          const mp3 = await toInbox(f, "mp3", f.type || "audio/mpeg");
+          const cv = c ? await toInbox(await squareJpg(c, 600), "jpg", "image/jpeg") : null;
+          await server({ action: "radio_add", mp3, cover: cv, track: { title, artist, dur: track.dur, links } });
+          closeSheet(); toast(x.fDone, 6000); paint(); return;
+        }
         await savePlaylist(list.concat([track]), files, [], `Kamei Radio : ${artist} – ${title}`, (a, n) => ($s("raE").textContent = x.fSend(`${a}/${n + 1}`)));
         closeSheet(); toast(x.fDone, 6000); paint();
       } catch (e) { $s("raE").textContent = (e && e.message) || "Erreur"; $s("raG").disabled = false; }
@@ -229,10 +254,11 @@
   }
   async function removeTrack(i) {
     const x = X(), t = list[i];
-    if (!t || !GH || !GH.token()) return toast(x.noKey, 4000);
+    if (!t) return;
     if (!confirm(x.delQ(t.title))) return;
     try {
       if (i === idx) { audio.pause(); idx = -1; document.body.classList.remove("radio-on"); }
+      if (!direct()) { await server({ action: "radio_del", id: t.id }); if (idx > i) idx--; paint(); return; }
       const rest = list.filter((_, k) => k !== i);
       await savePlaylist(rest, [], [`docs/music/${t.file}`].concat(t.cover ? [`docs/music/${t.cover}`] : []), `Kamei Radio : retrait de ${t.title}`);
       if (idx > i) idx--;

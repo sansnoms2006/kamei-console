@@ -365,7 +365,7 @@
     catch (e) { v.querySelector("#evBody").innerHTML = `<p class="hint err">${esc(errMsg(e))}</p>`; return; }
     const order = { live: 0, checkin: 1, reg: 2, closed: 3, draft: 4, done: 5, cancelled: 6 };
     const sorted = list.slice().sort((a, b) => (order[phaseOf(a)] - order[phaseOf(b)]) || (Date.parse(a.starts_at) - Date.parse(b.starts_at)));
-    v.querySelector(".evhead").innerHTML = `<h2 class="vtitle">${X.evTitle}</h2>${u && u.is_admin ? `<button class="mini" id="evNew">${X.evCreate}</button>` : ""}`;
+    v.querySelector(".evhead").innerHTML = `<h2 class="vtitle">${X.evTitle}</h2>${window.kameiCan("events") ? `<button class="mini" id="evNew">${X.evCreate}</button>` : ""}`;
     v.querySelector("#evBody").innerHTML = calendar() +
       (sorted.length ? sorted.map((e) => poster(e)).join("") : `<div class="vlogin"><p>${X.evNone}</p></div>`);
     const nb = v.querySelector("#evNew"); if (nb) nb.onclick = () => form();
@@ -390,7 +390,7 @@
     let e;
     try { e = await fetchOne(id); } catch (err) { openSheet(`<p class="hint err">${esc(errMsg(err))}</p><div class="btns"><button onclick="closeSheet()">←</button></div>`); return; }
     if (!e) return closeSheet();
-    const u = me(), p = phaseOf(e), admin = u && u.is_admin;
+    const u = me(), p = phaseOf(e), admin = window.kameiCan("events");
     const players = (e.players || []).filter((x) => !x.waitlist), wait = (e.players || []).filter((x) => x.waitlist);
     const ref = e.game_ref || {};
     const haveGame = e.platform !== "app" || !ref.title || (typeof games !== "undefined" && games.some((g) => g.title === ref.title || (ref.system && g.system === ref.system && g.title.toLowerCase() === String(ref.title).toLowerCase())));
@@ -672,7 +672,7 @@
       preview(data, posterBlob, posterPreview, e);
     };
   }
-  const admin = () => { const u = me(); return !!(u && u.is_admin); };
+  const admin = () => window.kameiCan("events");
 
   function preview(data, blob, prevUrl, orig) {
     const X = T();
