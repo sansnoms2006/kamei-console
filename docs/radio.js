@@ -7,19 +7,19 @@
       fTitle: "Titre du morceau", fArtist: "Artiste", fMp3: "🎵 Fichier MP3", fCover: "🖼️ Pochette (carrée de préférence)", fLinks: "Liens de l'artiste (facultatif)",
       fOk: "L'artiste a composé ce morceau et m'a donné son accord pour le diffuser dans Kamei.", fGo: "Publier", fNeed: "Il faut le titre, l'artiste, le MP3 et l'accord de l'artiste.",
       fBig: "Le MP3 est trop gros (40 Mo maximum).", fSend: (p) => `Envoi sur GitHub… ${p}`, fDone: "Morceau publié 🎉 Il arrive pour tout le monde dans 1 à 2 minutes.", noKey: "Ajoute d'abord ta clé GitHub (📦 Publier → 🔑).",
-      paused: "Musique en pause pendant le jeu ⏸️", soon: "Le morceau arrive (encore 1 à 2 minutes)…" },
+      paused: "Musique en pause pendant le jeu ⏸️", autoAdm: "▶️ Lancer la musique à l'ouverture de l'appli (pour tout le monde)", autoMe: "🎶 Musique au démarrage", autoOn: "Musique au démarrage activée", autoOff: "Plus de musique au démarrage", soon: "Le morceau arrive (encore 1 à 2 minutes)…" },
     nl: { navRadio: "Radio", title: "🎵 Kamei Radio", none: "Nog geen muziek. Binnenkort de nummers van Kamei-artiesten hier 🎧", add: "＋ Nummer toevoegen",
       shuffle: "Shuffle", repeat: "Herhalen", listen: "Luister ook op", tracks: (n) => `${n} nummer${n > 1 ? "s" : ""}`, del: "Verwijderen", delQ: (t) => `« ${t} » uit Kamei Radio verwijderen?`,
       fTitle: "Titel van het nummer", fArtist: "Artiest", fMp3: "🎵 MP3-bestand", fCover: "🖼️ Hoes (liefst vierkant)", fLinks: "Links van de artiest (optioneel)",
       fOk: "De artiest heeft dit nummer gemaakt en geeft toestemming om het in Kamei te laten horen.", fGo: "Publiceren", fNeed: "Titel, artiest, MP3 en toestemming van de artiest zijn nodig.",
       fBig: "De MP3 is te groot (max. 40 MB).", fSend: (p) => `Naar GitHub sturen… ${p}`, fDone: "Nummer gepubliceerd 🎉 Over 1 à 2 minuten voor iedereen beschikbaar.", noKey: "Voeg eerst je GitHub-sleutel toe (📦 Publiceren → 🔑).",
-      paused: "Muziek gepauzeerd tijdens het spel ⏸️", soon: "Het nummer komt eraan (nog 1 à 2 minuten)…" },
+      paused: "Muziek gepauzeerd tijdens het spel ⏸️", autoAdm: "▶️ Muziek starten bij het openen van de app (voor iedereen)", autoMe: "🎶 Muziek bij het opstarten", autoOn: "Muziek bij het opstarten aan", autoOff: "Geen muziek meer bij het opstarten", soon: "Het nummer komt eraan (nog 1 à 2 minuten)…" },
     en: { navRadio: "Radio", title: "🎵 Kamei Radio", none: "No music yet. Songs by Kamei artists coming soon 🎧", add: "＋ Add a song",
       shuffle: "Shuffle", repeat: "Repeat", listen: "Also listen on", tracks: (n) => `${n} song${n > 1 ? "s" : ""}`, del: "Remove", delQ: (t) => `Remove « ${t} » from Kamei Radio?`,
       fTitle: "Song title", fArtist: "Artist", fMp3: "🎵 MP3 file", fCover: "🖼️ Cover (square is best)", fLinks: "Artist links (optional)",
       fOk: "The artist made this song and agreed to have it played in Kamei.", fGo: "Publish", fNeed: "Title, artist, MP3 and the artist's agreement are needed.",
       fBig: "The MP3 is too big (40 MB max).", fSend: (p) => `Sending to GitHub… ${p}`, fDone: "Song published 🎉 Everyone gets it in 1 to 2 minutes.", noKey: "Add your GitHub key first (📦 Publish → 🔑).",
-      paused: "Music paused while playing ⏸️", soon: "The song is on its way (1 to 2 more minutes)…" },
+      paused: "Music paused while playing ⏸️", autoAdm: "▶️ Start the music when the app opens (for everyone)", autoMe: "🎶 Music on startup", autoOn: "Music on startup turned on", autoOff: "No more music on startup", soon: "The song is on its way (1 to 2 more minutes)…" },
   };
   for (const k in L) Object.assign(I18N[k], { navRadio: L[k].navRadio });
   const X = () => L[lang] || L.fr;
@@ -57,6 +57,8 @@
   #rMini span { flex: 1; min-width: 0; font-size: 13px; } #rMini b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } #rMini small { color: var(--muted); white-space: nowrap; }
   #rMini button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: none; color: var(--text); font-size: 18px; }
   #rMini i { position: absolute; left: 0; bottom: 0; height: 2px; background: var(--tacc, #9BD14B); }
+  .rauto { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.035); margin: 10px 0; font-size: 13.5px; font-weight: 600; }
+  .rauto span { flex: 1; } .rauto input { width: 22px; height: 22px; margin: 0; accent-color: var(--tacc, #9BD14B); }
   .rform label { display: block; font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 10px 0 4px; }
   .rform input[type=text], .rform input:not([type]) { width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: #0f1115; color: var(--text); font: 500 15px Inter, sans-serif; }`;
   document.head.appendChild(st);
@@ -152,13 +154,26 @@
       <div class="rlist">${list.map((s, i) => `<button class="rtrk ${i === idx ? "cur" : ""}" data-i="${i}">${s.cover ? `<img src="${esc(cover(s))}" alt="" loading="lazy">` : `<span class="ph">🎵</span>`}
         <span><b>${i === idx && !audio.paused ? "🔊 " : ""}${esc(s.title)}</b><small>${esc(s.artist)}</small></span><em>${fmt(s.dur)}</em>
         ${u && u.is_admin ? `<em data-del="${i}" style="padding:6px">🗑️</em>` : ""}</button>`).join("")}</div>`
-      : `<div class="vlogin"><p>${x.none}</p></div><div class="rlist"></div>`}`;
+      : `<div class="vlogin"><p>${x.none}</p></div><div class="rlist"></div>`}
+      ${autoAdmin() && list.length ? `<label class="rauto"><span>${x.autoMe}</span><input type="checkbox" id="rAutoMe" ${autoMine() ? "checked" : ""}></label>` : ""}
+      ${u && u.is_admin ? `<label class="rauto"><span>${x.autoAdm}</span><input type="checkbox" id="rAutoAdm" ${autoAdmin() ? "checked" : ""}></label>` : ""}`;
     const on = (id, fn) => { const b = v.querySelector("#" + id); if (b) b.onclick = fn; };
     on("rAdd", addForm); on("rPl", toggle); on("rNx", next); on("rPv", prev);
     on("rSh", () => { shuffle = !shuffle; try { localStorage.setItem("kamei-radio-shuffle", shuffle ? "1" : "0"); } catch (e) {} paint(); });
     on("rRp", () => { repeat = !repeat; paint(); });
     v.querySelectorAll("[data-i]").forEach((b) => b.onclick = (e) => { if (e.target.dataset.del) return removeTrack(+e.target.dataset.del); +b.dataset.i === idx ? toggle() : playAt(+b.dataset.i); });
     v.querySelectorAll("[data-ext]").forEach((a) => a.onclick = (e) => { if (window.KameiNative && window.KameiNative.openUrl) { e.preventDefault(); window.KameiNative.openUrl(a.dataset.ext); } });
+    const am = v.querySelector("#rAutoMe");
+    if (am) am.onchange = () => { try { localStorage.setItem("kamei-radio-auto", am.checked ? "1" : "0"); } catch (e) {} toast(am.checked ? x.autoOn : x.autoOff); };
+    const aa = v.querySelector("#rAutoAdm");
+    if (aa) aa.onchange = async () => {
+      const sb = window.kameiSB, c = (window.kameiConfig && window.kameiConfig()) || {};
+      const f = Object.assign({}, c.features || {}, { radio_auto: aa.checked });
+      const r = sb ? await sb.from("app_config").update({ features: f }).eq("id", 1) : { error: null };
+      if (r.error) { aa.checked = !aa.checked; return toast(r.error.message, 4000); }
+      c.features = f; try { localStorage.setItem("kamei-cfg", JSON.stringify(c)); } catch (e) {}
+      toast(aa.checked ? x.autoOn : x.autoOff); paint();
+    };
     const bar = v.querySelector("#rBar");
     if (bar) bar.onpointerdown = (e) => { if (idx < 0 || !audio.duration) return; const r = bar.getBoundingClientRect(); audio.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * audio.duration; };
     tick();
@@ -224,6 +239,34 @@
       paint();
     } catch (e) { toast((e && e.message) || "Erreur", 4000); }
   }
+
+  /* ---------- music when the app opens ---------- */
+  const autoAdmin = () => !!(((window.kameiConfig && window.kameiConfig()) || {}).features || {}).radio_auto;
+  const autoMine = () => { try { return localStorage.getItem("kamei-radio-auto") !== "0"; } catch (e) { return true; } };
+  let autoDone = false;
+  async function autostart() {
+    if (autoDone || !autoAdmin() || !autoMine() || (window.kameiFeature && !window.kameiFeature("radio"))) return;
+    autoDone = true;
+    await loadList();
+    if (!list.length || idx >= 0) return;
+    const pl = document.getElementById("player");
+    if (pl && getComputedStyle(pl).display !== "none") return;      // a game is already open
+    const start = () => {
+      if (idx >= 0 || (pl && getComputedStyle(pl).display !== "none")) return;
+      audio.volume = 0; playAt(shuffle || list.length > 1 ? Math.floor(Math.random() * list.length) : 0);
+      let v = 0; const fade = setInterval(() => { v = Math.min(1, v + 0.08); audio.volume = v; if (v >= 1) clearInterval(fade); }, 120);
+    };
+    start();
+    // browsers refuse sound before the first touch: try again at the first tap anywhere
+    setTimeout(() => {
+      if (!audio.paused) return;
+      idx = -1; document.body.classList.remove("radio-on");
+      const once = () => { document.removeEventListener("pointerdown", once, true); setTimeout(start, 350); };
+      document.addEventListener("pointerdown", once, true);
+    }, 700);
+  }
+  document.addEventListener("kamei-config", () => setTimeout(autostart, 400));
+  setTimeout(autostart, 3000);
 
   // a game starts: the music pauses (it would cover the game's sound)
   function pause() { if (!audio.paused) { audio.pause(); toast(X().paused, 2500); } }
