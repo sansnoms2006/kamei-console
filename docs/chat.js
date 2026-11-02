@@ -4,21 +4,21 @@
     chatReportQ: "Signaler ce message à l'admin ?", chatReported: "Merci, l'admin va regarder 🚩", generalRoom: "🌍 Salon Général", generalHint: "Tout le monde peut lire et écrire ici. Reste sympa 😉", reportUser: "🚩 Signaler ce joueur", reportUserQ: "Signaler ce joueur à l'admin ?",
     chatWith: (p) => `💬 Écrire à ${p}`, chatPh: "Ton message…", chatEmpty: "Pas encore de message. Dis bonjour 👋", chatSend: "Envoyer",
     chatErr: "Message pas envoyé", chatSlow: "Doucement ! Trop de messages d'un coup.", chatBanned: "Ton compte est bloqué.", chatNotFriend: "Vous n'êtes plus amis.",
-    chatSetup: "Le chat n'est pas encore activé (l'admin doit lancer kamei-chat.sql dans Supabase).", chatDel: "Effacer ce message ?", chatNew: (p) => `💬 ${p}`,
+    chatSetup: "Le chat n'est pas encore activé (l'admin doit lancer kamei-chat.sql dans Supabase).", chatDel: "Effacer ce message ?", chatNew: (p) => `💬 ${p}`, replyPh: "Reply…", replySend: "Send", replyOk: "Reply sent ✅", replyErr: "Not sent, try again from Messages", replyPh: "Antwoorden…", replySend: "Versturen", replyOk: "Antwoord verstuurd ✅", replyErr: "Niet verstuurd, probeer opnieuw via Berichten", replyPh: "Répondre…", replySend: "Envoyer", replyOk: "Réponse envoyée ✅", replyErr: "Pas envoyé, réessaie depuis Messages",
     chatToday: "Aujourd'hui", chatYesterday: "Hier",
   });
   Object.assign(I18N.nl, {
     chatReportQ: "Dit bericht melden aan de admin?", chatReported: "Bedankt, de admin kijkt ernaar 🚩", generalRoom: "🌍 Algemene chat", generalHint: "Iedereen kan hier lezen en schrijven. Blijf vriendelijk 😉", reportUser: "🚩 Deze speler melden", reportUserQ: "Deze speler melden aan de admin?",
     chatWith: (p) => `💬 Stuur ${p} een bericht`, chatPh: "Je bericht…", chatEmpty: "Nog geen berichten. Zeg hallo 👋", chatSend: "Versturen",
     chatErr: "Bericht niet verstuurd", chatSlow: "Rustig aan! Te veel berichten tegelijk.", chatBanned: "Je account is geblokkeerd.", chatNotFriend: "Jullie zijn geen vrienden meer.",
-    chatSetup: "De chat is nog niet actief (de admin moet kamei-chat.sql in Supabase uitvoeren).", chatDel: "Dit bericht wissen?", chatNew: (p) => `💬 ${p}`,
+    chatSetup: "De chat is nog niet actief (de admin moet kamei-chat.sql in Supabase uitvoeren).", chatDel: "Dit bericht wissen?", chatNew: (p) => `💬 ${p}`, replyPh: "Reply…", replySend: "Send", replyOk: "Reply sent ✅", replyErr: "Not sent, try again from Messages", replyPh: "Antwoorden…", replySend: "Versturen", replyOk: "Antwoord verstuurd ✅", replyErr: "Niet verstuurd, probeer opnieuw via Berichten",
     chatToday: "Vandaag", chatYesterday: "Gisteren",
   });
   Object.assign(I18N.en, {
     chatReportQ: "Report this message to the admin?", chatReported: "Thanks, the admin will check 🚩", generalRoom: "🌍 General room", generalHint: "Everyone can read and write here. Be nice 😉", reportUser: "🚩 Report this player", reportUserQ: "Report this player to the admin?",
     chatWith: (p) => `💬 Message ${p}`, chatPh: "Your message…", chatEmpty: "No messages yet. Say hi 👋", chatSend: "Send",
     chatErr: "Message not sent", chatSlow: "Slow down! Too many messages at once.", chatBanned: "Your account is blocked.", chatNotFriend: "You are no longer friends.",
-    chatSetup: "Chat isn't enabled yet (the admin must run kamei-chat.sql in Supabase).", chatDel: "Delete this message?", chatNew: (p) => `💬 ${p}`,
+    chatSetup: "Chat isn't enabled yet (the admin must run kamei-chat.sql in Supabase).", chatDel: "Delete this message?", chatNew: (p) => `💬 ${p}`, replyPh: "Reply…", replySend: "Send", replyOk: "Reply sent ✅", replyErr: "Not sent, try again from Messages",
     chatToday: "Today", chatYesterday: "Yesterday",
   });
 
@@ -76,7 +76,10 @@
           const p = await sb.from("profiles").select("id,pseudo,color").in("id", ids);
           const who = (id) => (p.data || []).find((x) => x.id === id) || { id, pseudo: "?" };
           const last = fresh[fresh.length - 1];
-          window.kameiNotify(t("chatNew", who(last.from_user).pseudo), last.body.startsWith("§img:") ? "📸 Photo" : last.body.slice(0, 120) + (fresh.length > 1 ? ` (+${fresh.length - 1})` : ""), () => open(who(last.from_user)));
+          const from = last.from_user;
+          window.kameiNotify(t("chatNew", who(from).pseudo), last.body.startsWith("§img:") ? "📸 Photo" : last.body.slice(0, 120) + (fresh.length > 1 ? ` (+${fresh.length - 1})` : ""), () => open(who(from)),
+            { reply: async (txt) => { const r = await sb.rpc("chat_send", { to_id: from, msg: txt }); if (r.error) return false;
+                await sb.rpc("chat_read", { other: from }); poll(); return true; } });
         }
       }
       lastSeenId = Math.max(lastSeenId || 0, newest);

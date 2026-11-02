@@ -161,6 +161,10 @@
             border: 1.5px solid color-mix(in srgb, var(--tacc, #8fc63f) 60%, transparent); box-shadow: 0 14px 40px rgba(0,0,0,.55), 0 0 24px color-mix(in srgb, var(--tacc, #8fc63f) 30%, transparent);
             transform: translateY(-140%); transition: transform .45s cubic-bezier(.2,1.3,.4,1), opacity .3s; opacity: 0; touch-action: pan-x; }
   .knotif.on { transform: none; opacity: 1; }
+  .knotif.rep { flex-wrap: wrap; }
+  .knotif .krep { flex: 1 0 100%; display: flex; gap: 8px; margin-top: 2px; }
+  .knotif .krep input { flex: 1; min-width: 0; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(0,0,0,.35); color: var(--text); font: 500 14px Inter, sans-serif; }
+  .knotif .krep button { border: 0; border-radius: 12px; padding: 0 14px; background: var(--tacc, #8fc63f); color: #0b0b12; font: 800 13px Inter, sans-serif; }
   .knotif .kav { flex: 0 0 46px; height: 46px; border-radius: 50%; border: 2.5px solid var(--tacc, #8fc63f); background: var(--tacc, #8fc63f) var(--khead) center 16% / 150% auto no-repeat; position: relative; }
   .knotif .kav i { position: absolute; right: -6px; bottom: -6px; font-style: normal; font-size: 18px; }
   .knotif .kt { flex: 1; min-width: 0; }
@@ -482,6 +486,8 @@ const SYSTEMS = {
   dos:   { label: "MS-DOS", short: "DOS", core: "dos", theme: "#a3a3a3", line: "PC · 1981", scene: ["keys", "#e7e5d8", "#d6d3c4", "#22c55e"], thumbs: ["DOS"], ext: ["dosz", "exe", "com", "bat"], x: 1, threads: 1, heavy: 1, g: "computer" },
   doom:  { label: "Doom", short: "DOOM", core: "prboom", theme: "#b91c1c", line: "id Software · 1993", scene: ["keys", "#3f3f46", "#27272a", "#dc2626"], thumbs: ["DOOM"], ext: ["wad", "iwad", "pwad"], x: 1, g: "computer" },
 };
+// Android app v10: 3DS games open in Azahar / Citra MMJ (installed separately), see n3ds.js
+if (window.KameiNative2) SYSTEMS["3ds"] = { label: "Nintendo 3DS", short: "3DS", core: null, theme: "#ef4444", line: "Nintendo · 2011", scene: ["ds", "#1f2937", "#ef4444"], thumbs: ["Nintendo - Nintendo 3DS"], ext: [], g: "handheld", ext3ds: 1 };
 const EXT = {};
 for (const [k, s] of Object.entries(SYSTEMS)) for (const e of s.ext) EXT[e] = k;
 for (const k of ["gb", "gbc", "gba", "nds", "gg", "ngp", "ws", "vb"]) SYSTEMS[k].g = SYSTEMS[k].g || "handheld";
@@ -895,7 +901,7 @@ function gameMenu(g) {
     <button class="row" id="mSys">${t("changeSys")}</button>
     <button class="row danger" id="mDel">${t("del")}</button></div>`);
   if ($("mResume")) $("mResume").onclick = () => { closeSheet(); play(g.id, false, "auto"); };
-  gameSlots(g);
+  if (g.system !== "3ds") gameSlots(g);
   $("mPlay").onclick = () => { closeSheet(); play(g.id, false, false); };
   if ($("mBios")) $("mBios").onclick = () => biosSheet(g.system);
   if ($("mTrade")) $("mTrade").onclick = () => window.kameiTrades.open();
@@ -916,6 +922,7 @@ function gameMenu(g) {
     $("dNo").onclick = closeSheet;
     $("dOk").onclick = async () => { await delGame(g.id); closeSheet(); await load(); toast(t("deleted")); };
   };
+  if (g.system === "3ds" && window.kamei3ds) window.kamei3ds.decorate(g);
 }
 let pickingCoverFor = null;
 $("coverFile").addEventListener("change", async (e) => {
@@ -927,7 +934,7 @@ $("coverFile").addEventListener("change", async (e) => {
 });
 
 /* =================== Import =================== */
-$("add").onclick = () => $("file").click();
+$("add").onclick = () => (window.kamei3ds && window.kamei3ds.addChoice ? window.kamei3ds.addChoice() : $("file").click());
 $("file").addEventListener("change", async (e) => {
   const files = [...e.target.files]; e.target.value = "";
   await importFiles(files);
@@ -1235,23 +1242,38 @@ function biosList() {
 function vibeOn() { try { return localStorage.getItem("kamei-vibe") !== "off"; } catch (e) { return true; } }
 function notifOn() { try { return localStorage.getItem("kamei-notif") !== "off"; } catch (e) { return true; } }
 /* Notification: native when the app is in the background (or a toast when it is open) */
-function notifCard(title, text, onTap) {
+function notifCard(title, text, onTap, opts) {
   let el = $("knotif");
   if (!el) { el = document.createElement("div"); el.id = "knotif"; el.className = "knotif"; document.body.appendChild(el); }
-  const emo = (THEME && THEME.emoji) || "";
-  el.innerHTML = `<div class="kav">${emo ? `<i>${emo}</i>` : ""}</div><div class="kt"><b>${esc(title)}</b>${text ? `<span>${esc(text)}</span>` : ""}</div><div class="kx">✕</div>`;
+  const emo = (THEME && THEME.emoji) || "", reply = opts && opts.reply;
+  el.className = "knotif" + (reply ? " rep" : "");
+  el.innerHTML = `<div class="kav">${emo ? `<i>${emo}</i>` : ""}</div><div class="kt"><b>${esc(title)}</b>${text ? `<span>${esc(text)}</span>` : ""}</div><div class="kx">✕</div>` +
+    (reply ? `<form class="krep"><input maxlength="500" placeholder="${esc(t("replyPh"))}" enterkeyhint="send"><button>${esc(t("replySend"))}</button></form>` : "");
   const hide = () => { el.classList.remove("on"); clearTimeout(notifCard.t); };
-  el.onclick = (e) => { hide(); if (onTap && !e.target.classList.contains("kx")) onTap(); };
+  el.onclick = (e) => { if (e.target.closest(".krep")) return; hide(); if (onTap && !e.target.classList.contains("kx")) onTap(); };
+  // answer straight from the popup (messages)
+  if (reply) {
+    const f = el.querySelector(".krep"), inp = f.querySelector("input");
+    inp.onfocus = () => clearTimeout(notifCard.t);
+    inp.onblur = () => { if (!inp.value.trim()) { clearTimeout(notifCard.t); notifCard.t = setTimeout(hide, 4000); } };
+    f.onsubmit = async (e) => {
+      e.preventDefault();
+      const v = inp.value.trim(); if (!v) return;
+      f.querySelector("button").disabled = true;
+      let ok = false; try { ok = await reply(v); } catch (err) {}
+      hide(); toast(ok ? t("replyOk") : t("replyErr"), 2500);
+    };
+  }
   let y0 = null;
   el.ontouchstart = (e) => { y0 = e.touches[0].clientY; };
   el.ontouchmove = (e) => { if (y0 !== null && e.touches[0].clientY - y0 < -25) { y0 = null; hide(); } };
   requestAnimationFrame(() => el.classList.add("on"));
-  clearTimeout(notifCard.t); notifCard.t = setTimeout(hide, 5500);
+  clearTimeout(notifCard.t); notifCard.t = setTimeout(hide, reply ? 9000 : 5500);
   try { window.kameiVibe && window.kameiVibe(25); } catch (e) {}
 }
-window.kameiNotify = (title, text, onTap) => {
+window.kameiNotify = (title, text, onTap, opts) => {
   if (!notifOn()) return;
-  if (document.visibilityState === "visible") { notifCard(title, text, onTap); return; }
+  if (document.visibilityState === "visible") { notifCard(title, text, onTap, opts); return; }
   try { if (window.KameiNative && KameiNative.notify) KameiNative.notify(title, text || ""); } catch (e) {}
 };
 window.kameiVibe = (ms) => {
@@ -1268,6 +1290,7 @@ async function play(id, force, resume) {
   if (resume !== undefined) play.resume = resume === true ? "auto" : (resume || false); else if (!force) play.resume = false;
   const g = await getGame(id);
   if (!g) return;
+  if (g.system === "3ds") { if (window.kamei3ds) window.kamei3ds.launch(g); return; }
   const sy = SYSTEMS[g.system];
   if (!force && sy.bios && sy.bios.need && !(await getBios(g.system))) return biosSheet(g.system, g.id);
   if (!force && sy.heavy && !sessionStorage.getItem("kamei-heavy-" + g.system)) { try { sessionStorage.setItem("kamei-heavy-" + g.system, "1"); } catch (e) {} toast(t("heavy"), 4500); }
@@ -1389,6 +1412,7 @@ window.addEventListener("online", scrapeMissing);
 <script src="me.js"></script>
 <script src="events.js"></script>
 <script src="race.js"></script>
+<script src="n3ds.js"></script>
 <script src="tour.js"></script>
 <script src="backup.js"></script>
 <script src="gh.js"></script>

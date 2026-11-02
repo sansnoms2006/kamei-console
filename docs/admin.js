@@ -2,7 +2,7 @@
 (function () {
   const FEATS = ["events", "tv", "chat", "general", "sessions", "requests", "catalogue", "trades", "netplay", "watch", "profile", "pet"];
   Object.assign(I18N.fr, {
-    adFeatures: "🎛️ Fonctions", adStats: "📊 Tableau de bord", adAnnounce: "📢 Annonce", adReports: "🚩 Signalements",
+    adFcm: "🔔 Notifications instantanées", adFcmHint: "Pour l'appli Android v10 : les notifications arrivent en quelques secondes. Firebase → Paramètres du projet → ton appli Android → télécharge google-services.json, ouvre-le et colle tout son contenu ici.", adFcmPh: "Colle ici le contenu de google-services.json", adFcmOn: (p) => `✅ Activé (projet ${p})`, adFcmOff: "Pas encore activé", adFcmBad: "Ce n'est pas un google-services.json valide (il doit contenir com.kamei.gameconsole)", adFcmSave: "Enregistrer", adFcmDel: "Désactiver", adFeatures: "🎛️ Fonctions", adStats: "📊 Tableau de bord", adAnnounce: "📢 Annonce", adReports: "🚩 Signalements",
     adFeatHint: "Une fonction désactivée disparaît pour tout le monde… sauf pour toi (tu peux la préparer tranquille).", adSaved: "Enregistré ✅",
     adF: { events: "🏆 Kamei Events", tv: "📺 Kamei TV", chat: "💬 Chat entre amis", general: "🌍 Salon Général", sessions: "🕹️ Sessions", requests: "📨 Demandes de jeux", catalogue: "📚 Catalogue",
            trades: "🔁 Échanges Pokémon", netplay: "👥 Jouer ensemble", watch: "📺 Regarder un ami", profile: "🏅 Profils & badges", pet: "🦎 Kamei Tamagotchi" },
@@ -14,7 +14,7 @@
     adKind: { message: "Message privé", general: "Salon Général", user: "Joueur" },
   });
   Object.assign(I18N.nl, {
-    adFeatures: "🎛️ Functies", adStats: "📊 Dashboard", adAnnounce: "📢 Aankondiging", adReports: "🚩 Meldingen",
+    adFcm: "🔔 Directe meldingen", adFcmHint: "Voor de Android-app v10: meldingen komen binnen enkele seconden. Firebase → Projectinstellingen → je Android-app → download google-services.json, open het en plak de hele inhoud hier.", adFcmPh: "Plak hier de inhoud van google-services.json", adFcmOn: (p) => `✅ Actief (project ${p})`, adFcmOff: "Nog niet actief", adFcmBad: "Dit is geen geldige google-services.json (com.kamei.gameconsole ontbreekt)", adFcmSave: "Opslaan", adFcmDel: "Uitschakelen", adFeatures: "🎛️ Functies", adStats: "📊 Dashboard", adAnnounce: "📢 Aankondiging", adReports: "🚩 Meldingen",
     adFeatHint: "Een uitgeschakelde functie verdwijnt voor iedereen… behalve voor jou.", adSaved: "Opgeslagen ✅",
     adF: { events: "🏆 Kamei Events", tv: "📺 Kamei TV", chat: "💬 Chat met vrienden", general: "🌍 Algemene chat", sessions: "🕹️ Sessies", requests: "📨 Spelaanvragen", catalogue: "📚 Catalogus",
            trades: "🔁 Pokémon ruilen", netplay: "👥 Samen spelen", watch: "📺 Meekijken", profile: "🏅 Profielen & badges", pet: "🦎 Kamei Tamagotchi" },
@@ -26,7 +26,7 @@
     adKind: { message: "Privébericht", general: "Algemene chat", user: "Speler" },
   });
   Object.assign(I18N.en, {
-    adFeatures: "🎛️ Features", adStats: "📊 Dashboard", adAnnounce: "📢 Announcement", adReports: "🚩 Reports",
+    adFcm: "🔔 Instant notifications", adFcmHint: "For the Android app v10: notifications arrive within seconds. Firebase → Project settings → your Android app → download google-services.json, open it and paste its whole content here.", adFcmPh: "Paste the content of google-services.json here", adFcmOn: (p) => `✅ On (project ${p})`, adFcmOff: "Not set up yet", adFcmBad: "This isn't a valid google-services.json (it must contain com.kamei.gameconsole)", adFcmSave: "Save", adFcmDel: "Turn off", adFeatures: "🎛️ Features", adStats: "📊 Dashboard", adAnnounce: "📢 Announcement", adReports: "🚩 Reports",
     adFeatHint: "A disabled feature disappears for everyone… except you (so you can prepare it).", adSaved: "Saved ✅",
     adF: { events: "🏆 Kamei Events", tv: "📺 Kamei TV", chat: "💬 Chat with friends", general: "🌍 General room", sessions: "🕹️ Sessions", requests: "📨 Game requests", catalogue: "📚 Catalogue",
            trades: "🔁 Pokémon trades", netplay: "👥 Play together", watch: "📺 Watch a friend", profile: "🏅 Profiles & badges", pet: "🦎 Kamei Tamagotchi" },
@@ -112,9 +112,35 @@
     });
     document.querySelectorAll("#sheet [data-see]").forEach((b) => b.onclick = () => window.kameiAdminUser && window.kameiAdminUser(b.dataset.see));
   }
+  async function fcm() {
+    const c = window.kameiConfig ? window.kameiConfig() : {};
+    const f = Object.assign({}, c.features || {});
+    openSheet(`<h3>${t("adFcm")}</h3><p class="hint">${t("adFcmHint")}</p>
+      <p class="hint"><b>${f.fcm && f.fcm.projectId ? esc(t("adFcmOn")(f.fcm.projectId)) : t("adFcmOff")}</b></p>
+      <textarea id="fcmJ" placeholder="${t("adFcmPh")}" style="width:100%;min-height:150px;box-sizing:border-box;border-radius:12px;padding:10px;background:var(--bg);color:var(--text);border:1px solid var(--line);font:12px ui-monospace,monospace"></textarea>
+      <div class="btns" style="margin-top:10px"><button id="aBack">←</button>${f.fcm ? `<button id="fcmDel" class="danger">${t("adFcmDel")}</button>` : ""}<button class="ok" id="fcmGo">${t("adFcmSave")}</button></div>`);
+    wireBack();
+    const save = async (val) => {
+      if (val) f.fcm = val; else delete f.fcm;
+      const r = await sb.from("app_config").update({ features: f }).eq("id", 1);
+      if (r.error) return toast(r.error.message, 4000);
+      toast(t("adSaved"), 1500); window.kameiConfigReload && window.kameiConfigReload(); fcm();
+    };
+    document.getElementById("fcmGo").onclick = () => {
+      try {
+        const j = JSON.parse(document.getElementById("fcmJ").value);
+        const cl = (j.client || []).find((x) => x.client_info && x.client_info.android_client_info && x.client_info.android_client_info.package_name === "com.kamei.gameconsole");
+        if (!cl) throw new Error();
+        const v = { appId: cl.client_info.mobilesdk_app_id, apiKey: (cl.api_key && cl.api_key[0] && cl.api_key[0].current_key) || "", projectId: j.project_info.project_id, senderId: j.project_info.project_number };
+        if (!v.appId || !v.apiKey || !v.projectId) throw new Error();
+        save(v);
+      } catch (e) { toast(t("adFcmBad"), 5000); }
+    };
+    const d = document.getElementById("fcmDel"); if (d) d.onclick = () => save(null);
+  }
   function wire() {
     const on = (id, fn) => { const b = document.getElementById(id); if (b) b.onclick = fn; };
-    on("adFeat", features); on("adStats", stats); on("adAnn", announce); on("adRep", reports);
+    on("adFeat", features); on("adStats", stats); on("adAnn", announce); on("adRep", reports); on("adFcm", fcm);
     sb.from("reports").select("id", { count: "exact", head: true }).eq("status", "open").then((r) => { const el = document.getElementById("adRepN"); if (el && r.count) el.textContent = r.count; }, () => {});
   }
   window.kameiAdmin = { wire, features, stats, announce, reports };

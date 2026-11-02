@@ -1,7 +1,8 @@
 /* Kamei Game Console — automatic updates */
 (function () {
-  const APK_VERSION = 9;   // version of the Android app this file ships with
-  const WEB_VERSION = 39;   // version of the interface files
+  // version of the Android app running this page (v10 adds window.KameiNative2)
+  const APK_VERSION = (() => { try { return window.KameiNative2 && window.KameiNative2.version ? window.KameiNative2.version() : 9; } catch (e) { return 9; } })();
+  const WEB_VERSION = 41;   // version of the interface files
   const N = window.KameiNative || null;
   const sb = window.kameiSB || null;
 

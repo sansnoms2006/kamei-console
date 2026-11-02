@@ -129,11 +129,19 @@
       }
       known = known || {}; remember(mine);
       newCount = me().is_admin ? r.data.filter((x) => x.status === "new").length : 0;
+      // admin: a player just sent a request
+      if (me().is_admin) {
+        let seenId = 0; try { seenId = +localStorage.getItem("kamei-req-admin") || 0; } catch (e) {}
+        const top = r.data.reduce((a, x) => Math.max(a, x.id), 0);
+        const fresh = r.data.filter((x) => x.id > seenId && x.status === "new" && x.user_id !== me().id);
+        if (seenId && fresh.length && window.kameiNotify) window.kameiNotify("📨 " + (lang === "nl" ? "Nieuwe aanvraag" : lang === "en" ? "New request" : "Nouvelle demande"), fresh.map((x) => x.title).join(" · "), () => window.kameiNav && window.kameiNav.go("requests"));
+        try { localStorage.setItem("kamei-req-admin", String(Math.max(seenId, top))); } catch (e) {}
+      }
       if (window.kameiNav) window.kameiNav.refresh();
     } catch (e) {}
   }
   setTimeout(poll, 9000);
-  setInterval(() => { if (document.visibilityState === "visible") poll(); }, 120000);
+  setInterval(() => { if (document.visibilityState === "visible") poll(); }, 60000);
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") poll(); });
 
   window.kameiRequests = { render, poll, badge: () => newCount };

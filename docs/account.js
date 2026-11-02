@@ -6,6 +6,7 @@
   const COLORS = ["#8fc63f", "#f87171", "#60a5fa", "#a855f7", "#f59e0b", "#14b8a6", "#ec4899", "#e5e7eb"];
 
   Object.assign(I18N.fr, {
+    batT: "🔋 Notifications écran éteint", batH: "Pour recevoir les notifications même quand ton écran est éteint, Android doit laisser Kamei tourner en arrière-plan.", batGo: "✅ Autoriser", batMore: "Sur Xiaomi, Oppo, Huawei, Samsung… ouvre aussi les réglages de l'appli → Batterie → « Aucune restriction » et active le « Démarrage automatique ».", batApp: "⚙️ Réglages de l'appli", batLater: "Plus tard",
     tabNew: "Créer mon joueur", tabLogin: "J'ai déjà un compte", pseudoFree: "✅ Ce pseudo est libre", pseudoUsed: "❌ Ce pseudo est déjà pris", pseudoShort: "2 caractères minimum",
     newHint: "Juste un pseudo et une couleur : pas besoin d'e-mail.", idLogin: "Ton pseudo (ou ton e-mail)", loginPass: "Mot de passe",
     noPass: "Ce pseudo n'existe pas, ou il n'a pas encore de mot de passe (Moi → 🔐 Mot de passe).", anonOff: "La création par pseudo n'est pas encore activée sur le serveur. Réessaie plus tard.",
@@ -33,6 +34,7 @@
     offline: "Les comptes ne marchent qu'avec internet", accountsOff: "Les comptes ne sont disponibles que dans l'app Android",
   });
   Object.assign(I18N.nl, {
+    batT: "🔋 Meldingen met scherm uit", batH: "Om meldingen te krijgen als je scherm uit is, moet Android Kamei op de achtergrond laten werken.", batGo: "✅ Toestaan", batMore: "Op Xiaomi, Oppo, Huawei, Samsung… open ook de app-instellingen → Batterij → « Geen beperkingen » en zet « Automatisch starten » aan.", batApp: "⚙️ App-instellingen", batLater: "Later",
     tabNew: "Mijn speler maken", tabLogin: "Ik heb al een account", pseudoFree: "✅ Deze naam is vrij", pseudoUsed: "❌ Deze naam is al bezet", pseudoShort: "Minstens 2 tekens",
     newHint: "Alleen een naam en een kleur: geen e-mail nodig.", idLogin: "Je naam (of je e-mail)", loginPass: "Wachtwoord",
     noPass: "Deze naam bestaat niet, of heeft nog geen wachtwoord (Ik → 🔐 Wachtwoord).", anonOff: "Aanmaken met een naam is nog niet actief op de server. Probeer later opnieuw.",
@@ -60,6 +62,7 @@
     offline: "Accounts werken alleen met internet", accountsOff: "Accounts zijn alleen beschikbaar in de Android-app",
   });
   Object.assign(I18N.en, {
+    batT: "🔋 Notifications with the screen off", batH: "To get notifications even when your screen is off, Android must let Kamei run in the background.", batGo: "✅ Allow", batMore: "On Xiaomi, Oppo, Huawei, Samsung… also open the app settings → Battery → « Unrestricted » and turn on « Autostart ».", batApp: "⚙️ App settings", batLater: "Later",
     tabNew: "Create my player", tabLogin: "I already have an account", pseudoFree: "✅ This username is free", pseudoUsed: "❌ This username is taken", pseudoShort: "2 characters minimum",
     newHint: "Just a username and a color: no email needed.", idLogin: "Your username (or your email)", loginPass: "Password",
     noPass: "This username doesn't exist, or has no password yet (Me → 🔐 Password).", anonOff: "Creating a player with a username isn't enabled on the server yet. Try again later.",
@@ -392,7 +395,7 @@
     openSheet(`<h3>${t("adminTitle")}</h3>
       <div class="stats"><div><b>${users.length}</b><span>${t("accounts")}</span></div><div><b>${online}</b><span>${t("onlineNow")}</span></div><div><b>${t("minutes", mins)}</b><span>${t("playTime")}</span></div></div>
       ${window.kameiAdmin ? `<div class="adgrid"><button id="adFeat">${t("adFeatures")}</button><button id="adStats">${t("adStats")}</button>
-        <button id="adAnn">${t("adAnnounce")}</button><button id="adRep">${t("adReports")}<span class="unread" id="adRepN"></span></button></div>` : ""}
+        <button id="adAnn">${t("adAnnounce")}</button><button id="adRep">${t("adReports")}<span class="unread" id="adRepN"></span></button><button id="adFcm" style="grid-column:1/-1">${t("adFcm")}</button></div>` : ""}
       <button class="row" id="adPub">${t("publish")}</button>
       <input id="adQ" placeholder="${t("searchUser")}" value="${esc(adminQuery)}"><div id="adList"></div>
       <div class="btns"><button id="adBack">←</button></div>`);
@@ -515,8 +518,41 @@
         k = { uid: me.id, key: r.data }; localStorage.setItem("kamei-push", JSON.stringify(k));
       }
       NP.setPush(JSON.stringify({ key: k.key, url: SUPABASE_URL, anon: SUPABASE_KEY }));
+      fcmSetup(k.key);
     } catch (e) {}
   }
+  // app v10: instant notifications through Firebase (the admin gives the Firebase project in Admin → Notifications)
+  function fcmSetup(dkey) {
+    const N2 = window.KameiNative2;
+    if (!N2 || !N2.fcmInit) return;
+    const cfg = window.kameiConfig && window.kameiConfig().features && window.kameiConfig().features.fcm;
+    if (!cfg || !cfg.appId) return;
+    window.kameiFcmToken = (tok) => { if (tok) sb.rpc("notif_fcm", { dkey, tok }).then(() => {}, () => {}); };
+    try { const old = N2.fcmToken(); if (old) window.kameiFcmToken(old); N2.fcmInit(JSON.stringify(cfg)); } catch (e) {}
+    // app v11: ask once a week to let Kamei work with the screen off
+    try {
+      const last = +localStorage.getItem("kamei-bat-asked") || 0;
+      if (N2.batteryOk && !N2.batteryOk() && Date.now() - last > 7 * 86400000 && !document.getElementById("gate")) {
+        localStorage.setItem("kamei-bat-asked", String(Date.now()));
+        setTimeout(batterySheet, 3000);
+      }
+    } catch (e) {}
+  }
+  function batterySheet() {
+    const N2 = window.KameiNative2; if (!N2 || !N2.askBattery) return;
+    openSheet(`<h3>${t("batT")}</h3><p class="hint">${t("batH")}</p>
+      <button class="row ok-row" id="batGo">${t("batGo")}</button><p class="hint">${t("batMore")}</p>
+      <button class="row" id="batApp">${t("batApp")}</button><div class="btns"><button id="batNo">${t("batLater")}</button></div>`);
+    document.getElementById("batGo").onclick = () => { N2.askBattery(); closeSheet(); };
+    document.getElementById("batApp").onclick = () => { try { N2.appSettings(); } catch (e) {} closeSheet(); };
+    document.getElementById("batNo").onclick = closeSheet;
+  }
+  window.kameiBatterySheet = batterySheet;
+  // while the app is open, what you see on screen is not sent again as a notification
+  setInterval(() => {
+    const k = pushKey();
+    if (window.KameiNative2 && document.visibilityState === "visible" && k && sb) sb.rpc("notif_touch", { dkey: k.key, lg: lang }).then(() => {}, () => {});
+  }, 45000);
   async function pushOff() {
     const k = pushKey();
     try { if (NP && NP.setPush) NP.setPush(""); } catch (e) {}

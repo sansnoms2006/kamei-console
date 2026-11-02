@@ -94,7 +94,8 @@
         window.kameiProfile && F("profile") ? row("meBadges", t("pfMine").replace(/^\S+\s/, "")) : "",
         window.kameiTrades && F("trades") ? row("meTrades", t("trades").replace(/^\S+\s/, "")) : "",
       ])}
-      ${grp(t("meSettings"), [row("meLang", t("meLang"), lang.toUpperCase()), row("meApp", t("meApp")), window.kameiTour ? row("meTour", t("meTour")) : ""])}
+      ${grp(t("meSettings"), [row("meLang", t("meLang"), lang.toUpperCase()), row("meApp", t("meApp")),
+        (() => { try { return window.KameiNative2 && window.KameiNative2.batteryOk && !window.KameiNative2.batteryOk() ? row("meBat", t("batT"), "⚠️") : ""; } catch (e) { return ""; } })(), window.kameiTour ? row("meTour", t("meTour")) : ""])}
       ${grp(t("meData"), [row("meBios", t("meBios")), window.kameiBackup ? row("meBackup", t("meBackup")) : ""])}
       ${window.KameiNative ? "" : grp(t("meApkG"), [row("meApk", /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ? t("meApk") : t("meApk"))])}
       ${grp(t("meAccount"), [window.kameiSecure ? row("meSecure", t("secure")) : "", u.is_admin ? row("meAdmin", t("meAdmin")) : "", `<button id="meOut" class="danger"><span>${t("meLogout")}</span></button>`])}`;
@@ -112,6 +113,7 @@
     on("meAdmin", () => window.kameiAdminSheet());
     on("meSecure", () => window.kameiSecure());
     on("meApk", apkSheet);
+    on("meBat", () => window.kameiBatterySheet && window.kameiBatterySheet());
     if (window.kameiSecureInfo && v.querySelector("#meSecure")) window.kameiSecureInfo().then((i) => {
       const b = v.querySelector("#meSecure"); if (!b) return;
       const val = b.querySelector(".v");
