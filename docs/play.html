@@ -14,6 +14,7 @@
   body.lcd #game::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 5;
     background: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px); }
   .ejs_start_button { font-size: 22px !important; padding: 16px 30px !important; border-radius: 16px !important; }
+  body.racewait .ejs_menu_bar, body.racewait .ejs_virtualGamepad_parent { pointer-events: none !important; }
   #wait { position: fixed; inset: 0; display: grid; place-items: center; color: #8b8ba7;
           font: 600 14px/1.4 system-ui, sans-serif; }
 </style>
@@ -61,6 +62,7 @@
 (function () {
   let started = false;
   let meta = null;
+  let race = null;   // Kamei Events speedrun: { wait } — no save states, rewind, fast-forward or cheats
 
   /* ---------- Save slots (stored on the device, in IndexedDB) ---------- */
   let dbp = null;
@@ -85,6 +87,7 @@
   const ready = () => emu() && emu().started && emu().gameManager;
 
   async function saveSlot(slot) {
+    if (race) return false;
     if (!ready()) return false;
     const gm = emu().gameManager;
     const state = gm.getState().slice();
@@ -94,6 +97,7 @@
     return true;
   }
   async function loadSlot(slot) {
+    if (race) return false;
     if (!ready()) return false;
     const rec = await idb("readonly", (s) => s.get(key(slot)));
     if (!rec) return false;
@@ -250,22 +254,37 @@
     try { camStream.getVideoTracks()[0].contentHint = "motion"; } catch (e) {}
     return camStream;
   }
-  async function netHost(ice, peer, input) {
+  // quality for the Kamei Events régie: "low" = small mosaic picture (~240p, few images/s), "high" = full picture
+  function applyQ(x, q) {
+    if (!x || !x.vs) return;
+    x.q = q || x.q;
+    try {
+      const prm = x.vs.getParameters(); prm.encodings = prm.encodings && prm.encodings.length ? prm.encodings : [{}];
+      const c = document.querySelector("#game canvas"), h = (c && c.height) || 480;
+      if (x.q === "low") Object.assign(prm.encodings[0], { maxBitrate: 220000, maxFramerate: 6, scaleResolutionDownBy: Math.max(1, h / 240) });
+      else Object.assign(prm.encodings[0], { maxBitrate: x.input ? 3500000 : 2000000, maxFramerate: x.q === "high" ? 30 : 60, scaleResolutionDownBy: 1 });
+      prm.degradationPreference = x.q === "low" ? "balanced" : "maintain-framerate";
+      x.vs.setParameters(prm).catch(() => {});
+    } catch (e) {}
+  }
+  async function netHost(ice, peer, input, q) {
     peer = peer || "p2";
     netStop(peer);
     const cs = gameStream();
     if (!cs) { parent.postMessage({ type: "netState", peer, state: "error" }, "*"); return; }
     const pc = new RTCPeerConnection({ iceServers: ice });
-    const x = peers[peer] = { pc, dc: null, input: !!input };
-    const vs = pc.addTrack(cs.getVideoTracks()[0], cs);
+    const x = peers[peer] = { pc, dc: null, input: !!input, q: q || null };
+    const vs = x.vs = pc.addTrack(cs.getVideoTracks()[0], cs);
     const audio = window.kameiAudioStream && window.kameiAudioStream();
-    if (audio && audio.getAudioTracks()[0]) pc.addTrack(audio.getAudioTracks()[0], audio);
+    if (audio && audio.getAudioTracks()[0] && !x.q) pc.addTrack(audio.getAudioTracks()[0], audio);
+    if (x.q) applyQ(x);
     x.dc = pc.createDataChannel("p2", { ordered: false, maxRetransmits: 0 });
     if (x.input) x.dc.onmessage = (e) => { try { applyP2(JSON.parse(e.data)); } catch (err) {} };
     pc.onicecandidate = (e) => { if (e.candidate) sig(peer, { kind: "ice", data: e.candidate.toJSON() }); };
     pc.onconnectionstatechange = () => {
       parent.postMessage({ type: "netState", peer, state: pc.connectionState }, "*");
-      if (pc.connectionState === "connected") {
+      if (pc.connectionState === "connected" && x.q) applyQ(x);
+      else if (pc.connectionState === "connected") {
         try { const prm = vs.getParameters(); prm.encodings = prm.encodings && prm.encodings.length ? prm.encodings : [{}];
               prm.encodings[0].maxBitrate = x.input ? 3500000 : 2000000; prm.encodings[0].maxFramerate = 60; prm.degradationPreference = "maintain-framerate"; vs.setParameters(prm); } catch (e) {}
       }
@@ -341,14 +360,37 @@
     window.EJS_defaultOptions = { "save-save-interval": "30", "melonds_touch_mode": "Touch" };
     if (msg.opts && msg.opts.rewind) { window.EJS_defaultOptions.rewindEnabled = "enabled"; window.EJS_defaultOptions["rewind-granularity"] = "6"; }
     opts = msg.opts || {};
+    if (msg.race) { race = msg.race; delete window.EJS_defaultOptions.rewindEnabled; opts.rewind = false; opts.cheats = []; window.EJS_defaultOptions.fastForward = "disabled"; window.EJS_defaultOptions.slowMotion = "disabled"; }
     window.EJS_Buttons = { netplay: false, exitEmulation: false, cacheManager: false, contextMenu: false, saveState: false, loadState: false };
     const s = document.createElement("script");
     s.src = "data/loader.js";
     document.body.appendChild(s);
     if (msg.system === "nds") setupTouchToMouse();
     if (msg.vibe) setupVibe();
-    const iv = setInterval(() => { if (ready()) { clearInterval(iv); applyOpts(); syncPad(); setTimeout(syncPad, 600); setTimeout(syncPad, 2000); parent.postMessage({ type: "started" }, "*");
-      if (msg.resume) setTimeout(() => { loadSlot(msg.resume === true ? "auto" : String(msg.resume)).then((ok) => parent.postMessage({ type: "resumed", ok }, "*"), () => {}); }, 700); } }, 400);
+    const iv = setInterval(() => { if (ready()) { clearInterval(iv); if (race) lockRace(); applyOpts(); syncPad(); setTimeout(syncPad, 600); setTimeout(syncPad, 2000); parent.postMessage({ type: "started" }, "*");
+      if (msg.resume && !race) setTimeout(() => { loadSlot(msg.resume === true ? "auto" : String(msg.resume)).then((ok) => parent.postMessage({ type: "resumed", ok }, "*"), () => {}); }, 700); } }, 400);
+  }
+
+  /* Kamei Events speedrun: everything that could change the time is locked, and the game waits for the GO */
+  function lockRace() {
+    const gm = emu().gameManager, f = gm.functions || {};
+    try { f.toggleFastForward && f.toggleFastForward(0); f.toggleSlowMotion && f.toggleSlowMotion(0); f.toggleRewind && f.toggleRewind(0); gm.resetCheat(); } catch (e) {}
+    const no = () => false;
+    for (const k of ["toggleFastForward", "toggleSlowMotion", "toggleRewind", "loadState", "setCheat"]) if (f[k]) f[k] = no;
+    for (const k of ["quickSave", "quickLoad", "loadState", "setCheat", "toggleFastForward", "toggleSlowMotion"]) if (gm[k]) gm[k] = no;
+    const sim = gm.simulateInput.bind(gm);
+    gm.simulateInput = (p, i, v) => { if (i >= 24 && i <= 29) return; return sim(p, i, v); };
+    try { emu().rewindEnabled = false; emu().isFastForward = false; } catch (e) {}
+    if (race.wait) raceHold(true);
+  }
+  let holdIv = null;
+  function raceHold(on) {
+    try { emu().gameManager.toggleMainLoop(on ? 0 : 1); } catch (e) {}
+    try { emu().paused = !!on; } catch (e) {}
+    document.body.classList.toggle("racewait", !!on);
+    clearInterval(holdIv); holdIv = null;
+    // nobody can start before the GO (even with the emulator's own play button)
+    if (on) holdIv = setInterval(() => { if (race && race.wait) { try { emu().gameManager.toggleMainLoop(0); } catch (e) {} } else { clearInterval(holdIv); holdIv = null; } }, 150);
   }
 
   /* Short vibration when a virtual (touch) button is pressed */
@@ -390,7 +432,9 @@
     }
     if (d.type === "key") window.kameiKey(d.code, d.down);
     if (d.type === "axis") window.kameiAxis(...d.v);
-    if (d.type === "netHost") netHost(d.ice || [], d.peer, d.input);
+    if (d.type === "netHost") netHost(d.ice || [], d.peer, d.input, d.q);
+    if (d.type === "netQ") applyQ(peers[d.peer], d.q);
+    if (d.type === "raceGo" && race) { race.wait = false; if (ready()) raceHold(false); }
     if (d.type === "netSig") netSig(d.peer, d.data);
     if (d.type === "netStop") netStop(d.peer);
     if (d.type === "opts") applyOpts(d.opts);

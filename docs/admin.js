@@ -1,10 +1,10 @@
 /* Kamei Game Console — admin tools: features on/off, dashboard, announcement, reports */
 (function () {
-  const FEATS = ["tv", "chat", "general", "sessions", "requests", "catalogue", "trades", "netplay", "watch", "profile", "pet"];
+  const FEATS = ["events", "tv", "chat", "general", "sessions", "requests", "catalogue", "trades", "netplay", "watch", "profile", "pet"];
   Object.assign(I18N.fr, {
     adFeatures: "🎛️ Fonctions", adStats: "📊 Tableau de bord", adAnnounce: "📢 Annonce", adReports: "🚩 Signalements",
     adFeatHint: "Une fonction désactivée disparaît pour tout le monde… sauf pour toi (tu peux la préparer tranquille).", adSaved: "Enregistré ✅",
-    adF: { tv: "📺 Kamei TV", chat: "💬 Chat entre amis", general: "🌍 Salon Général", sessions: "🕹️ Sessions", requests: "📨 Demandes de jeux", catalogue: "📚 Catalogue",
+    adF: { events: "🏆 Kamei Events", tv: "📺 Kamei TV", chat: "💬 Chat entre amis", general: "🌍 Salon Général", sessions: "🕹️ Sessions", requests: "📨 Demandes de jeux", catalogue: "📚 Catalogue",
            trades: "🔁 Échanges Pokémon", netplay: "👥 Jouer ensemble", watch: "📺 Regarder un ami", profile: "🏅 Profils & badges", pet: "🦎 Kamei Tamagotchi" },
     adS: { users: "Joueurs", new7: "Nouveaux (7 j)", online: "En ligne", today: "Actifs aujourd'hui", playing: "En train de jouer", sessions7: "Parties (7 j)", minutes7: "Temps de jeu (7 j)",
            messages7: "Messages (7 j)", trades7: "Échanges (7 j)", requests: "Demandes en attente", reports: "Signalements ouverts" },
@@ -16,7 +16,7 @@
   Object.assign(I18N.nl, {
     adFeatures: "🎛️ Functies", adStats: "📊 Dashboard", adAnnounce: "📢 Aankondiging", adReports: "🚩 Meldingen",
     adFeatHint: "Een uitgeschakelde functie verdwijnt voor iedereen… behalve voor jou.", adSaved: "Opgeslagen ✅",
-    adF: { tv: "📺 Kamei TV", chat: "💬 Chat met vrienden", general: "🌍 Algemene chat", sessions: "🕹️ Sessies", requests: "📨 Spelaanvragen", catalogue: "📚 Catalogus",
+    adF: { events: "🏆 Kamei Events", tv: "📺 Kamei TV", chat: "💬 Chat met vrienden", general: "🌍 Algemene chat", sessions: "🕹️ Sessies", requests: "📨 Spelaanvragen", catalogue: "📚 Catalogus",
            trades: "🔁 Pokémon ruilen", netplay: "👥 Samen spelen", watch: "📺 Meekijken", profile: "🏅 Profielen & badges", pet: "🦎 Kamei Tamagotchi" },
     adS: { users: "Spelers", new7: "Nieuw (7 d)", online: "Online", today: "Actief vandaag", playing: "Aan het spelen", sessions7: "Sessies (7 d)", minutes7: "Speeltijd (7 d)",
            messages7: "Berichten (7 d)", trades7: "Ruilen (7 d)", requests: "Open aanvragen", reports: "Open meldingen" },
@@ -28,7 +28,7 @@
   Object.assign(I18N.en, {
     adFeatures: "🎛️ Features", adStats: "📊 Dashboard", adAnnounce: "📢 Announcement", adReports: "🚩 Reports",
     adFeatHint: "A disabled feature disappears for everyone… except you (so you can prepare it).", adSaved: "Saved ✅",
-    adF: { tv: "📺 Kamei TV", chat: "💬 Chat with friends", general: "🌍 General room", sessions: "🕹️ Sessions", requests: "📨 Game requests", catalogue: "📚 Catalogue",
+    adF: { events: "🏆 Kamei Events", tv: "📺 Kamei TV", chat: "💬 Chat with friends", general: "🌍 General room", sessions: "🕹️ Sessions", requests: "📨 Game requests", catalogue: "📚 Catalogue",
            trades: "🔁 Pokémon trades", netplay: "👥 Play together", watch: "📺 Watch a friend", profile: "🏅 Profiles & badges", pet: "🦎 Kamei Tamagotchi" },
     adS: { users: "Players", new7: "New (7 d)", online: "Online", today: "Active today", playing: "Playing now", sessions7: "Sessions (7 d)", minutes7: "Play time (7 d)",
            messages7: "Messages (7 d)", trades7: "Trades (7 d)", requests: "Pending requests", reports: "Open reports" },
@@ -45,7 +45,7 @@
   async function features() {
     const c = window.kameiConfig ? window.kameiConfig() : {};
     const f = Object.assign({}, c.features || {});
-    const on = (k) => (k in f ? f[k] !== false : k !== "tv");
+    const on = (k) => (k in f ? f[k] !== false : !["tv", "events"].includes(k));
     openSheet(`<h3>${t("adFeatures")}</h3><p class="hint">${t("adFeatHint")}</p>` +
       FEATS.map((k) => `<label class="row" style="display:flex;gap:10px;align-items:center"><span style="flex:1">${t("adF")[k]}</span>
         <input type="checkbox" data-f="${k}" ${on(k) ? "checked" : ""} style="width:22px;height:22px;margin:0;accent-color:var(--tacc,#8fc63f)"></label>`).join("") + backBtn);

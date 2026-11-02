@@ -1273,10 +1273,12 @@ window.addEventListener("message", (e) => {
     const go = async (bios) => {
       // the game is handed over as bytes (Safari can't always read a Blob that came out of IndexedDB)
       let rom;
+      const R = window.kameiRace && window.kameiRace.frameFlag ? window.kameiRace.frameFlag() : null;
       try { rom = await romBytes(current); } catch (err) { toast(t("romBad"), 6000); closePlayer(); return; }
       frameWin().postMessage({ type: "load", system: s.core, blob: rom, saveKey: current.saveKey || current.title,
                              lang: EJS_LANG[lang], color: s.theme, ext: s.x ? (current.whole || extOf(current.romName || "") || null) : null,
-                             threads: !!s.threads, bios, vibe: vibeOn(), resume: play.resume || false, opts: window.kameiGameOpts ? window.kameiGameOpts.forGame(current) : {} }, "*", [rom]);
+                             threads: !!s.threads, bios, vibe: vibeOn(), resume: R ? false : (play.resume || false), race: R,
+                             opts: R ? {} : window.kameiGameOpts ? window.kameiGameOpts.forGame(current) : {} }, "*", [rom]);
     };
     if (s.bios) getBios(current.system).then((b) => go(b ? biosZip(b.files) : null)).catch(() => go(null)); else go(null);
   }
@@ -1298,10 +1300,12 @@ function closePlayer() {
   load();
 }
 $("quit").onclick = () => {
+  if (window.kameiRace && window.kameiRace.onQuit && window.kameiRace.onQuit() === "stay") return;
   try { frameWin().postMessage({ type: "quit" }, "*"); } catch (e) {}
   closePlayer.t = setTimeout(closePlayer, 3000);
 };
 $("savesBtn").onclick = () => {
+  if (window.kameiRace && window.kameiRace.frameFlag && window.kameiRace.frameFlag()) { toast("🔒 Speedrun"); return; }
   openSheet(`<h3>${t("savesTitle")}</h3><p class="hint">…</p>`);
   frameWin().postMessage({ type: "slots" }, "*");
 };
@@ -1368,6 +1372,8 @@ window.addEventListener("online", scrapeMissing);
 <script src="admin.js"></script>
 <script src="pet.js"></script>
 <script src="me.js"></script>
+<script src="events.js"></script>
+<script src="race.js"></script>
 <script src="tour.js"></script>
 <script src="backup.js"></script>
 <script src="gh.js"></script>

@@ -70,10 +70,11 @@
     consoles: '<path d="M6 9h12a4 4 0 0 1 4 4v1a3 3 0 0 1-5.2 2L15 14H9l-1.8 2A3 3 0 0 1 2 14v-1a4 4 0 0 1 4-4z"/><path d="M7 11.5v3M5.5 13h3"/>',
     discover: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
     social: '<path d="M4 5h16v11H9l-5 4z"/>',
+    events: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8M10 17h4"/>',
     me: '<circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
   };
   const icon = (k) => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
-  const tabs = [["consoles", "navPlay"], ["discover", "navDiscover"], ["social", "navSocial"], ["me", "navMe"]];
+  const tabs = [["consoles", "navPlay"], ["discover", "navDiscover"], ["events", "navEvents"], ["social", "navSocial"], ["me", "navMe"]];
   const SUBS = { discover: [["catalogue", "navCat"], ["requests", "navRequests"], ["tv", "navTV"]], social: [["chat", "navChat"], ["friends", "navFriends"], ["sessions", "navSessions"]] };
   const parentOf = (k) => Object.keys(SUBS).find((p) => SUBS[p].some(([s]) => s === k));
   const nav = document.createElement("nav"); nav.className = "bnav"; nav.setAttribute("aria-label", "Navigation");
@@ -88,7 +89,7 @@
       for (const [s] of SUBS[k]) { const d = document.createElement("div"); d.className = "subv"; d.id = "v-" + s; v.appendChild(d); views[s] = d; }
     }
   }
-  views.me = tops.me;
+  views.me = tops.me; views.events = tops.events;
   let cur = "consoles";
   const sub = { discover: "catalogue", social: "chat" };
   const F = (k) => !window.kameiFeature || window.kameiFeature(k);
@@ -119,6 +120,7 @@
     const tv = window.kameiTV ? window.kameiTV.badge() : "";
     set("chat", n); set("social", n); set("requests", rn); set("tv", tv);
     set("discover", (rn || 0) + (tv ? 1 : 0));
+    if (window.kameiEvents) set("events", window.kameiEvents.badge());
   }
   function go(k, force) {
     let top = k, s = null;
@@ -143,6 +145,7 @@
   async function render(k) {
     const v = views[k]; if (!v) return;
     if (k === "catalogue" && window.kameiCatalogue) return window.kameiCatalogue.render(v);
+    if (k === "events" && window.kameiEvents) return window.kameiEvents.render(v);
     if (!sb || !me()) return loginBox(v);
     if (k === "me" && window.kameiMeView) return window.kameiMeView.render(v);
     if (k === "friends") {

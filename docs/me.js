@@ -5,17 +5,17 @@
       mePhotoQ: "Photo de profil", mePhotoHint: "Choisis une image : elle sera recadrée en carré. Tous les joueurs pourront la voir, alors reste correct 🙂",
       mePhotoPick: "🖼️ Choisir une image", mePhotoUp: "Envoi de la photo…", mePhotoOk: "Photo mise à jour ✅", mePhotoErr: "La photo n'a pas pu être envoyée",
       meLang: "Langue et thème", meApp: "Vibrations, notifications…", meTour: "Revoir la visite guidée", meBackup: "Changer de téléphone", meBios: "BIOS des consoles",
-      meAdmin: "Administration", meLogout: "Se déconnecter", meKamei: "Mon Kamei", meCopy: "Copier" },
+      meAdmin: "Administration", navPalm: "🏆 Palmarès des tournois", meLogout: "Se déconnecter", meKamei: "Mon Kamei", meCopy: "Copier" },
     nl: { meProfile: "MIJN PROFIEL", meSettings: "INSTELLINGEN", meData: "GEGEVENS", meAccount: "ACCOUNT", mePhoto: "Foto wijzigen", mePhotoDel: "Foto verwijderen",
       mePhotoQ: "Profielfoto", mePhotoHint: "Kies een afbeelding: ze wordt vierkant bijgesneden. Alle spelers kunnen ze zien, dus hou het netjes 🙂",
       mePhotoPick: "🖼️ Afbeelding kiezen", mePhotoUp: "Foto uploaden…", mePhotoOk: "Foto bijgewerkt ✅", mePhotoErr: "De foto kon niet worden verstuurd",
       meLang: "Taal en thema", meApp: "Trillen, meldingen…", meTour: "Rondleiding opnieuw bekijken", meBackup: "Van telefoon wisselen", meBios: "BIOS van consoles",
-      meAdmin: "Beheer", meLogout: "Uitloggen", meKamei: "Mijn Kamei", meCopy: "Kopiëren" },
+      meAdmin: "Beheer", navPalm: "🏆 Erelijst van toernooien", meLogout: "Uitloggen", meKamei: "Mijn Kamei", meCopy: "Kopiëren" },
     en: { meProfile: "MY PROFILE", meSettings: "SETTINGS", meData: "DATA", meAccount: "ACCOUNT", mePhoto: "Change photo", mePhotoDel: "Remove photo",
       mePhotoQ: "Profile photo", mePhotoHint: "Pick an image: it will be cropped to a square. Every player can see it, so keep it clean 🙂",
       mePhotoPick: "🖼️ Pick an image", mePhotoUp: "Uploading photo…", mePhotoOk: "Photo updated ✅", mePhotoErr: "The photo couldn't be uploaded",
       meLang: "Language and theme", meApp: "Vibration, notifications…", meTour: "Replay the guided tour", meBackup: "Switch phone", meBios: "Console BIOS files",
-      meAdmin: "Administration", meLogout: "Log out", meKamei: "My Kamei", meCopy: "Copy" },
+      meAdmin: "Administration", navPalm: "🏆 Tournament trophies", meLogout: "Log out", meKamei: "My Kamei", meCopy: "Copy" },
   };
   for (const k in L) Object.assign(I18N[k], L[k]);
 
@@ -75,6 +75,7 @@
         <div class="mcode"><span>${esc(u.friend_code || "")}</span><button class="mini" id="meCopy">${t("meCopy")}</button></div></div></div>
       <div id="mePetBox"></div>
       ${grp(t("meProfile"), [
+        window.kameiEvents && F("events") ? row("mePalm", t("navPalm")) : "",
         window.kameiProfile && F("profile") ? row("meBadges", t("pfMine").replace(/^\S+\s/, "")) : "",
         window.kameiTrades && F("trades") ? row("meTrades", t("trades").replace(/^\S+\s/, "")) : "",
       ])}
@@ -85,6 +86,7 @@
     on("mePhoto", photoSheet);
     on("meCopy", async () => { try { await navigator.clipboard.writeText(u.friend_code); toast(t("copied")); } catch (e) { toast(u.friend_code); } });
     on("meBadges", () => window.kameiProfile.mine());
+    on("mePalm", () => window.kameiEvents.palmares());
     on("meTrades", () => window.kameiTrades.open());
     on("meLang", () => document.getElementById("langBtn").click());
     on("meApp", () => document.getElementById("langBtn").click());

@@ -280,6 +280,7 @@
         : `<p class="hint">${t("nothingYet")}</p>`}
       ${window.kameiPlay && feat("watch") && isOnline(p) && p.now_game ? `<button class="row ok-row" id="dWatch" style="margin-top:12px">${t("lvWatch")} · ${esc(p.now_game)}</button>` : ""}
       ${window.kameiChat && feat("chat") ? `<button class="row ok-row" id="dChat" style="margin-top:12px">${t("chatWith", esc(p.pseudo))}</button>` : ""}
+      ${window.kameiEvents && feat("events") ? `<button class="row" id="dPalm" style="margin-top:12px">${t("navPalm") || "🏆"}</button>` : ""}
       <div id="dPlay"></div>
       <div id="dPet"></div>
       <div id="dProfile"></div>
@@ -292,6 +293,7 @@
       toast(r.error ? errMsg(r.error) : t("chatReported"), 3500);
     };
     if (document.getElementById("dChat")) document.getElementById("dChat").onclick = () => window.kameiChat.open(p);
+    if (document.getElementById("dPalm")) document.getElementById("dPalm").onclick = () => window.kameiEvents.palmares(p.id, p.pseudo, () => friendDetail(p));
     if (document.getElementById("dWatch")) document.getElementById("dWatch").onclick = () => window.kameiPlay.watch(p);
     if (window.kameiProfile && feat("profile")) window.kameiProfile.fill(p, document.getElementById("dProfile"));
     if (window.kameiPet && feat("pet")) window.kameiPet.friend(p, document.getElementById("dPet"));

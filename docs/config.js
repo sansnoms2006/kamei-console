@@ -6,7 +6,7 @@
   Object.assign(I18N.en, { annClose: "Close" });
   const sb = window.kameiSB, me = () => window.kameiMe && window.kameiMe();
   let cfg = {}; try { cfg = JSON.parse(localStorage.getItem("kamei-cfg") || "{}"); } catch (e) {}
-  const DEFAULT_OFF = ["tv"];   // features hidden until the admin turns them on
+  const DEFAULT_OFF = ["tv", "events"];   // features hidden until the admin turns them on
 
   window.kameiFeature = (k) => {
     if (me() && me().is_admin) return true;

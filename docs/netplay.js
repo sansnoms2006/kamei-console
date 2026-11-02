@@ -127,6 +127,7 @@
     if (!e.data) return;
     try { if (e.source !== frame()) return; } catch (err) { return; }
     if (e.data.type === "started") { liveStart(); if (pendingWith) { const f = pendingWith; pendingWith = null; setTimeout(() => startHosting(f), 800); } }
+    if (e.data.peer && String(e.data.peer).startsWith("rx-")) return;   // Kamei Events régie (race.js)
     if ((e.data.type === "netSig" || e.data.type === "netState") && e.data.peer && e.data.peer !== "p2") return liveFromFrame(e.data);
     if (!host) return;
     if (e.data.type === "netSig") host.ch.send(Object.assign({ from: "host" }, e.data.data));
