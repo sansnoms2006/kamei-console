@@ -1,7 +1,7 @@
 /* Kamei Game Console — automatic updates */
 (function () {
   const APK_VERSION = 9;   // version of the Android app this file ships with
-  const WEB_VERSION = 38;   // version of the interface files
+  const WEB_VERSION = 39;   // version of the interface files
   const N = window.KameiNative || null;
   const sb = window.kameiSB || null;
 
@@ -11,7 +11,7 @@
     webSitePages: "Première fois : sur GitHub → kamei-console → Settings → Pages → Branch « main », dossier « /docs » → Save.",
     ghKey: "Clé GitHub", ghKeyHint: "Colle ici la clé « Kamei app » créée sur GitHub. Elle reste uniquement sur ce téléphone.", ghOk: "Clé GitHub enregistrée et fonctionnelle",
     ghBad: "Cette clé ne fonctionne pas (vérifie qu'elle a accès à kamei-console en lecture et écriture)", ghMissing: "Ajoute d'abord ta clé GitHub", ghRemove: "Retirer la clé de ce téléphone",
-    pubZip: "Mise à jour de l'interface (.zip)", apkAnnounce: "Nouvelle version de l'app (.apk)", apkAnnounceHint: "Poste l'APK sur Discord, puis colle ici le lien du message : tes amis verront « Nouvelle version disponible ».",
+    pubZip: "Mise à jour de l'interface (.zip)", apkAnnounce: "Nouvelle version de l'app (.apk)", apkAnnounceHint: "Mets l'APK dans une Release GitHub (github.com/sansnoms2006/kamei-console/releases/new, fichier nommé Kamei-Game-Console.apk), puis colle ici le lien du fichier : tes amis verront « Nouvelle version disponible » et le bouton « Installer l'appli » de l'onglet Moi s'en sert.",
     apkLinkPh: "Lien du message Discord", announce: "Annoncer la nouvelle version",
     updTitle: "Nouvelle version de l'app", updApkHint: "Télécharge-la puis ouvre le fichier pour l'installer. Tes jeux et sauvegardes sont gardés.",
     updDownload: "Télécharger", later: "Plus tard", updInstalled: "Mise à jour installée ✨", updDownloading: "Mise à jour en cours…",

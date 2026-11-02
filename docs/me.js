@@ -5,16 +5,31 @@
       mePhotoQ: "Photo de profil", mePhotoHint: "Choisis une image : elle sera recadrée en carré. Tous les joueurs pourront la voir, alors reste correct 🙂",
       mePhotoPick: "🖼️ Choisir une image", mePhotoUp: "Envoi de la photo…", mePhotoOk: "Photo mise à jour ✅", mePhotoErr: "La photo n'a pas pu être envoyée",
       meLang: "Langue et thème", meApp: "Vibrations, notifications…", meTour: "Revoir la visite guidée", meBackup: "Changer de téléphone", meBios: "BIOS des consoles",
+      meApkG: "APPLI", meApk: "📱 Installer l'appli (Android uniquement)", meIos: "📱 Mettre l'appli sur l'écran d'accueil",
+      apkTitle: "L'appli Android Kamei Console", apkWhy: "Avec l'appli : notifications même quand elle est fermée, jeux plus fluides, manettes Bluetooth et ton icône sur l'écran d'accueil.",
+      apkDl: "⬇️ Télécharger l'appli (APK)", apkSteps: ["Touche « Télécharger » et attends la fin du téléchargement.", "Ouvre le fichier téléchargé (notification ou dossier Téléchargements).", "Si Android demande : Paramètres → autorise « Installer des applis inconnues » pour ton navigateur, puis reviens.", "Touche « Installer », puis « Ouvrir »."],
+      apkWarn: "⚠️ Avant d'installer : mets un mot de passe (Moi → 🔐 Mot de passe) pour retrouver ton compte dans l'appli avec ton pseudo.", apkSize: "Environ 100 Mo : mieux vaut être en Wi-Fi.", apkNone: "Le lien de l'appli n'est pas encore disponible, réessaie plus tard.",
+      iosSteps: ["Ouvre ce site dans Safari.", "Touche le bouton Partager (le carré avec la flèche ↑).", "Choisis « Sur l'écran d'accueil », puis « Ajouter »."], apkOnly: "🤖 Uniquement pour les téléphones et tablettes Android (pas pour iPhone ni iPad).", iosHint: "⚠️ L'appli existe seulement pour Android : elle ne s'installe pas sur iPhone ou iPad. Par contre, tu peux mettre Kamei Console sur ton écran d'accueil comme une vraie appli.",
       meAdmin: "Administration", navPalm: "🏆 Palmarès des tournois", meLogout: "Se déconnecter", meKamei: "Mon Kamei", meCopy: "Copier" },
     nl: { meProfile: "MIJN PROFIEL", meSettings: "INSTELLINGEN", meData: "GEGEVENS", meAccount: "ACCOUNT", mePhoto: "Foto wijzigen", mePhotoDel: "Foto verwijderen",
       mePhotoQ: "Profielfoto", mePhotoHint: "Kies een afbeelding: ze wordt vierkant bijgesneden. Alle spelers kunnen ze zien, dus hou het netjes 🙂",
       mePhotoPick: "🖼️ Afbeelding kiezen", mePhotoUp: "Foto uploaden…", mePhotoOk: "Foto bijgewerkt ✅", mePhotoErr: "De foto kon niet worden verstuurd",
       meLang: "Taal en thema", meApp: "Trillen, meldingen…", meTour: "Rondleiding opnieuw bekijken", meBackup: "Van telefoon wisselen", meBios: "BIOS van consoles",
+      meApkG: "APP", meApk: "📱 App installeren (alleen Android)", meIos: "📱 App op je beginscherm zetten",
+      apkTitle: "De Android-app Kamei Console", apkWhy: "Met de app: meldingen ook als ze gesloten is, vlotter spelen, Bluetooth-controllers en je icoon op het beginscherm.",
+      apkDl: "⬇️ App downloaden (APK)", apkSteps: ["Tik op « Downloaden » en wacht tot het klaar is.", "Open het gedownloade bestand (melding of map Downloads).", "Vraagt Android het: Instellingen → sta « Onbekende apps installeren » toe voor je browser en ga terug.", "Tik op « Installeren » en dan « Openen »."],
+      apkWarn: "⚠️ Voor je installeert: kies een wachtwoord (Ik → 🔐 Wachtwoord) om je account in de app terug te vinden met je naam.", apkSize: "Ongeveer 100 MB: liefst via wifi.", apkNone: "De link van de app is nog niet beschikbaar, probeer later opnieuw.",
+      iosSteps: ["Open deze site in Safari.", "Tik op de deelknop (vierkant met pijl ↑).", "Kies « Zet op beginscherm » en dan « Voeg toe »."], apkOnly: "🤖 Alleen voor Android-telefoons en -tablets (niet voor iPhone of iPad).", iosHint: "⚠️ De app bestaat alleen voor Android: ze werkt niet op iPhone of iPad. Wel kun je Kamei Console als een echte app op je beginscherm zetten.",
       meAdmin: "Beheer", navPalm: "🏆 Erelijst van toernooien", meLogout: "Uitloggen", meKamei: "Mijn Kamei", meCopy: "Kopiëren" },
     en: { meProfile: "MY PROFILE", meSettings: "SETTINGS", meData: "DATA", meAccount: "ACCOUNT", mePhoto: "Change photo", mePhotoDel: "Remove photo",
       mePhotoQ: "Profile photo", mePhotoHint: "Pick an image: it will be cropped to a square. Every player can see it, so keep it clean 🙂",
       mePhotoPick: "🖼️ Pick an image", mePhotoUp: "Uploading photo…", mePhotoOk: "Photo updated ✅", mePhotoErr: "The photo couldn't be uploaded",
       meLang: "Language and theme", meApp: "Vibration, notifications…", meTour: "Replay the guided tour", meBackup: "Switch phone", meBios: "Console BIOS files",
+      meApkG: "APP", meApk: "📱 Install the app (Android only)", meIos: "📱 Add the app to your home screen",
+      apkTitle: "The Kamei Console Android app", apkWhy: "With the app: notifications even when it's closed, smoother games, Bluetooth controllers and your icon on the home screen.",
+      apkDl: "⬇️ Download the app (APK)", apkSteps: ["Tap « Download » and wait until it's done.", "Open the downloaded file (notification or Downloads folder).", "If Android asks: Settings → allow « Install unknown apps » for your browser, then come back.", "Tap « Install », then « Open »."],
+      apkWarn: "⚠️ Before installing: set a password (Me → 🔐 Password) to find your account in the app with your username.", apkSize: "About 100 MB: Wi-Fi is better.", apkNone: "The app link isn't available yet, try again later.",
+      iosSteps: ["Open this site in Safari.", "Tap the Share button (square with an ↑ arrow).", "Choose « Add to Home Screen », then « Add »."], apkOnly: "🤖 Only for Android phones and tablets (not iPhone or iPad).", iosHint: "⚠️ The app only exists for Android: it can't be installed on iPhone or iPad. However, you can put Kamei Console on your home screen like a real app.",
       meAdmin: "Administration", navPalm: "🏆 Tournament trophies", meLogout: "Log out", meKamei: "My Kamei", meCopy: "Copy" },
   };
   for (const k in L) Object.assign(I18N[k], L[k]);
@@ -81,6 +96,7 @@
       ])}
       ${grp(t("meSettings"), [row("meLang", t("meLang"), lang.toUpperCase()), row("meApp", t("meApp")), window.kameiTour ? row("meTour", t("meTour")) : ""])}
       ${grp(t("meData"), [row("meBios", t("meBios")), window.kameiBackup ? row("meBackup", t("meBackup")) : ""])}
+      ${window.KameiNative ? "" : grp(t("meApkG"), [row("meApk", /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ? t("meApk") : t("meApk"))])}
       ${grp(t("meAccount"), [window.kameiSecure ? row("meSecure", t("secure")) : "", u.is_admin ? row("meAdmin", t("meAdmin")) : "", `<button id="meOut" class="danger"><span>${t("meLogout")}</span></button>`])}`;
     const on = (id, fn) => { const b = v.querySelector("#" + id); if (b) b.onclick = fn; };
     on("mePhoto", photoSheet);
@@ -95,6 +111,7 @@
     on("meBackup", () => window.kameiBackup.open());
     on("meAdmin", () => window.kameiAdminSheet());
     on("meSecure", () => window.kameiSecure());
+    on("meApk", apkSheet);
     if (window.kameiSecureInfo && v.querySelector("#meSecure")) window.kameiSecureInfo().then((i) => {
       const b = v.querySelector("#meSecure"); if (!b) return;
       const val = b.querySelector(".v");
@@ -103,6 +120,27 @@
     }, () => {});
     on("meOut", () => window.kameiLogout && window.kameiLogout());
     paintPet();
+  }
+
+  /* ---------- install the Android app (website only) ---------- */
+  const APK_DEFAULT = "https://github.com/sansnoms2006/kamei-console/releases/latest/download/Kamei-Game-Console.apk";
+  async function apkSheet() {
+    const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const ol = (list) => `<ol style="margin:6px 0 12px;padding-left:20px;line-height:1.55;font-size:14px">${list.map((x) => `<li>${esc(x)}</li>`).join("")}</ol>`;
+    if (ios) {
+      openSheet(`<h3>${t("meApk")}</h3><p class="hint" style="color:#f59e0b">${t("iosHint")}</p><h4 style="margin:10px 0 0">${t("meIos")}</h4>${ol(t("iosSteps"))}<div class="btns"><button id="apBack">←</button></div>`);
+      document.getElementById("apBack").onclick = closeSheet;
+      return;
+    }
+    let url = APK_DEFAULT;
+    try { const j = window.KameiGH && (await window.KameiGH.readJSON("updates/latest.json")); if (j && j.apk_url && /\.apk(\?|$)|releases\//i.test(j.apk_url)) url = j.apk_url; } catch (e) {}
+    const anon = window.kameiSecureInfo ? (await window.kameiSecureInfo().catch(() => ({}))) : {};
+    openSheet(`<h3>${t("apkTitle")}</h3><p class="hint" style="font-weight:700;color:var(--text)">${t("apkOnly")}</p><p class="hint">${t("apkWhy")}</p>
+      ${anon && anon.anon ? `<p class="hint" style="color:#f59e0b">${t("apkWarn")}</p>${window.kameiSecure ? `<button class="row" id="apSec">${t("secure")}</button>` : ""}` : ""}
+      <a class="row ok-row" id="apDl" href="${esc(url)}" rel="noopener" style="display:block;text-align:center;text-decoration:none">${t("apkDl")}</a>
+      <p class="hint" style="text-align:center">${t("apkSize")}</p>${ol(t("apkSteps"))}<div class="btns"><button id="apBack">←</button></div>`);
+    document.getElementById("apBack").onclick = closeSheet;
+    if (document.getElementById("apSec")) document.getElementById("apSec").onclick = () => window.kameiSecure();
   }
 
   /* ---------- profile photo: crop to a 256 px square, upload to avatars/<uid>/ ---------- */
