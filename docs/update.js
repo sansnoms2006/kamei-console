@@ -2,7 +2,7 @@
 (function () {
   // version of the Android app running this page (v10 adds window.KameiNative2)
   const APK_VERSION = (() => { try { return window.KameiNative2 && window.KameiNative2.version ? window.KameiNative2.version() : 9; } catch (e) { return 9; } })();
-  const WEB_VERSION = 42;   // version of the interface files
+  const WEB_VERSION = 44;   // version of the interface files
   const N = window.KameiNative || null;
   const sb = window.kameiSB || null;
 
@@ -13,7 +13,7 @@
     ghKey: "Clé GitHub", ghKeyHint: "Colle ici la clé « Kamei app » créée sur GitHub. Elle reste uniquement sur ce téléphone.", ghOk: "Clé GitHub enregistrée et fonctionnelle",
     ghBad: "Cette clé ne fonctionne pas (vérifie qu'elle a accès à kamei-console en lecture et écriture)", ghMissing: "Ajoute d'abord ta clé GitHub", ghRemove: "Retirer la clé de ce téléphone",
     pubZip: "Mise à jour de l'interface (.zip)", apkAnnounce: "Nouvelle version de l'app (.apk)", apkAnnounceHint: "Mets l'APK dans une Release GitHub (github.com/sansnoms2006/kamei-console/releases/new, fichier nommé Kamei-Game-Console.apk), puis colle ici le lien du fichier : tes amis verront « Nouvelle version disponible » et le bouton « Installer l'appli » de l'onglet Moi s'en sert.",
-    apkLinkPh: "Lien du message Discord", announce: "Annoncer la nouvelle version",
+    apkLinkPh: "Lien de l'APK (Release GitHub)", announce: "Annoncer la nouvelle version",
     updTitle: "Nouvelle version de l'app", updApkHint: "Télécharge-la puis ouvre le fichier pour l'installer. Tes jeux et sauvegardes sont gardés.",
     updDownload: "Télécharger", later: "Plus tard", updInstalled: "Mise à jour installée ✨", updDownloading: "Mise à jour en cours…",
     publish: "📦 Publier une mise à jour", publishHint: "Choisis le fichier que Claude t'a donné : un .zip (mise à jour rapide) ou un .apk (nouvelle version de l'app).",
@@ -28,7 +28,7 @@
     ghKey: "GitHub-sleutel", ghKeyHint: "Plak hier de sleutel « Kamei app » van GitHub. Ze blijft alleen op deze telefoon.", ghOk: "GitHub-sleutel opgeslagen en werkt",
     ghBad: "Deze sleutel werkt niet (controleer lees- en schrijftoegang tot kamei-console)", ghMissing: "Voeg eerst je GitHub-sleutel toe", ghRemove: "Sleutel van deze telefoon verwijderen",
     pubZip: "Update van de interface (.zip)", apkAnnounce: "Nieuwe app-versie (.apk)", apkAnnounceHint: "Post de APK op Discord en plak hier de link van het bericht: je vrienden zien « Nieuwe versie beschikbaar ».",
-    apkLinkPh: "Link van het Discord-bericht", announce: "Nieuwe versie aankondigen",
+    apkLinkPh: "Link van de APK (GitHub Release)", announce: "Nieuwe versie aankondigen",
     updTitle: "Nieuwe versie van de app", updApkHint: "Download ze en open het bestand om te installeren. Je spellen en opslag blijven bewaard.",
     updDownload: "Downloaden", later: "Later", updInstalled: "Update geïnstalleerd ✨", updDownloading: "Bezig met updaten…",
     publish: "📦 Update publiceren", publishHint: "Kies het bestand dat Claude je gaf: een .zip (snelle update) of een .apk (nieuwe app-versie).",
@@ -43,7 +43,7 @@
     ghKey: "GitHub key", ghKeyHint: "Paste the « Kamei app » key created on GitHub. It stays on this phone only.", ghOk: "GitHub key saved and working",
     ghBad: "This key doesn't work (check it has read and write access to kamei-console)", ghMissing: "Add your GitHub key first", ghRemove: "Remove the key from this phone",
     pubZip: "Interface update (.zip)", apkAnnounce: "New app version (.apk)", apkAnnounceHint: "Post the APK on Discord, then paste the message link here: your friends will see « New version available ».",
-    apkLinkPh: "Discord message link", announce: "Announce the new version",
+    apkLinkPh: "APK link (GitHub Release)", announce: "Announce the new version",
     updTitle: "New version of the app", updApkHint: "Download it and open the file to install. Your games and saves are kept.",
     updDownload: "Download", later: "Later", updInstalled: "Update installed ✨", updDownloading: "Updating…",
     publish: "📦 Publish an update", publishHint: "Pick the file Claude gave you: a .zip (quick update) or an .apk (new app version).",

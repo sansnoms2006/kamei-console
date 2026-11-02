@@ -116,7 +116,7 @@
     const c = window.kameiConfig ? window.kameiConfig() : {};
     const f = Object.assign({}, c.features || {});
     openSheet(`<h3>${t("adFcm")}</h3><p class="hint">${t("adFcmHint")}</p>
-      <p class="hint"><b>${f.fcm && f.fcm.projectId ? esc(t("adFcmOn")(f.fcm.projectId)) : t("adFcmOff")}</b></p>
+      <p class="hint"><b>${f.fcm && f.fcm.projectId ? esc(t("adFcmOn", f.fcm.projectId)) : t("adFcmOff")}</b></p>
       <textarea id="fcmJ" placeholder="${t("adFcmPh")}" style="width:100%;min-height:150px;box-sizing:border-box;border-radius:12px;padding:10px;background:var(--bg);color:var(--text);border:1px solid var(--line);font:12px ui-monospace,monospace"></textarea>
       <div class="btns" style="margin-top:10px"><button id="aBack">←</button>${f.fcm ? `<button id="fcmDel" class="danger">${t("adFcmDel")}</button>` : ""}<button class="ok" id="fcmGo">${t("adFcmSave")}</button></div>
       ${f.fcm ? `<button class="row ok-row" id="fcmTest" style="margin-top:12px">🧪 Tester l'envoi vers mes téléphones</button><div id="fcmRes" class="hint" style="white-space:pre-wrap;margin-top:8px"></div>` : ""}`);
