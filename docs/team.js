@@ -109,7 +109,7 @@
     if (b) { e.preventDefault(); e.stopPropagation(); page(); }
   }, true);
 
-  window.kameiTeam = { refresh, get, banner, credit, page, jobName };
+  window.kameiTeam = { refresh, get, banner, credit, page, jobName, list: () => list };
   setTimeout(refresh, 1800);
   setInterval(refresh, 10 * 60000);
 })();

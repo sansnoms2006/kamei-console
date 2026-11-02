@@ -14,8 +14,9 @@
         catalogue: ["📚 Catalogue", "Les jeux Kamei Productions et des jeux libres : touche « Installer » et le jeu arrive directement dans ta console."],
         requests: ["📨 Demandes", "Tu veux un jeu ? Demande-le ici. Tu suis où en est ta demande (en cours, acceptée, dispo) et tu es prévenu."],
         tv: ["📺 Kamei TV", "Les lives de Kamei Production, en direct dans l'appli. Quand un live commence, la TV s'allume toute seule et tu reçois une notification."],
+        radio: ["🎵 Kamei Radio", "La musique des artistes de la team Kamei : un lecteur avec pochette, aléatoire et liens Spotify / Deezer / YouTube. La musique continue pendant que tu navigues (mini lecteur en bas)."],
         events: ["🏆 Kamei Events", "Les tournois du mois : affiches, compte à rebours des inscriptions et calendrier. Touche une affiche pour t'inscrire."],
-        events2: ["Badges 🥇🥈🥉", "Le podium gagne un badge sur le jeu du tournoi. Si tu rejoues, ton badge est remis en jeu : « Lucas 🥇 défend son titre » ! Ton palmarès est dans Moi."],
+        events2: ["🏆 Champion Kamei", "Gagne un tournoi et tu deviens Champion Kamei : trophée doré qui tourne, bannière et lueur autour de ton avatar. 2e et 3e : médailles 🥈 🥉. Tu gardes ton titre tant que tu ne rejoues pas… et si tu rejoues, tu le remets en jeu !"],
         chat: ["💬 Messages", "Discute avec tes amis (texte et photos) et rejoins le salon Général 🌍 avec tous les joueurs."],
         friends: ["👥 Amis", "Ajoute un ami avec son code ami. Sur sa fiche : lui écrire, jouer en ligne ensemble, le regarder jouer en direct, échanger des Pokémon et voir son Kamei."],
         sessions: ["🕹️ Sessions", "Ton temps de jeu, tes parties et à quoi jouent tes amis."],
@@ -25,7 +26,9 @@
         secure: ["🔐 Mot de passe", "Important : ton compte est rangé sur ce téléphone. Mets un mot de passe pour pouvoir te connecter avec ton pseudo sur un autre téléphone."],
         lang: ["Langue et thèmes", "Change la langue (FR, NL, EN) et le thème de l'appli : Halloween, Noël… et plein d'autres."],
         backup: ["Changer de téléphone", "Emporte tes jeux et tes sauvegardes vers un nouveau téléphone."],
+        team: ["👥 La team Kamei", "Voici les personnes qui font vivre Kamei :"],
         bye: ["À toi de jouer !", "Tu peux revoir cette visite quand tu veux : Moi → Revoir la visite guidée. Amuse-toi bien ! 💚"],
+        teamNone: "La team Kamei s'agrandit bientôt !",
       } },
     nl: { tourNext: "Volgende ➜", tourPrev: "‹", tourSkip: "Overslaan", tourEnd: "Let's go! 🎮", tourAgain: "🦎 Rondleiding opnieuw bekijken",
       tourS: {
@@ -40,8 +43,9 @@
         catalogue: ["📚 Catalogus", "Spellen van Kamei Productions en vrije spellen: tik op « Installeren » en het spel staat op je console."],
         requests: ["📨 Aanvragen", "Wil je een spel? Vraag het hier aan en volg je aanvraag (bezig, aanvaard, beschikbaar)."],
         tv: ["📺 Kamei TV", "De livestreams van Kamei Production in de app. Als een live start, gaat de tv vanzelf aan en krijg je een melding."],
+        radio: ["🎵 Kamei Radio", "Muziek van de artiesten van team Kamei: een speler met hoes, shuffle en links naar Spotify / Deezer / YouTube. De muziek speelt verder terwijl je rondkijkt (minispeler onderaan)."],
         events: ["🏆 Kamei Events", "De toernooien van de maand: affiches, aftellen voor de inschrijvingen en kalender. Tik op een affiche om je in te schrijven."],
-        events2: ["Badges 🥇🥈🥉", "Het podium wint een badge voor het spel. Speel je opnieuw, dan staat je badge op het spel: « Lucas 🥇 verdedigt zijn titel »! Je erelijst staat bij Ik."],
+        events2: ["🏆 Kamei-kampioen", "Win een toernooi en je wordt Kamei-kampioen: draaiende gouden trofee, banner en gloed rond je avatar. 2e en 3e: medailles 🥈 🥉. Je houdt je titel zolang je niet opnieuw speelt… en speel je opnieuw, dan zet je hem op het spel!"],
         chat: ["💬 Berichten", "Chat met je vrienden (tekst en foto's) en ga naar de algemene chat 🌍 met alle spelers."],
         friends: ["👥 Vrienden", "Voeg een vriend toe met zijn vriendencode. Op zijn fiche: berichten, samen online spelen, live meekijken, Pokémon ruilen en zijn Kamei zien."],
         sessions: ["🕹️ Sessies", "Je speeltijd, je sessies en wat je vrienden spelen."],
@@ -51,7 +55,9 @@
         secure: ["🔐 Wachtwoord", "Belangrijk: je account staat op deze telefoon. Kies een wachtwoord om met je naam op een andere telefoon in te loggen."],
         lang: ["Taal en thema's", "Kies de taal (FR, NL, EN) en het thema: Halloween, Kerstmis… en nog veel meer."],
         backup: ["Van telefoon wisselen", "Neem je spellen en opslagen mee naar een nieuwe telefoon."],
+        team: ["👥 Team Kamei", "Dit zijn de mensen achter Kamei:"],
         bye: ["Aan jou!", "Deze rondleiding opnieuw zien? Ik → Rondleiding opnieuw bekijken. Veel plezier! 💚"],
+        teamNone: "Team Kamei groeit binnenkort!",
       } },
     en: { tourNext: "Next ➜", tourPrev: "‹", tourSkip: "Skip", tourEnd: "Let's go! 🎮", tourAgain: "🦎 Replay the guided tour",
       tourS: {
@@ -66,8 +72,9 @@
         catalogue: ["📚 Catalogue", "Kamei Productions games and free games: tap « Install » and the game lands in your console."],
         requests: ["📨 Requests", "Want a game? Ask for it here and follow your request (in progress, accepted, available)."],
         tv: ["📺 Kamei TV", "Kamei Production's lives, inside the app. When a live starts, the TV switches on by itself and you get a notification."],
+        radio: ["🎵 Kamei Radio", "Music by the Kamei team's artists: a player with cover art, shuffle and Spotify / Deezer / YouTube links. The music keeps playing while you browse (mini player at the bottom)."],
         events: ["🏆 Kamei Events", "This month's tournaments: posters, sign-up countdowns and a calendar. Tap a poster to sign up."],
-        events2: ["Badges 🥇🥈🥉", "The podium wins a badge for the game. Play again and your badge is at stake: « Lucas 🥇 is defending the title »! Your trophies are in Me."],
+        events2: ["🏆 Kamei Champion", "Win a tournament and you become Kamei Champion: a spinning gold trophy, a banner and a glow around your avatar. 2nd and 3rd: medals 🥈 🥉. You keep your title as long as you don't play again… and if you do, it's at stake!"],
         chat: ["💬 Messages", "Chat with your friends (text and photos) and join the General room 🌍 with every player."],
         friends: ["👥 Friends", "Add a friend with their friend code. On their page: message them, play online together, watch them live, trade Pokémon and see their Kamei."],
         sessions: ["🕹️ Sessions", "Your play time, your sessions and what your friends are playing."],
@@ -77,7 +84,9 @@
         secure: ["🔐 Password", "Important: your account lives on this phone. Set a password to log in with your username on another phone."],
         lang: ["Language and themes", "Change the language (FR, NL, EN) and the app theme: Halloween, Christmas… and many more."],
         backup: ["Switch phone", "Take your games and saves to a new phone."],
+        team: ["👥 The Kamei team", "Here are the people who make Kamei happen:"],
         bye: ["Your turn!", "To see this tour again: Me → Replay the guided tour. Have fun! 💚"],
+        teamNone: "The Kamei team is growing soon!",
       } },
   };
   for (const k in L) Object.assign(I18N[k], L[k]);
@@ -97,8 +106,9 @@
     ["catalogue", "catalogue", "#v-catalogue"],
     ["requests", "requests", "#v-requests"],
     ["tv", "tv", "#v-tv .tvset, #v-tv"],
+    ["radio", "radio", "#v-radio .rnow, #v-radio"],
     ["events", "events", "#v-events .evcal, #v-events"],
-    ["events2", "events", '#v-events .evc, [data-nv="events"]'],
+    ["events2", "events", '#v-events .thall, #v-events .evc, [data-nv="events"]'],
     ["chat", "chat", "#v-chat"],
     ["friends", "friends", "#v-friends"],
     ["sessions", "sessions", "#v-sessions"],
@@ -108,6 +118,7 @@
     ["secure", "me", "#meSecure"],
     ["lang", "me", "#meLang"],
     ["backup", "me", "#meBackup"],
+    ["team", "me", "#v-me .sban, #meTeam"],
     ["bye", "consoles", null],
   ];
 
@@ -147,7 +158,7 @@
     document.body.appendChild(box);
     const hole = box.querySelector(".hole"), bub = box.querySelector(".bub");
     let i = 0, busy = false;
-    const done = async () => { try { localStorage.setItem("kamei-tour-done", "2"); } catch (e) {} box.remove(); await openTab("consoles"); window.scrollTo(0, 0); };
+    const done = async () => { try { localStorage.setItem("kamei-tour-done", "3"); } catch (e) {} box.remove(); await openTab("consoles"); window.scrollTo(0, 0); };
     // a step whose element doesn't exist (feature off, no game yet…) is skipped
     async function show(dir) {
       if (busy) return; busy = true;
@@ -159,7 +170,11 @@
           await openTab(tab);
           const el = sel ? firstVis(sel) : null;
           if (sel && !el) { i += dir || 1; continue; }
-          const [title, text] = t("tourS")[k];
+          let [title, text] = t("tourS")[k];
+          if (k === "team") {
+            const tm = window.kameiTeam ? (await (window.kameiTeam.refresh(), wait(400)), window.kameiTeam.list ? window.kameiTeam.list() : []) : [];
+            text = tm.length ? text + " " + tm.slice(0, 6).map((m) => `${m.founder ? "👑" : "⭐"} ${m.pseudo} (${window.kameiTeam.jobName(m)})`).join(", ") + "." : t("tourS").teamNone;
+          }
           bub.querySelector("b").textContent = title;
           bub.querySelector("p").textContent = text;
           bub.querySelector("span").textContent = `${i + 1} / ${STEPS.length}`;
@@ -196,7 +211,7 @@
 
   // first launch: once logged in and the screen is ready
   const iv = setInterval(() => {
-    let seen = false; try { seen = localStorage.getItem("kamei-tour-done") === "2"; } catch (e) {}
+    let seen = false; try { seen = localStorage.getItem("kamei-tour-done") === "3"; } catch (e) {}
     if (seen) return clearInterval(iv);
     if (!me() || !vis(document.querySelector("#deck"))) return;
     if (document.querySelector("#sheetBg.on") || document.querySelector("#playerWrap.on, .player.on")) return;
