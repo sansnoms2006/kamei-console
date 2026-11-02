@@ -2,7 +2,7 @@
 (function () {
   // version of the Android app running this page (v10 adds window.KameiNative2)
   const APK_VERSION = (() => { try { return window.KameiNative2 && window.KameiNative2.version ? window.KameiNative2.version() : 9; } catch (e) { return 9; } })();
-  const WEB_VERSION = 53;   // version of the interface files
+  const WEB_VERSION = 54;   // version of the interface files
   const N = window.KameiNative || null;
   const sb = window.kameiSB || null;
 
