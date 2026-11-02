@@ -17,7 +17,7 @@
     finishProfile: "Choisis ton pseudo", finishHint: "Il ne manque plus que ton pseudo et ta couleur.", go: "C'est parti !", retry: "Réessayer",
     admin: "🛡️ Admin", adminTitle: "Gestion des comptes", accounts: "comptes", onlineNow: "en ligne", playTime: "de jeu",
     clearPhoto: "🖼️ Retirer sa photo de profil", searchUser: "Rechercher un joueur…", banned: "Banni", isAdmin: "Admin", created: (a) => `Inscrit ${a}`,
-    renameUser: "Renommer", ban: "Bannir", unban: "Débannir", makeAdmin: "Rendre admin", roles: "🧑‍💼 Postes", rolesHint: "Ce joueur gère seulement ce que tu coches. Il ne devient pas admin.", roleNames: { music: "🎵 Musique (Kamei Radio)", requests: "📨 Demandes de jeux", events: "🏆 Événements", tv: "📺 Kamei TV + régie" }, myRoles: "Mes postes", removeAdmin: "Retirer admin",
+    renameUser: "Renommer", ban: "Bannir", unban: "Débannir", makeAdmin: "Rendre admin", ttl: "🏆 Titre Kamei", ttlOpts: ["Aucun", "🏆 Champion Kamei", "🥈 Médaille d'argent", "🥉 Médaille de bronze"], ttlGame: "Pour quel jeu ? (facultatif)", ttlOk: "Titre mis à jour", roles: "🧑‍💼 Postes", rolesHint: "Ce joueur gère seulement ce que tu coches. Il ne devient pas admin.", roleNames: { music: "🎵 Musique (Kamei Radio)", requests: "📨 Demandes de jeux", events: "🏆 Événements", tv: "📺 Kamei TV + régie" }, myRoles: "Mes postes", removeAdmin: "Retirer admin",
     newCode: "Nouveau code ami", deleteUser: "Supprimer le compte", deleteUserQ: (n) => `Supprimer définitivement le compte de ${n} ?`,
     deleteUserHint: "Son profil, ses amis et son historique seront effacés. Ça ne peut pas être annulé.", done: "C'est fait",
     youBanned: "Ce compte a été banni", notYourself: "Tu ne peux pas faire ça sur ton propre compte", friendsN: (n) => `${n} ami${n > 1 ? "s" : ""}`, gamesN: (n) => `${n} partie${n > 1 ? "s" : ""}`,
@@ -45,7 +45,7 @@
     finishProfile: "Kies je gebruikersnaam", finishHint: "Alleen je naam en kleur ontbreken nog.", go: "Let's go!", retry: "Opnieuw proberen",
     admin: "🛡️ Admin", adminTitle: "Accounts beheren", accounts: "accounts", onlineNow: "online", playTime: "speeltijd",
     clearPhoto: "🖼️ Profielfoto verwijderen", searchUser: "Zoek een speler…", banned: "Verbannen", isAdmin: "Admin", created: (a) => `Ingeschreven ${a}`,
-    renameUser: "Naam wijzigen", ban: "Verbannen", unban: "Verbanning opheffen", makeAdmin: "Admin maken", roles: "🧑‍💼 Functies", rolesHint: "Deze speler beheert alleen wat je aanvinkt. Hij wordt geen admin.", roleNames: { music: "🎵 Muziek (Kamei Radio)", requests: "📨 Spelaanvragen", events: "🏆 Evenementen", tv: "📺 Kamei TV + regie" }, myRoles: "Mijn functies", removeAdmin: "Admin afnemen",
+    renameUser: "Naam wijzigen", ban: "Verbannen", unban: "Verbanning opheffen", makeAdmin: "Admin maken", ttl: "🏆 Kamei-titel", ttlOpts: ["Geen", "🏆 Kamei-kampioen", "🥈 Zilveren medaille", "🥉 Bronzen medaille"], ttlGame: "Voor welk spel? (optioneel)", ttlOk: "Titel bijgewerkt", roles: "🧑‍💼 Functies", rolesHint: "Deze speler beheert alleen wat je aanvinkt. Hij wordt geen admin.", roleNames: { music: "🎵 Muziek (Kamei Radio)", requests: "📨 Spelaanvragen", events: "🏆 Evenementen", tv: "📺 Kamei TV + regie" }, myRoles: "Mijn functies", removeAdmin: "Admin afnemen",
     newCode: "Nieuwe vriendencode", deleteUser: "Account verwijderen", deleteUserQ: (n) => `Account van ${n} definitief verwijderen?`,
     deleteUserHint: "Profiel, vrienden en geschiedenis worden gewist. Dit kan niet ongedaan worden.", done: "Gedaan",
     youBanned: "Dit account is verbannen", notYourself: "Dat kan niet op je eigen account", friendsN: (n) => `${n} vriend${n > 1 ? "en" : ""}`, gamesN: (n) => `${n} spel${n > 1 ? "len" : ""}`,
@@ -73,7 +73,7 @@
     finishProfile: "Pick your username", finishHint: "Only your username and color are missing.", go: "Let's go!", retry: "Retry",
     admin: "🛡️ Admin", adminTitle: "Manage accounts", accounts: "accounts", onlineNow: "online", playTime: "played",
     clearPhoto: "🖼️ Remove profile photo", searchUser: "Search a player…", banned: "Banned", isAdmin: "Admin", created: (a) => `Joined ${a}`,
-    renameUser: "Rename", ban: "Ban", unban: "Unban", makeAdmin: "Make admin", roles: "🧑‍💼 Jobs", rolesHint: "This player only manages what you tick. They do not become admin.", roleNames: { music: "🎵 Music (Kamei Radio)", requests: "📨 Game requests", events: "🏆 Events", tv: "📺 Kamei TV + control room" }, myRoles: "My jobs", removeAdmin: "Remove admin",
+    renameUser: "Rename", ban: "Ban", unban: "Unban", makeAdmin: "Make admin", ttl: "🏆 Kamei title", ttlOpts: ["None", "🏆 Kamei Champion", "🥈 Silver medal", "🥉 Bronze medal"], ttlGame: "For which game? (optional)", ttlOk: "Title updated", roles: "🧑‍💼 Jobs", rolesHint: "This player only manages what you tick. They do not become admin.", roleNames: { music: "🎵 Music (Kamei Radio)", requests: "📨 Game requests", events: "🏆 Events", tv: "📺 Kamei TV + control room" }, myRoles: "My jobs", removeAdmin: "Remove admin",
     newCode: "New friend code", deleteUser: "Delete account", deleteUserQ: (n) => `Permanently delete ${n}'s account?`,
     deleteUserHint: "Profile, friends and history will be erased. This can't be undone.", done: "Done",
     youBanned: "This account has been banned", notYourself: "You can't do that to your own account", friendsN: (n) => `${n} friend${n > 1 ? "s" : ""}`, gamesN: (n) => `${n} game${n > 1 ? "s" : ""}`,
@@ -103,7 +103,8 @@
     const c = (p && p.color) || "#2a2a3d";
     const letter = p ? esc(p.pseudo.slice(0, 1).toUpperCase()) : "👤";
     const photo = p && p.avatar_url && /^[0-9a-f-]{36}\/[\w.-]+$/i.test(p.avatar_url) && sb ? sb.storage.from("avatars").getPublicUrl(p.avatar_url).data.publicUrl : "";
-    return `<span class="av" style="--ac:${c};width:${size}px;height:${size}px;font-size:${Math.round(size * .45)}px">${letter}${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" onerror="this.remove()">` : ""}</span>`;
+    const tg = p && window.kameiTitles ? window.kameiTitles.avClass(p.id, size) : "";
+    return `<span class="av${tg}" style="--ac:${c};width:${size}px;height:${size}px;font-size:${Math.round(size * .45)}px">${letter}${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" onerror="this.remove()">` : ""}</span>`;
   }
   function paintBtn() { btn.innerHTML = avatarHTML(me, 34) + (me ? "" : ""); btn.title = me ? me.pseudo : t("account"); }
 
@@ -417,6 +418,9 @@ const ROLE_ICON = { music: "🎵", requests: "📨", events: "🏆", tv: "📺" 
         ${t("myCode").replace(/^Ton |^Jouw |^Your /, "")} : <b class="code">${esc(u.friend_code)}</b></p>
       <button class="row" id="uRename">${t("renameUser")}</button>
       <button class="row" id="uCode">${t("newCode")}</button>
+      <h3 style="margin:14px 0 4px">${t("ttl")}</h3>
+      <div class="two" style="display:flex;gap:8px"><select id="uTtl" style="flex:1;min-width:0;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#0f1115;color:var(--text);font:600 15px Inter,sans-serif">${t("ttlOpts").map((lb, i) => `<option value="${i}" ${((window.kameiTitles && window.kameiTitles.get(u.id)) || { rank: 0 }).rank === i ? "selected" : ""}>${lb}</option>`).join("")}</select>
+        <input id="uTtlG" style="flex:1" maxlength="60" placeholder="${t("ttlGame")}" value="${esc(((window.kameiTitles && window.kameiTitles.get(u.id)) || {}).game || "")}"></div>
       ${self || u.is_admin ? "" : `<h3 style="margin:14px 0 4px">${t("roles")}</h3><p class="hint" style="margin:0 0 6px">${t("rolesHint")}</p>
         ${Object.entries(t("roleNames")).map(([k, lb]) => `<label class="row" style="display:flex;gap:10px;align-items:center"><span style="flex:1">${lb}</span>
           <input type="checkbox" data-role="${k}" ${(u.roles || []).includes(k) ? "checked" : ""} style="width:22px;height:22px;margin:0;accent-color:var(--tacc,#8fc63f)"></label>`).join("")}`}
@@ -441,6 +445,14 @@ const ROLE_ICON = { music: "🎵", requests: "📨", events: "🏆", tv: "📺" 
       };
     };
     document.getElementById("uCode").onclick = async () => { const res = await sb.rpc("admin_new_code", { uid: u.id }); if (res.error) return toast(errMsg(res.error)); u.friend_code = res.data; if (self) me.friend_code = res.data; toast(t("done")); adminUser(u); };
+    const saveTtl = async () => {
+      const r = +document.getElementById("uTtl").value, g = document.getElementById("uTtlG").value.trim();
+      const res = await sb.rpc("admin_title_set", { uid: u.id, r: r || null, streak_: 1, game_: g || null });
+      if (res.error) return toast(errMsg(res.error), 3000);
+      toast(t("ttlOk")); if (window.kameiTitles) window.kameiTitles.refresh();
+    };
+    document.getElementById("uTtl").onchange = saveTtl;
+    document.getElementById("uTtlG").onchange = () => { if (+document.getElementById("uTtl").value) saveTtl(); };
     document.querySelectorAll("#sheet input[data-role]").forEach((x) => x.onchange = async () => {
       const want = [...document.querySelectorAll("#sheet input[data-role]")].filter((y) => y.checked).map((y) => y.dataset.role);
       const res = await sb.rpc("admin_set_roles", { uid: u.id, value: want });

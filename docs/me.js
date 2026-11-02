@@ -89,6 +89,7 @@
         <div style="min-width:0"><p class="mname">${esc(u.pseudo)} ${u.is_admin ? `<span class="badge">Admin</span>` : ""}</p>
         <div class="mcode"><span>${esc(u.friend_code || "")}</span><button class="mini" id="meCopy">${t("meCopy")}</button></div>
         ${!u.is_admin && (u.roles || []).length && t("roleNames") ? `<p class="hint" style="margin:6px 0 0;font-size:12.5px">${t("myRoles")} : ${u.roles.map((r) => esc(t("roleNames")[r] || r)).join(" · ")}</p>` : ""}</div></div>
+      ${window.kameiTitles ? window.kameiTitles.banner(u.id) : ""}
       <div id="mePetBox"></div>
       ${grp(t("meProfile"), [
         window.kameiEvents && F("events") ? row("mePalm", t("navPalm")) : "",

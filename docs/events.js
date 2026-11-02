@@ -12,13 +12,13 @@
       kinds: { speedrun: "⏱️ Speedrun", combat: "🥊 Combat", br: "🪂 Battle royale", other: "🎮 Tournoi" },
       teams: ["Solo", "Duo", "Trio", "Squad"],
       places: (n, s) => `${n} / ${s} places`, waiting: (n) => `${n} en liste d'attente`,
-      defends: (p, m) => `${p} ${m} défend son titre`, defended: (n) => (n ? ` · défendu ${n} fois` : ""),
+      defends: (p, m) => `${p} ${m} remet son titre en jeu`, defended: (n) => (n ? ` · champion ${n + 1} fois d'affilée` : ""),
       evGame: "Jeu", evWhen: "Date", evRules: "Règlement", evPlayers: "Joueurs inscrits", evWaitList: "Liste d'attente", evNoPlayers: "Personne pour l'instant. Sois le premier !",
-      evStake: "🏅 Badges en jeu", evStakeHint: "Les joueurs qui ont un badge sur ce jeu et qui s'inscrivent le remettent en jeu : 1er, 2e ou 3e → ils prennent le badge de leur place ; 4e ou plus → ils le perdent.",
-      evStakeNone: "Aucun détenteur de badge inscrit pour l'instant.", evResults: "🏁 Classement final",
+      evStake: "🏆 Titres en jeu", evStakeHint: "Le 1er devient Champion Kamei 🏆, le 2e et le 3e prennent la médaille 🥈 🥉. Les champions et médaillés qui jouent ce tournoi remettent leur titre en jeu : 1er → ils restent champions, 2e/3e → médaille, plus loin → ils perdent leur titre.",
+      evStakeNone: "Aucun champion ni médaillé inscrit pour l'instant.", evResults: "🏁 Classement final",
       evReg: "📝 S'inscrire", evUnreg: "Se désinscrire", evCheck: "✅ Check-in : je suis là !", evChecked: "✅ Présence confirmée", evKey: "🔑 Voir la clé du match",
       evMine: "Tu es inscrit ✅", evMineWait: (n) => `Tu es en liste d'attente (n°${n})`, evTeamQ: "Nom de ton équipe", evTeamHint: "Tes coéquipiers doivent s'inscrire avec exactement le même nom d'équipe.",
-      evRisk: (m) => `Tu as le badge ${m} sur ce jeu. En t'inscrivant, tu le remets en jeu : si tu finis 1er, 2e ou 3e tu prends le badge de ta place, si tu finis 4e ou plus tu le perds. On y va ?`,
+      evRisk: (m) => `Tu as le titre ${m} Kamei. En jouant ce tournoi, tu le remets en jeu : 1er → tu es (ou restes) Champion Kamei 🏆, 2e ou 3e → tu prends la médaille de ta place, plus loin ou abandon → tu perds ton titre. On y va ?`,
       evRegOk: "Inscription confirmée ! 🎉", evRegWait: "C'est complet : tu es en liste d'attente. Si quelqu'un se désinscrit, tu prends sa place.", evUnregOk: "Tu es désinscrit.",
       evUnregQ: "Tu veux vraiment te désinscrire ?", evCheckOk: "Présence confirmée ✅ Bonne chance !", evKeyIs: "Clé du match", evKeyNone: "L'admin n'a pas encore donné la clé.",
       evAppGame: (g, s) => `🎮 Jeu de l'appli : ${g}${s ? " (" + s + ")" : ""}`, evMissing: "⚠️ Ce jeu n'est pas encore sur ta console : ajoute-le avant le tournoi.",
@@ -26,6 +26,11 @@
       err: { closed: "Les inscriptions sont fermées.", too_late: "Trop tard : le tournoi a commencé.", not_now: "Le check-in n'est pas encore ouvert.", not_registered: "Tu n'es pas inscrit à ce tournoi.",
         too_early: "La clé sera visible 5 minutes avant le début.", banned: "Ton compte est bloqué.", already_done: "Ce tournoi est déjà terminé.", event_locked: "Ce tournoi est terminé : il ne peut plus être modifié." },
       // admin
+      rdTitle: "🎮 Soirée à plusieurs jeux (facultatif)", rdHint: "Le jeu du dessus est la manche 1. Ajoute d'autres manches : chaque manche a son heure, son jeu et son check-in. 1er = 10 pts, 2e = 7, 3e = 5, 4e = 3, 5e = 2, 6e = 1. Le meilleur total devient Champion Kamei 🏆.",
+      rdAdd: "＋ Ajouter une manche", rdN: (n) => `Manche ${n}`, rdPick: "— Choisis un jeu de la console —", rdName: "Nom du jeu", rdFile: "📁 Fichier du jeu", rdNeed: "Chaque manche a besoin d'un jeu.",
+      rdProg: "🗓️ Programme de la soirée", rdNow: "🔴 En cours", rdDone: "✅ Terminée", rdNext: "À venir", rdStart: "▶️ Lancer", rdRank: "🏁 Classement", rdStartQ: (n, g) => `Lancer la manche ${n} (${g}) ? Tous les joueurs devront refaire leur check-in.`,
+      rdStand: "📊 Classement général", rdPts: (n) => `${n} pts`, rdNone: "Pas encore de points.", rdFinHint: "Places calculées avec le total des points de la soirée (tu peux encore les changer).",
+      rdRoundHint: (n, g) => `Classement de la manche ${n} : ${g}. Les points sont ajoutés au classement général.`, rdSaved: "Classement de la manche enregistré ✅", rdCheck: "✅ Je suis là pour cette manche",
       adEdit: "✏️ Modifier", adPublish: "🚀 Publier", adStart: "🔴 Lancer le tournoi", adFinal: "🏁 Classement final", adCancel: "❌ Annuler le tournoi", adDelete: "🗑️ Supprimer", adRepost: "📣 Reposter sur Discord",
       adCancelQ: "Annuler ce tournoi ? Les joueurs le verront comme « Annulé ».", adDeleteQ: "Supprimer définitivement ce tournoi (et ses inscriptions) ?",
       fNew: "Nouvel event", fEdit: "Modifier l'event", fName: "Nom du tournoi", fNamePh: "Coupe Kamei de novembre", fGame: "Jeu", fGamePh: "Super Mario Kart, Fortnite…",
@@ -45,8 +50,8 @@
         other: "• Sois fair-play 🙂\n• L'admin a le dernier mot en cas de litige.",
       },
       fin: "Classement final", finHint: "Donne une place à chaque joueur. 1er, 2e et 3e reçoivent le badge de leur place ; les détenteurs qui finissent 4e ou plus perdent leur badge.",
-      finPlace: "Place", finScore: "Temps / score", finGo: "✅ Valider le classement", finChanges: "Changements de badges :", finNoChange: "Aucun changement de badge.",
-      finDup: "Deux joueurs ont la même place.", finQ: "Valider ? Les badges seront mis à jour automatiquement et les joueurs prévenus.", finOk: "Classement validé, badges mis à jour 🏅",
+      finPlace: "Place", finScore: "Temps / score", finGo: "✅ Valider le classement", finChanges: "Changements de titres Kamei :", finNoChange: "Aucun changement de titre.",
+      finDup: "Deux joueurs ont la même place.", finQ: "Valider ? Les titres Kamei et badges seront mis à jour automatiquement et les joueurs prévenus.", finOk: "Classement validé, badges mis à jour 🏅",
       finWin: (m) => `gagne ${m}`, finDown: (a, b) => `${a} → ${b}`, finLose: (m) => `perd ${m}`, finKeep: (m) => `garde ${m}`,
       // palmarès
       pmTitle: "🏆 Palmarès", pmOf: (p) => `🏆 Palmarès de ${p}`, pmNone: "Pas encore de tournoi joué.", pmPlayed: (n) => `${n} tournoi${n > 1 ? "s" : ""}`, pmBadge: "Badge actuel",
@@ -62,19 +67,24 @@
       kinds: { speedrun: "⏱️ Speedrun", combat: "🥊 Gevecht", br: "🪂 Battle royale", other: "🎮 Toernooi" },
       teams: ["Solo", "Duo", "Trio", "Squad"],
       places: (n, s) => `${n} / ${s} plaatsen`, waiting: (n) => `${n} op de wachtlijst`,
-      defends: (p, m) => `${p} ${m} verdedigt zijn titel`, defended: (n) => (n ? ` · ${n}× verdedigd` : ""),
+      defends: (p, m) => `${p} ${m} zet zijn titel op het spel`, defended: (n) => (n ? ` · ${n + 1}× op rij kampioen` : ""),
       evGame: "Spel", evWhen: "Datum", evRules: "Reglement", evPlayers: "Ingeschreven spelers", evWaitList: "Wachtlijst", evNoPlayers: "Nog niemand. Wees de eerste!",
-      evStake: "🏅 Badges op het spel", evStakeHint: "Spelers met een badge voor dit spel die zich inschrijven, zetten hem op het spel: 1e, 2e of 3e → ze krijgen de badge van hun plaats; 4e of slechter → ze verliezen hem.",
-      evStakeNone: "Nog geen badgehouder ingeschreven.", evResults: "🏁 Eindklassement",
+      evStake: "🏆 Titels op het spel", evStakeHint: "De 1e wordt Kamei-kampioen 🏆, de 2e en 3e krijgen de medaille 🥈 🥉. Kampioenen en medaillewinnaars die meespelen zetten hun titel op het spel: 1e → ze blijven kampioen, 2e/3e → medaille, verder → ze verliezen hun titel.",
+      evStakeNone: "Nog geen kampioen of medaillewinnaar ingeschreven.", evResults: "🏁 Eindklassement",
       evReg: "📝 Inschrijven", evUnreg: "Uitschrijven", evCheck: "✅ Check-in: ik ben er!", evChecked: "✅ Aanwezigheid bevestigd", evKey: "🔑 Matchcode bekijken",
       evMine: "Je bent ingeschreven ✅", evMineWait: (n) => `Je staat op de wachtlijst (nr. ${n})`, evTeamQ: "Naam van je team", evTeamHint: "Je teamgenoten moeten zich met exact dezelfde teamnaam inschrijven.",
-      evRisk: (m) => `Je hebt de badge ${m} voor dit spel. Door je in te schrijven zet je hem op het spel: 1e, 2e of 3e → je krijgt de badge van je plaats, 4e of slechter → je verliest hem. Doen?`,
+      evRisk: (m) => `Je hebt de Kamei-titel ${m}. In dit toernooi zet je hem op het spel: 1e → je bent (of blijft) Kamei-kampioen 🏆, 2e of 3e → de medaille van je plaats, verder of opgeven → je verliest je titel. Doen?`,
       evRegOk: "Inschrijving bevestigd! 🎉", evRegWait: "Het is vol: je staat op de wachtlijst. Als iemand zich uitschrijft, krijg jij zijn plaats.", evUnregOk: "Je bent uitgeschreven.",
       evUnregQ: "Wil je je echt uitschrijven?", evCheckOk: "Aanwezigheid bevestigd ✅ Succes!", evKeyIs: "Matchcode", evKeyNone: "De admin heeft de code nog niet gegeven.",
       evAppGame: (g, s) => `🎮 Spel in de app: ${g}${s ? " (" + s + ")" : ""}`, evMissing: "⚠️ Dit spel staat nog niet op je console: voeg het toe voor het toernooi.",
       evExt: "🕹️ Wordt gespeeld op je console / pc", evLogin: "Log in om je in te schrijven.",
       err: { closed: "De inschrijvingen zijn gesloten.", too_late: "Te laat: het toernooi is begonnen.", not_now: "De check-in is nog niet open.", not_registered: "Je bent niet ingeschreven.",
         too_early: "De code is 5 minuten voor de start zichtbaar.", banned: "Je account is geblokkeerd.", already_done: "Dit toernooi is al afgelopen.", event_locked: "Dit toernooi is afgelopen en kan niet meer gewijzigd worden." },
+      rdTitle: "🎮 Avond met meerdere spellen (optioneel)", rdHint: "Het spel hierboven is ronde 1. Voeg rondes toe: elke ronde heeft een uur, een spel en een eigen check-in. 1e = 10 ptn, 2e = 7, 3e = 5, 4e = 3, 5e = 2, 6e = 1. Het beste totaal wordt Kamei-kampioen 🏆.",
+      rdAdd: "＋ Ronde toevoegen", rdN: (n) => `Ronde ${n}`, rdPick: "— Kies een spel van de console —", rdName: "Naam van het spel", rdFile: "📁 Spelbestand", rdNeed: "Elke ronde heeft een spel nodig.",
+      rdProg: "🗓️ Programma van de avond", rdNow: "🔴 Bezig", rdDone: "✅ Klaar", rdNext: "Komt nog", rdStart: "▶️ Starten", rdRank: "🏁 Klassement", rdStartQ: (n, g) => `Ronde ${n} (${g}) starten? Alle spelers moeten opnieuw inchecken.`,
+      rdStand: "📊 Algemeen klassement", rdPts: (n) => `${n} ptn`, rdNone: "Nog geen punten.", rdFinHint: "Plaatsen berekend met het totaal van de avond (je kunt ze nog wijzigen).",
+      rdRoundHint: (n, g) => `Klassement van ronde ${n}: ${g}. De punten gaan naar het algemeen klassement.`, rdSaved: "Klassement van de ronde opgeslagen ✅", rdCheck: "✅ Ik ben er voor deze ronde",
       adEdit: "✏️ Wijzigen", adPublish: "🚀 Publiceren", adStart: "🔴 Toernooi starten", adFinal: "🏁 Eindklassement", adCancel: "❌ Toernooi annuleren", adDelete: "🗑️ Verwijderen", adRepost: "📣 Opnieuw op Discord",
       adCancelQ: "Dit toernooi annuleren?", adDeleteQ: "Dit toernooi (en de inschrijvingen) definitief verwijderen?",
       fNew: "Nieuw event", fEdit: "Event wijzigen", fName: "Naam van het toernooi", fNamePh: "Kamei Cup november", fGame: "Spel", fGamePh: "Super Mario Kart, Fortnite…",
@@ -94,8 +104,8 @@
         other: "• Wees fair-play 🙂\n• De admin heeft het laatste woord.",
       },
       fin: "Eindklassement", finHint: "Geef elke speler een plaats. 1e, 2e en 3e krijgen de badge van hun plaats; badgehouders die 4e of slechter eindigen verliezen hem.",
-      finPlace: "Plaats", finScore: "Tijd / score", finGo: "✅ Klassement bevestigen", finChanges: "Badgewijzigingen:", finNoChange: "Geen badgewijzigingen.",
-      finDup: "Twee spelers hebben dezelfde plaats.", finQ: "Bevestigen? De badges worden automatisch bijgewerkt en de spelers verwittigd.", finOk: "Klassement bevestigd, badges bijgewerkt 🏅",
+      finPlace: "Plaats", finScore: "Tijd / score", finGo: "✅ Klassement bevestigen", finChanges: "Wijzigingen Kamei-titels:", finNoChange: "Geen titelwijzigingen.",
+      finDup: "Twee spelers hebben dezelfde plaats.", finQ: "Bevestigen? De Kamei-titels en badges worden automatisch bijgewerkt en de spelers verwittigd.", finOk: "Klassement bevestigd, badges bijgewerkt 🏅",
       finWin: (m) => `wint ${m}`, finDown: (a, b) => `${a} → ${b}`, finLose: (m) => `verliest ${m}`, finKeep: (m) => `houdt ${m}`,
       pmTitle: "🏆 Erelijst", pmOf: (p) => `🏆 Erelijst van ${p}`, pmNone: "Nog geen toernooi gespeeld.", pmPlayed: (n) => `${n} toernooi${n > 1 ? "en" : ""}`, pmBadge: "Huidige badge",
       pmNoBadge: "Nog geen badge", pmHist: "Geschiedenis", pmPlace: (p) => (p ? `${p}e` : "—"),
@@ -110,19 +120,24 @@
       kinds: { speedrun: "⏱️ Speedrun", combat: "🥊 Fighting", br: "🪂 Battle royale", other: "🎮 Tournament" },
       teams: ["Solo", "Duo", "Trio", "Squad"],
       places: (n, s) => `${n} / ${s} spots`, waiting: (n) => `${n} on the waiting list`,
-      defends: (p, m) => `${p} ${m} is defending the title`, defended: (n) => (n ? ` · defended ${n}×` : ""),
+      defends: (p, m) => `${p} ${m} puts the title on the line`, defended: (n) => (n ? ` · champion ${n + 1}× in a row` : ""),
       evGame: "Game", evWhen: "Date", evRules: "Rules", evPlayers: "Registered players", evWaitList: "Waiting list", evNoPlayers: "Nobody yet. Be the first!",
-      evStake: "🏅 Badges at stake", evStakeHint: "Players holding a badge for this game who sign up put it at stake: 1st, 2nd or 3rd → they take the badge of their place; 4th or worse → they lose it.",
-      evStakeNone: "No badge holder signed up yet.", evResults: "🏁 Final ranking",
+      evStake: "🏆 Titles at stake", evStakeHint: "1st becomes Kamei champion 🏆, 2nd and 3rd take the medal 🥈 🥉. Champions and medallists who play put their title at stake: 1st → they stay champion, 2nd/3rd → medal, further → they lose their title.",
+      evStakeNone: "No champion or medallist signed up yet.", evResults: "🏁 Final ranking",
       evReg: "📝 Sign up", evUnreg: "Withdraw", evCheck: "✅ Check-in: I'm here!", evChecked: "✅ Presence confirmed", evKey: "🔑 Show the match key",
       evMine: "You're signed up ✅", evMineWait: (n) => `You're on the waiting list (#${n})`, evTeamQ: "Your team name", evTeamHint: "Your teammates must sign up with exactly the same team name.",
-      evRisk: (m) => `You hold the ${m} badge for this game. Signing up puts it at stake: 1st, 2nd or 3rd → you take the badge of your place, 4th or worse → you lose it. Go?`,
+      evRisk: (m) => `You hold the Kamei title ${m}. Playing this tournament puts it at stake: 1st → you are (or stay) Kamei champion 🏆, 2nd or 3rd → the medal of your place, further or quitting → you lose your title. Go?`,
       evRegOk: "You're signed up! 🎉", evRegWait: "It's full: you're on the waiting list. If someone withdraws, you take their spot.", evUnregOk: "You withdrew.",
       evUnregQ: "Do you really want to withdraw?", evCheckOk: "Presence confirmed ✅ Good luck!", evKeyIs: "Match key", evKeyNone: "The admin hasn't given the key yet.",
       evAppGame: (g, s) => `🎮 In-app game: ${g}${s ? " (" + s + ")" : ""}`, evMissing: "⚠️ This game isn't on your console yet: add it before the tournament.",
       evExt: "🕹️ Played on your console / PC", evLogin: "Log in to sign up.",
       err: { closed: "Sign-ups are closed.", too_late: "Too late: the tournament has started.", not_now: "Check-in isn't open yet.", not_registered: "You're not signed up.",
         too_early: "The key shows up 5 minutes before the start.", banned: "Your account is blocked.", already_done: "This tournament is already finished.", event_locked: "This tournament is finished and can't be edited." },
+      rdTitle: "🎮 Multi-game night (optional)", rdHint: "The game above is round 1. Add more rounds: each round has its time, its game and its own check-in. 1st = 10 pts, 2nd = 7, 3rd = 5, 4th = 3, 5th = 2, 6th = 1. The best total becomes Kamei Champion 🏆.",
+      rdAdd: "＋ Add a round", rdN: (n) => `Round ${n}`, rdPick: "— Pick a game from the console —", rdName: "Game name", rdFile: "📁 Game file", rdNeed: "Every round needs a game.",
+      rdProg: "🗓️ Tonight's programme", rdNow: "🔴 Live", rdDone: "✅ Done", rdNext: "Coming up", rdStart: "▶️ Start", rdRank: "🏁 Ranking", rdStartQ: (n, g) => `Start round ${n} (${g})? Every player has to check in again.`,
+      rdStand: "📊 Overall standings", rdPts: (n) => `${n} pts`, rdNone: "No points yet.", rdFinHint: "Places worked out from the night's point totals (you can still change them).",
+      rdRoundHint: (n, g) => `Ranking of round ${n}: ${g}. The points go to the overall standings.`, rdSaved: "Round ranking saved ✅", rdCheck: "✅ I'm here for this round",
       adEdit: "✏️ Edit", adPublish: "🚀 Publish", adStart: "🔴 Start the tournament", adFinal: "🏁 Final ranking", adCancel: "❌ Cancel the tournament", adDelete: "🗑️ Delete", adRepost: "📣 Repost on Discord",
       adCancelQ: "Cancel this tournament?", adDeleteQ: "Delete this tournament (and its sign-ups) for good?",
       fNew: "New event", fEdit: "Edit event", fName: "Tournament name", fNamePh: "Kamei November Cup", fGame: "Game", fGamePh: "Super Mario Kart, Fortnite…",
@@ -142,8 +157,8 @@
         other: "• Be fair-play 🙂\n• The admin has the final word.",
       },
       fin: "Final ranking", finHint: "Give each player a place. 1st, 2nd and 3rd get the badge of their place; holders who finish 4th or worse lose theirs.",
-      finPlace: "Place", finScore: "Time / score", finGo: "✅ Confirm the ranking", finChanges: "Badge changes:", finNoChange: "No badge change.",
-      finDup: "Two players have the same place.", finQ: "Confirm? Badges are updated automatically and players are notified.", finOk: "Ranking confirmed, badges updated 🏅",
+      finPlace: "Place", finScore: "Time / score", finGo: "✅ Confirm the ranking", finChanges: "Kamei title changes:", finNoChange: "No title change.",
+      finDup: "Two players have the same place.", finQ: "Confirm? Kamei titles and badges are updated automatically and players are notified.", finOk: "Ranking confirmed, badges updated 🏅",
       finWin: (m) => `wins ${m}`, finDown: (a, b) => `${a} → ${b}`, finLose: (m) => `loses ${m}`, finKeep: (m) => `keeps ${m}`,
       pmTitle: "🏆 Trophies", pmOf: (p) => `🏆 ${p}'s trophies`, pmNone: "No tournament played yet.", pmPlayed: (n) => `${n} tournament${n > 1 ? "s" : ""}`, pmBadge: "Current badge",
       pmNoBadge: "No badge yet", pmHist: "History", pmPlace: (p) => (p ? `#${p}` : "—"),
@@ -154,6 +169,8 @@
 
   const sb = window.kameiSB, me = () => window.kameiMe && window.kameiMe();
   const MEDAL = ["", "🥇", "🥈", "🥉"];
+  const TITLE = ["", "🏆", "🥈", "🥉"];   // the Kamei title (all games)
+  const tIcon = (r, px) => (window.kameiTitles ? window.kameiTitles.icon(r, px) : TITLE[r]);
   const BR_POINTS = { win: 10, top5: 7, top10: 5, top25: 2, kill: 1 };
   const LOCALE = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
   const avatar = (p, n) => (window.kameiAvatar ? window.kameiAvatar(p, n) : "");
@@ -188,6 +205,16 @@
   .evc .pfake .pe { font-size: 84px; filter: drop-shadow(0 6px 10px rgba(0,0,0,.4)); }
   .evc .pfake .pcov { width: 52%; max-height: 62%; object-fit: contain; border-radius: 10px; filter: drop-shadow(0 14px 22px rgba(0,0,0,.55)); }
   .evd .info .gcov { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; vertical-align: middle; margin-right: 8px; }
+  .evrounds { margin-top: 14px; border-top: 1px dashed var(--line); padding-top: 8px; }
+  .evrounds .rd { border: 1px solid var(--line); border-radius: 14px; padding: 10px; margin: 8px 0; background: rgba(255,255,255,.03); }
+  .evrounds .rdh { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .evrounds .rdh button { border: 0; background: rgba(255,90,110,.15); color: #ff8a9b; border-radius: 10px; padding: 4px 10px; }
+  .evrounds .rd > * + * { margin-top: 6px; }
+  .evprog .rdi { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 12px; background: rgba(255,255,255,.035); margin-bottom: 6px; }
+  .evprog .rdi.now { box-shadow: inset 0 0 0 2px #ff4d5e; } .evprog .rdi.done { opacity: .75; }
+  .evprog .rdi img, .evprog .rdi .nc { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: #23233a; flex: none; display: grid; place-items: center; font-size: 18px; }
+  .evprog .rdi span { flex: 1; min-width: 0; } .evprog .rdi b { display: block; } .evprog .rdi small { color: var(--muted); }
+  .evprog .rdi .mini { flex: none; }
   .gpick { margin-top: 8px; border: 1px solid var(--line); border-radius: 14px; padding: 10px; background: rgba(255,255,255,.03); }
   .gpick .sel { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
   .gpick .sel img, .gpick .sel .nc { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; background: #23233a; display: grid; place-items: center; font: 800 10px Inter, sans-serif; color: var(--muted); flex: none; }
@@ -320,7 +347,7 @@
     const img = e.poster ? `<img class="pimg" src="${esc(posterUrl(e.poster))}" alt="" loading="lazy">`
       : `<div class="pfake pf-${esc(e.kind)}">${coverUrl(e.game_ref) ? `<img class="pcov" src="${esc(coverUrl(e.game_ref))}" alt="" onerror="this.remove()">` : `<div class="pe">${{ speedrun: "⏱️", combat: "🥊", br: "🪂", other: "🏆" }[e.kind] || "🏆"}</div>`}</div>`;
     const chip = { live: "live", reg: "reg", checkin: "check" }[p] || "";
-    const defs = (e.defenders || []).slice(0, 4).map((d) => `<span>🛡️ ${esc(X.defends(d.pseudo, MEDAL[d.rank]))}</span>`).join("");
+    const defs = (e.defenders || []).slice(0, 4).map((d) => `<span>🛡️ ${esc(X.defends(d.pseudo, TITLE[d.rank]))}</span>`).join("");
     const n = e.count || 0, pct = Math.min(100, Math.round((n / e.slots) * 100));
     const mine = e.mine ? `<span class="evchip">${e.mine.waitlist ? "⏳" : "✅"}</span>` : "";
     return `<button class="evc ${cls || ""} ${["done", "cancelled"].includes(p) ? "dim" : ""}" data-ev="${e.id}">${img}
@@ -366,7 +393,7 @@
     const order = { live: 0, checkin: 1, reg: 2, closed: 3, draft: 4, done: 5, cancelled: 6 };
     const sorted = list.slice().sort((a, b) => (order[phaseOf(a)] - order[phaseOf(b)]) || (Date.parse(a.starts_at) - Date.parse(b.starts_at)));
     v.querySelector(".evhead").innerHTML = `<h2 class="vtitle">${X.evTitle}</h2>${window.kameiCan("events") ? `<button class="mini" id="evNew">${X.evCreate}</button>` : ""}`;
-    v.querySelector("#evBody").innerHTML = calendar() +
+    v.querySelector("#evBody").innerHTML = (window.kameiTitles ? window.kameiTitles.hall() : "") + calendar() +
       (sorted.length ? sorted.map((e) => poster(e)).join("") : `<div class="vlogin"><p>${X.evNone}</p></div>`);
     const nb = v.querySelector("#evNew"); if (nb) nb.onclick = () => form();
     v.querySelector("#evPrev").onclick = () => { ym = ym.m === 0 ? { y: ym.y - 1, m: 11 } : { y: ym.y, m: ym.m - 1 }; render(v); };
@@ -382,7 +409,7 @@
 
   /* ---------- event page ---------- */
   function playerRow(p, extra) {
-    return `<div class="evpl">${extra || ""}${avatar(p, 34)}<b>${esc(p.pseudo)}${p.team ? ` <small>· ${esc(p.team)}</small>` : ""}</b>${p.badge ? `<span title="badge">${MEDAL[p.badge]}</span>` : ""}${p.checked_in ? "<small>✅</small>" : ""}</div>`;
+    return `<div class="evpl">${extra || ""}${avatar(p, 34)}<b>${esc(p.pseudo)}${p.team ? ` <small>· ${esc(p.team)}</small>` : ""}</b>${p.badge ? tIcon(p.badge, 24) : ""}${p.checked_in ? "<small>✅</small>" : ""}</div>`;
   }
   async function detail(id) {
     const X = T();
@@ -399,7 +426,8 @@
     else if (e.mine) {
       const pos = e.mine.waitlist ? wait.findIndex((x) => x.id === u.id) + 1 : 0;
       acts += `<div class="row" style="text-align:center;font-weight:700">${e.mine.waitlist ? X.evMineWait(pos) : X.evMine}</div>`;
-      if (!e.mine.waitlist && (p === "checkin" || (p === "live" && e.checkin_min > 0)) && !e.mine.checked_in) acts += `<button class="row ok-row" id="eCheck">${X.evCheck}</button>`;
+      const multi = Array.isArray(e.rounds) && e.rounds.length > 1;
+      if (!e.mine.waitlist && (multi ? p === "live" && e.round >= 0 : (p === "checkin" || (p === "live" && e.checkin_min > 0))) && !e.mine.checked_in) acts += `<button class="row ok-row" id="eCheck">${multi ? X.rdCheck + " (" + esc(e.rounds[e.round].game) + ")" : X.evCheck}</button>`;
       if (e.mine.checked_in) acts += `<div class="hint" style="text-align:center">${X.evChecked}</div>`;
       if (!e.mine.waitlist && e.platform === "ext" && e.has_key && (p === "live" || Date.parse(e.starts_at) - now() < 5 * 60000)) acts += `<button class="row ok-row" id="eKey">${X.evKey}</button>`;
       if (!e.mine.waitlist && e.platform === "app" && e.kind === "speedrun" && ["closed", "checkin", "live"].includes(p) && window.kameiRace) acts += `<button class="row ok-row" id="eLobby">${X.evLobby}</button>`;
@@ -410,7 +438,7 @@
         ${["open", "live"].includes(e.status) ? `<button class="row ok-row" id="aRegie">${X.evRegie}</button>` : ""}
         ${e.status !== "done" ? `<button class="row" id="aEdit">${X.adEdit}</button>` : ""}
         ${e.status === "draft" ? `<button class="row ok-row" id="aPub">${X.adPublish}</button>` : ""}
-        ${e.status === "open" ? `<button class="row" id="aLive">${X.adStart}</button>` : ""}
+        ${e.status === "open" && !(Array.isArray(e.rounds) && e.rounds.length > 1) ? `<button class="row" id="aLive">${X.adStart}</button>` : ""}
         ${["open", "live"].includes(e.status) ? `<button class="row ok-row" id="aFin">${X.adFinal}</button>` : ""}
         ${e.status !== "draft" ? `<button class="row" id="aRepost">${X.adRepost}</button>` : ""}
         ${["open", "live", "draft"].includes(e.status) ? `<button class="row danger" id="aCancel">${X.adCancel}</button>` : ""}
@@ -419,17 +447,26 @@
     const podium = res.filter((r) => r.place >= 1 && r.place <= 3);
     const pod = (n) => { const r = podium.find((x) => x.place === n); return r ? `<div class="p${n}"><span class="m">${MEDAL[n]}</span>${avatar(r, 40)}<b>${esc(r.pseudo)}</b>${r.score ? `<small>${esc(r.score)}</small>` : ""}</div>` : "<div></div>"; };
     const resultsHTML = e.status === "done" ? `<h4>${X.evResults}</h4>${podium.length ? `<div class="evpod">${pod(2)}${pod(1)}${pod(3)}</div>` : ""}
-      ${res.filter((r) => !(r.place >= 1 && r.place <= 3)).map((r) => playerRow(r, `<span class="pl">${r.place || "—"}</span>`).replace("</b>", `</b>${r.score ? `<small>${esc(r.score)}</small>` : ""}${r.before && !r.after ? `<small>💔${MEDAL[r.before]}</small>` : ""}`)).join("")}` : "";
+      ${res.filter((r) => !(r.place >= 1 && r.place <= 3)).map((r) => playerRow(r, `<span class="pl">${r.place || "—"}</span>`).replace("</b>", `</b>${r.score ? `<small>${esc(r.score)}</small>` : ""}${r.before && !r.after ? `<small>💔${TITLE[r.before]}</small>` : ""}`)).join("")}` : "";
+    const multiE = Array.isArray(e.rounds) && e.rounds.length > 1, rres = e.round_results || [];
+    const progHTML = multiE ? `<h4>${X.rdProg}</h4><div class="evprog">${e.rounds.map((r, i) => {
+        const doneR = rres.some((x) => x.round === i), nowR = e.round === i && e.status === "live", win = rres.find((x) => x.round === i && x.place === 1);
+        const cov = coverUrl(r.game_ref);
+        return `<div class="rdi ${nowR ? "now" : doneR ? "done" : ""}">${cov ? `<img src="${esc(cov)}" alt="" onerror="this.remove()">` : `<span class="nc">${{ speedrun: "⏱️", combat: "🥊", br: "🪂" }[r.kind] || "🎮"}</span>`}
+          <span><b>${esc(r.game)}</b><small>${r.at ? esc(new Date(r.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })) + " · " : ""}${esc(X.kinds[r.kind] || r.kind)} · ${nowR ? X.rdNow : doneR ? X.rdDone + (win ? " · 🥇 " + esc(win.pseudo) : "") : X.rdNext}</small></span>
+          ${admin && ["open", "live"].includes(e.status) ? `${!nowR && !doneR ? `<button class="mini" data-rstart="${i}">${X.rdStart}</button>` : ""}${nowR || doneR ? `<button class="mini" data-rrank="${i}">${X.rdRank}</button>` : ""}` : ""}</div>`;
+      }).join("")}</div>
+      <h4>${X.rdStand}</h4>${(e.standings || []).length ? (e.standings || []).map((x, i) => playerRow(x, `<span class="pl">${i + 1}</span>`).replace("</b>", `</b><small><b>${X.rdPts(x.total)}</b></small>`)).join("") : `<p class="hint">${X.rdNone}</p>`}` : "";
     const defs = e.defenders || [];
     const stake = e.status === "done" ? "" : `<h4>${X.evStake}</h4><div class="evstake"><p>${X.evStakeHint}</p>
-      ${defs.length ? defs.map((d) => `<div class="evpl">${avatar(d, 34)}<b>🛡️ ${esc(X.defends(d.pseudo, MEDAL[d.rank]))}</b><small>${X.defended(d.defended).replace(/^ · /, "")}</small></div>`).join("") : `<p style="margin:0">${X.evStakeNone}</p>`}</div>`;
+      ${defs.length ? defs.map((d) => `<div class="evpl">${avatar(d, 34)}<b>🛡️ ${esc(X.defends(d.pseudo, TITLE[d.rank]))}</b>${tIcon(d.rank, 26)}<small>${X.defended(d.defended).replace(/^ · /, "")}</small></div>`).join("") : `<p style="margin:0">${X.evStakeNone}</p>`}</div>`;
     openSheet(`<div class="evd">${poster(e)}
       <div class="info"><b>${X.evGame} :</b> ${esc(e.game)} · ${esc(X.kinds[e.kind] || e.kind)}${e.team_size > 1 ? " · " + X.teams[e.team_size - 1] : ""}${e.kind === "combat" && e.best_of > 1 ? " · BO" + e.best_of : ""}</div>
       <div class="info"><b>${X.evWhen} :</b> ${esc(fmtDate(e.starts_at))}</div>
       <div class="info">${e.platform === "app" && coverUrl(ref) ? `<img class="gcov" src="${esc(coverUrl(ref))}" alt="" onerror="this.remove()">` : ""}${e.platform === "app" ? esc(X.evAppGame(ref.title || e.game, ref.system ? sysLabel(ref.system) : "")) : X.evExt}</div>
       ${u && !haveGame && e.status !== "done" ? `<div class="hint">${X.evMissing}</div>` : ""}
       <div class="evact">${acts}</div>
-      <div id="eBoard"></div>${resultsHTML}${stake}
+      <div id="eBoard"></div>${progHTML}${resultsHTML}${stake}
       ${e.rules ? `<h4>${X.evRules}</h4><div class="rules">${esc(e.rules)}</div>` : ""}
       ${e.status !== "done" ? `<h4>${X.evPlayers} (${players.length}/${e.slots})</h4>${players.length ? players.map((x) => playerRow(x)).join("") : `<p class="hint">${X.evNoPlayers}</p>`}
         ${wait.length ? `<h4>${X.evWaitList} (${wait.length})</h4>${wait.map((x, i) => playerRow(x, `<span class="pl">${i + 1}</span>`)).join("")}` : ""}` : ""}
@@ -469,6 +506,14 @@
     on("aPub", () => publish(e.id));
     on("aLive", async () => { const r = await sb.rpc("event_set_status", { eid: e.id, st: "live" }); if (r.error) return toast(errMsg(r.error), 3500); detail(e.id); });
     on("aFin", () => finalize(e));
+    document.querySelectorAll("#sheet [data-rstart]").forEach((b) => b.onclick = async () => {
+      const i = +b.dataset.rstart;
+      if (!confirm(X.rdStartQ(i + 1, e.rounds[i].game))) return;
+      const r = await sb.rpc("event_round_start", { eid: e.id, r: i });
+      if (r.error) return toast(errMsg(r.error), 3500);
+      detail(e.id);
+    });
+    document.querySelectorAll("#sheet [data-rrank]").forEach((b) => b.onclick = () => finalize(e, +b.dataset.rrank));
     on("aRepost", async () => { const r = await discordPost("event_post", e.id); toast(r ? "Discord ✅" : T().fDiscordOff, 3500); });
     on("aCancel", async () => { if (!confirm(X.adCancelQ)) return; const r = await sb.rpc("event_set_status", { eid: e.id, st: "cancelled" }); if (r.error) return toast(errMsg(r.error), 3500); detail(e.id); });
     on("aDel", async () => {
@@ -517,9 +562,9 @@
       team = team.trim().slice(0, 30);
       if (!team) return;
     }
-    const mine = await sb.from("badges").select("rank").eq("user_id", u.id).eq("game_key", e.game_key).maybeSingle();
+    const mine = await sb.from("titles").select("rank").eq("user_id", u.id).maybeSingle();
     const held = mine && mine.data && mine.data.rank;
-    if (held && !confirm(X.evRisk(MEDAL[held]))) return;
+    if (held && !confirm(X.evRisk(TITLE[held]))) return;
     const r = await sb.rpc("event_register", { eid: e.id, team_: team });
     if (r.error) return toast(errMsg(r.error), 3500);
     const d = r.data || {};
@@ -546,9 +591,12 @@
     } finally { URL.revokeObjectURL(url); }
   }
 
-  function form(e, keepBlob, preselect) {
+  function form(e, keepBlob, preselect, preRound) {
     const X = T(), editing = !!(e && e.id);
     const d = Object.assign({ title: "", game: "", kind: "speedrun", platform: "app", team_size: 1, slots: 16, best_of: 3, checkin_min: 30, rules: "", points: BR_POINTS }, e || {});
+    // multi-game night: round 1 is the main game of the form, the other rounds are listed below
+    if (Array.isArray(d.rounds) && d.rounds[0]) { const r0 = d.rounds[0]; d.game = r0.game; d.kind = r0.kind; d.platform = r0.platform; d.game_ref = r0.game_ref || d.game_ref; }
+    let extra = Array.isArray(d.rounds) ? d.rounds.slice(1).map((r) => Object.assign({}, r, { game_ref: r.game_ref ? Object.assign({}, r.game_ref) : null })) : [];
     if (!editing) {
       const s = new Date(); s.setDate(s.getDate() + 7); s.setHours(20, 0, 0, 0);
       d.starts_at = s.toISOString(); d.reg_end = new Date(s.getTime() - 2 * 3600000).toISOString();
@@ -571,6 +619,7 @@
       <label>${X.fStart}</label><input id="fStart" type="datetime-local" value="${toLocalInput(d.starts_at)}">
       <label>${X.fEnd}</label><input id="fEnd" type="datetime-local" value="${toLocalInput(d.reg_end)}">
       <label>${X.fCheck}</label><select id="fCheck">${[0, 15, 30, 60].map((n) => opt(n, d.checkin_min, X.fCheckO[n])).join("")}</select>
+      <div class="evrounds"><label>${X.rdTitle}</label><p class="hint">${X.rdHint}</p><div id="fRounds"></div><button class="row" type="button" id="fAddRound">${X.rdAdd}</button><input type="file" id="fRoundRom" hidden></div>
       <div id="fKeyBox"><label>${X.fKey}</label><input id="fKey" maxlength="60" autocomplete="off" placeholder="—"><p class="hint">${X.fKeyHint}</p></div>
       <label>${X.fPoster}</label><button class="row" id="fPick" type="button">${X.fPosterPick}</button><input type="file" id="fFile" accept="image/*" hidden>
       <div class="pprev" id="fPrev">${posterPreview ? `<img src="${esc(posterPreview)}" alt="">` : ""}<p class="hint">${X.fPosterHint}</p></div>
@@ -633,6 +682,47 @@
       form(Object.assign({}, e || {}, snap, { id: e ? e.id : null, poster: e ? e.poster : null, game_ref: pick }), posterBlob, ids[0] || null);
     };
     $s("fPlat").onchange = () => { sync(); paintPick(); }; sync(); paintPick();
+    // ---- extra rounds ----
+    const glist = () => (typeof games !== "undefined" ? games.slice().sort((a, b) => a.title.localeCompare(b.title)) : []);
+    const paintRounds = () => {
+      const box = $s("fRounds"); if (!box) return;
+      box.innerHTML = extra.map((r, i) => `<div class="rd"><div class="rdh"><b>${X.rdN(i + 2)}</b><button type="button" data-rdel="${i}">✕</button></div>
+        <input type="datetime-local" data-rat="${i}" value="${r.at ? toLocalInput(r.at) : ""}">
+        <div class="two"><select data-rplat="${i}">${opt("app", r.platform, X.fPlatApp)}${opt("ext", r.platform, X.fPlatExt)}</select>
+          <select data-rkind="${i}">${Object.keys(X.kinds).map((k) => opt(k, r.kind, X.kinds[k])).join("")}</select></div>
+        ${r.platform === "ext" ? "" : `<select data-rgame="${i}"><option value="">${esc(X.rdPick)}</option>${glist().map((g) => `<option value="${esc(g.id)}" ${r.gid === g.id || (!r.gid && r.game_ref && r.game_ref.title === g.title && r.game_ref.system === g.system) ? "selected" : ""}>${esc(g.title)} · ${esc(sysName(g.system))}</option>`).join("")}</select>
+          <button class="row" type="button" data-rfile="${i}">${X.rdFile}</button>`}
+        <input data-rname="${i}" maxlength="60" placeholder="${esc(X.rdName)}" value="${esc(r.game || "")}">${r.busy ? `<p class="hint" style="margin:0">${X.gpReading}</p>` : ""}</div>`).join("");
+      box.querySelectorAll("[data-rdel]").forEach((b) => b.onclick = () => { extra.splice(+b.dataset.rdel, 1); paintRounds(); });
+      box.querySelectorAll("[data-rat]").forEach((x) => x.onchange = () => (extra[+x.dataset.rat].at = fromLocalInput(x.value)));
+      box.querySelectorAll("[data-rkind]").forEach((x) => x.onchange = () => (extra[+x.dataset.rkind].kind = x.value));
+      box.querySelectorAll("[data-rname]").forEach((x) => x.oninput = () => (extra[+x.dataset.rname].game = x.value.trim()));
+      box.querySelectorAll("[data-rplat]").forEach((x) => x.onchange = () => { const r = extra[+x.dataset.rplat]; r.platform = x.value; if (r.platform === "ext") { r.game_ref = null; r.gid = null; } paintRounds(); });
+      box.querySelectorAll("[data-rgame]").forEach((x) => x.onchange = () => chooseRound(+x.dataset.rgame, x.value));
+      box.querySelectorAll("[data-rfile]").forEach((b) => b.onclick = () => { $s("fRoundRom").dataset.i = b.dataset.rfile; $s("fRoundRom").click(); });
+    };
+    async function chooseRound(i, id) {
+      const r = extra[i], g = glist().find((x) => x.id === id); if (!r) return;
+      if (!g) { r.gid = null; r.game_ref = null; paintRounds(); return; }
+      r.gid = id; r.game = g.title; r.game_ref = { title: g.title, system: g.system }; r.busy = true; paintRounds();
+      try { r.game_ref.hash = await window.kameiRomHash(id); } catch (err) {}
+      try { const c = window.kameiCoverOf ? await window.kameiCoverOf(id) : null; if (c && c.url) r.game_ref.cover = c.url; } catch (err) {}
+      r.busy = false; if (document.getElementById("fRounds")) paintRounds();
+    }
+    $s("fAddRound").onclick = () => {
+      const last = extra.length ? extra[extra.length - 1].at : fromLocalInput($s("fStart").value);
+      extra.push({ game: "", kind: "speedrun", platform: "app", game_ref: null, at: last ? new Date(Date.parse(last) + 30 * 60000).toISOString() : null });
+      paintRounds();
+    };
+    $s("fRoundRom").onchange = async (ev) => {
+      const files = [...(ev.target.files || [])], i = +ev.target.dataset.i; ev.target.value = "";
+      if (!files.length || !window.kameiImportFiles) return;
+      const snap = collect();
+      const ids = await window.kameiImportFiles(files);
+      form(Object.assign({}, e || {}, snap, { id: e ? e.id : null, poster: e ? e.poster : null, game_ref: pick }), posterBlob, null, ids[0] ? { i, id: ids[0] } : null);
+    };
+    paintRounds();
+    if (preRound) setTimeout(() => chooseRound(preRound.i, preRound.id), 0);
     if (preselect) choose(preselect);
     if (editing && admin()) sb.rpc("event_admin_key", { eid: e.id }).then((r) => { if (r.data && $s("fKey")) $s("fKey").value = r.data; });
     $s("fPick").onclick = () => $s("fFile").click();
@@ -653,6 +743,8 @@
         checkin_min: +$s("fCheck").value, rules: $s("fRules").value.trim(), starts_at: fromLocalInput($s("fStart").value), reg_end: fromLocalInput($s("fEnd").value),
         match_key: $s("fKey").value.trim(), poster: editing ? e.poster : null,
       };
+      data.rounds = extra.length ? [{ game: data.game, kind: data.kind, platform: data.platform, game_ref: pick ? { title: pick.title, system: pick.system, hash: pick.hash || null, cover: pick.cover || null } : null, at: data.starts_at }]
+        .concat(extra.map((r) => ({ game: r.game, kind: r.kind, platform: r.platform, game_ref: r.platform === "ext" ? null : r.game_ref, at: r.at || data.starts_at }))) : null;
       if ($s("fKind").value === "br") { data.points = {}; document.querySelectorAll("[data-pt]").forEach((x) => (data.points[x.dataset.pt] = Math.max(0, +x.value || 0))); }
       return data;
     }
@@ -669,6 +761,12 @@
       }
       if (data.title.length < 2 || !g || !data.starts_at || !data.reg_end) { $s("fErr").textContent = X.fNeed; return; }
       if (Date.parse(data.reg_end) > Date.parse(data.starts_at)) { $s("fErr").textContent = X.fDates; return; }
+      if (data.rounds) {
+        if (extra.some((r) => r.busy)) { $s("fErr").textContent = X.gpReading; return; }
+        if (data.rounds.some((r) => !r.game)) { $s("fErr").textContent = X.rdNeed; return; }
+        data.rounds[0].game_ref = data.game_ref || null;
+        data.game = data.rounds.map((r) => r.game).join(" · ").slice(0, 60);
+      }
       preview(data, posterBlob, posterPreview, e);
     };
   }
@@ -701,6 +799,7 @@
           const cu = await sb.storage.from("posters").upload(cpath, cblob, { contentType: "image/jpeg", upsert: false });
           if (!cu.error) d.game_ref = Object.assign({}, d.game_ref, { cover: cpath }); else d.game_ref = Object.assign({}, d.game_ref, { cover: null });
         }
+        if (d.rounds && d.rounds[0]) d.rounds = [Object.assign({}, d.rounds[0], { game_ref: d.game_ref || null })].concat(d.rounds.slice(1));
         let oldPoster = null;
         if (blob) {
           const path = `ev-${Date.now()}-${Math.random().toString(36).slice(2, 7)}.jpg`;
@@ -741,19 +840,24 @@
   }
 
   /* ---------- admin: final ranking → automatic badges ---------- */
-  async function finalize(e) {
+  async function finalize(e, rnd) {
     const X = T(), players = (e.players || []).filter((x) => !x.waitlist);
+    const multi = Array.isArray(e.rounds) && e.rounds.length > 1, isRound = multi && rnd != null;
     // speedrun: places and times are filled in from the chronos (you can still change them)
     let pre = {};
-    if (e.kind === "speedrun") {
+    if (isRound) for (const x of (e.round_results || []).filter((y) => y.round === rnd)) pre[x.id] = { place: x.place, score: x.score || "" };
+    if (multi && !isRound) {
+      (e.standings || []).forEach((x, i) => (pre[x.id] = { place: i + 1, score: X.rdPts(x.total) }));
+      players.sort((a, b) => ((pre[a.id] || { place: 999 }).place - (pre[b.id] || { place: 999 }).place));
+    } else if (e.kind === "speedrun" && (!isRound || rnd === e.round)) {
       const r = await sb.rpc("event_board", { eid: e.id });
       const done = ((r.data && r.data.players) || []).filter((x) => x.status === "done").sort((a, b) => a.ms - b.ms);
       done.forEach((x, i) => (pre[x.id] = { place: i + 1, score: (window.kameiFmtTime || String)(x.ms) + (x.rom_ok === false ? " ⚠️" : "") }));
       players.sort((a, b) => ((pre[a.id] || { place: 999 }).place - (pre[b.id] || { place: 999 }).place));
     }
     const n = players.length;
-    openSheet(`<h3>${X.fin}</h3><p class="hint">${X.finHint}</p><div class="evfin">
-      ${players.map((p, i) => `<div class="evpl" data-u="${p.id}">${avatar(p, 30)}<b>${esc(p.pseudo)}${p.badge ? " " + MEDAL[p.badge] : ""}</b>
+    openSheet(`<h3>${isRound ? X.rdN(rnd + 1) + " · " + esc(e.rounds[rnd].game) : X.fin}</h3><p class="hint">${isRound ? X.rdRoundHint(rnd + 1, esc(e.rounds[rnd].game)) : multi ? X.rdFinHint : X.finHint}</p><div class="evfin">
+      ${players.map((p, i) => `<div class="evpl" data-u="${p.id}">${avatar(p, 30)}<b>${esc(p.pseudo)}${p.badge ? " " + TITLE[p.badge] : ""}</b>
         <input placeholder="${esc(X.finScore)}" maxlength="30" data-score value="${esc((pre[p.id] || {}).score || "")}">
         <select data-place aria-label="${esc(X.finPlace)}"><option value="">—</option>${Array.from({ length: n }, (_, k) => `<option value="${k + 1}" ${(pre[p.id] || {}).place === k + 1 ? "selected" : ""}>${k + 1}</option>`).join("")}</select></div>`).join("")}
       </div><div id="finSum" class="hint" style="margin-top:10px"></div><p class="hint err" id="finErr"></p>
@@ -762,12 +866,17 @@
     const read = () => [...document.querySelectorAll("#sheet [data-u]")].map((r) => ({ id: r.dataset.u, place: +r.querySelector("[data-place]").value || null, score: r.querySelector("[data-score]").value.trim() }));
     const summary = () => {
       const rows = read(), out = [];
+      if (isRound) {
+        const pts = [0, 10, 7, 5, 3, 2, 1];
+        $s("finSum").innerHTML = rows.filter((r) => r.place).sort((a, b) => a.place - b.place).map((r) => `${esc(players.find((x) => x.id === r.id).pseudo)} : +${pts[r.place] || 0}`).join(" · ");
+        return rows;
+      }
       for (const r of rows) {
         const p = players.find((x) => x.id === r.id), had = p.badge, now_ = r.place && r.place <= 3 ? r.place : null;
-        if (!had && now_) out.push(`${esc(p.pseudo)} ${X.finWin(MEDAL[now_])}`);
-        else if (had && !now_) out.push(`${esc(p.pseudo)} ${X.finLose(MEDAL[had])}`);
-        else if (had && now_ !== had) out.push(`${esc(p.pseudo)} ${X.finDown(MEDAL[had], MEDAL[now_])}`);
-        else if (had) out.push(`${esc(p.pseudo)} ${X.finKeep(MEDAL[had])} 🛡️`);
+        if (!had && now_) out.push(`${esc(p.pseudo)} ${X.finWin(TITLE[now_])}`);
+        else if (had && !now_) out.push(`${esc(p.pseudo)} ${X.finLose(TITLE[had])}`);
+        else if (had && now_ !== had) out.push(`${esc(p.pseudo)} ${X.finDown(TITLE[had], TITLE[now_])}`);
+        else if (had) out.push(`${esc(p.pseudo)} ${X.finKeep(TITLE[had])} 🛡️`);
       }
       $s("finSum").innerHTML = `<b>${X.finChanges}</b><br>${out.length ? out.join("<br>") : X.finNoChange}`;
       return rows;
@@ -778,11 +887,18 @@
     $s("finGo").onclick = async () => {
       const rows = summary(), used = rows.filter((r) => r.place).map((r) => r.place);
       if (new Set(used).size !== used.length) { $s("finErr").textContent = X.finDup; return; }
+      if (isRound) {
+        $s("finGo").disabled = true;
+        const rr = await sb.rpc("event_round_finalize", { eid: e.id, r: rnd, ranking: rows.filter((x) => x.place).map((x) => ({ id: x.id, place: x.place, score: x.score || null })) });
+        if (rr.error) { $s("finGo").disabled = false; $s("finErr").textContent = errMsg(rr.error); return; }
+        toast(X.rdSaved, 3000); detail(e.id); return;
+      }
       if (!confirm(X.finQ)) return;
       $s("finGo").disabled = true;
       const r = await sb.rpc("event_finalize", { eid: e.id, ranking: rows.filter((x) => x.place).map((x) => ({ id: x.id, place: x.place, score: x.score || null })) });
       if (r.error) { $s("finGo").disabled = false; $s("finErr").textContent = errMsg(r.error); return; }
       discordPost("event_results", e.id);
+      if (window.kameiTitles) window.kameiTitles.refresh();
       toast(X.finOk, 3500);
       detail(e.id); if (view) render(view);
     };
