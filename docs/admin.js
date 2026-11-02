@@ -118,7 +118,8 @@
     openSheet(`<h3>${t("adFcm")}</h3><p class="hint">${t("adFcmHint")}</p>
       <p class="hint"><b>${f.fcm && f.fcm.projectId ? esc(t("adFcmOn")(f.fcm.projectId)) : t("adFcmOff")}</b></p>
       <textarea id="fcmJ" placeholder="${t("adFcmPh")}" style="width:100%;min-height:150px;box-sizing:border-box;border-radius:12px;padding:10px;background:var(--bg);color:var(--text);border:1px solid var(--line);font:12px ui-monospace,monospace"></textarea>
-      <div class="btns" style="margin-top:10px"><button id="aBack">←</button>${f.fcm ? `<button id="fcmDel" class="danger">${t("adFcmDel")}</button>` : ""}<button class="ok" id="fcmGo">${t("adFcmSave")}</button></div>`);
+      <div class="btns" style="margin-top:10px"><button id="aBack">←</button>${f.fcm ? `<button id="fcmDel" class="danger">${t("adFcmDel")}</button>` : ""}<button class="ok" id="fcmGo">${t("adFcmSave")}</button></div>
+      ${f.fcm ? `<button class="row ok-row" id="fcmTest" style="margin-top:12px">🧪 Tester l'envoi vers mes téléphones</button><div id="fcmRes" class="hint" style="white-space:pre-wrap;margin-top:8px"></div>` : ""}`);
     wireBack();
     const save = async (val) => {
       if (val) f.fcm = val; else delete f.fcm;
@@ -137,6 +138,27 @@
       } catch (e) { toast(t("adFcmBad"), 5000); }
     };
     const d = document.getElementById("fcmDel"); if (d) d.onclick = () => save(null);
+    // diagnostic: sends a test notification to my phones and explains what goes wrong
+    const tb = document.getElementById("fcmTest");
+    if (tb) tb.onclick = async () => {
+      const out = document.getElementById("fcmRes"); out.textContent = "…"; tb.disabled = true;
+      const L = [];
+      try {
+        const r = await sb.functions.invoke("kamei-discord", { body: { action: "push_test" } });
+        const d = r.data;
+        if (r.error || !d) L.push("❌ La fonction kamei-discord ne répond pas (redéploie-la avec le dernier code). " + ((r.error && r.error.message) || ""));
+        else if (d.error === "unknown_action") L.push("❌ La fonction kamei-discord n'a pas le dernier code : remplace-le et clique Deploy.");
+        else if (!d.service_account) L.push("❌ Le secret FCM_SERVICE_ACCOUNT manque dans Supabase (Edge Functions → Secrets).");
+        else if (d.service_account_json === "invalid") L.push("❌ Le secret FCM_SERVICE_ACCOUNT n'est pas un JSON complet : recolle tout le fichier « adminsdk », du { au }.");
+        else if (d.google_auth !== "ok") L.push("❌ Google refuse le fichier secret : " + d.google_auth + "\n→ Regénère une clé privée dans Firebase (Comptes de service) et remplace le secret.");
+        else {
+          L.push("✅ Connexion à Google OK (projet " + d.project + ")");
+          if (!d.devices.length) L.push("❌ Aucun téléphone enregistré : ouvre l'appli Android v10/v11, connecté, avec les notifications activées.");
+          d.devices.forEach((x, i) => L.push(`📱 Téléphone ${i + 1} : ` + (x.sent ? "✅ envoyé → regarde ton téléphone" : x.token === "missing" ? "pas de jeton Firebase (ancienne appli, ou appli pas encore rouverte depuis l'activation)" : "❌ " + x.status + " " + (x.error || ""))));
+        }
+      } catch (e) { L.push("❌ " + (e.message || e)); }
+      out.textContent = L.join("\n"); tb.disabled = false;
+    };
   }
   function wire() {
     const on = (id, fn) => { const b = document.getElementById(id); if (b) b.onclick = fn; };
