@@ -6,27 +6,27 @@
       only3ds: "📱 Les jeux 3DS s'installent seulement dans l'appli Android (ils s'ouvrent dans Azahar).", install: "Installer", installed: "Installé ✓", installing: "Téléchargement…", catAdded: (n) => `${n} est dans ta bibliothèque !`, by: (a) => `par ${a}`, authorPage: "Page de l'auteur",
       addCat: "＋ Ajouter un jeu au catalogue", catTitle: "Nom du jeu", catAuthor: "Auteur", catSource: "Lien (optionnel, https://…)", catCover: "Image de jaquette (optionnel)",
       catAllowed: "C'est un jeu que j'ai créé (ou j'ai le droit de le partager)", catPick: "Choisir le fichier du jeu", catSend: "Publier dans le catalogue", catSending: "Envoi sur GitHub…",
-      catNeed: "Choisis le fichier, mets le nom et coche la case.", catTooBig: "Fichier trop gros (95 Mo max — limite de GitHub).", catDone: "Ajouté au catalogue ✅", catRemove: "Retirer", catRemoved: "Retiré du catalogue", catOffline: "Catalogue indisponible (pas de connexion ?)" },
+      catNeed: "Choisis le fichier (ou colle un lien), mets le nom et coche la case.", catTooBig: "Fichier trop gros pour l'envoi direct (95 Mo max) : mets-le dans une Release GitHub (jusqu'à 2 Go) et colle son lien.", catLink: "🔗 Gros fichier ? Colle son lien ici", catLinkHint: "Jusqu'à 2 Go : sur github.com → kamei-console → Releases → crée une release (ou modifie-en une) → glisse le fichier → publie, puis appui long sur le fichier → copier le lien.", catDone: "Ajouté au catalogue ✅", catRemove: "Retirer", catRemoved: "Retiré du catalogue", catOffline: "Catalogue indisponible (pas de connexion ?)" },
     nl: { cat: "📚 Catalogus", catHint: "De spellen gemaakt door Kamei Productions. Installeer ze met één klik!", catEmpty: "De catalogus is nog leeg.",
       only3ds: "📱 3DS-spellen installeer je alleen in de Android-app (ze openen in Azahar).", install: "Installeren", installed: "Geïnstalleerd ✓", installing: "Downloaden…", catAdded: (n) => `${n} staat in je bibliotheek!`, by: (a) => `door ${a}`, authorPage: "Pagina van de maker",
       addCat: "＋ Spel toevoegen aan catalogus", catTitle: "Naam van het spel", catAuthor: "Maker", catSource: "Link (optioneel, https://…)", catCover: "Hoesje (optioneel)",
       catAllowed: "Ik heb dit spel zelf gemaakt (of mag het delen)", catPick: "Spelbestand kiezen", catSend: "Publiceren in catalogus", catSending: "Bezig met uploaden naar GitHub…",
-      catNeed: "Kies het bestand, vul de naam in en vink het vakje aan.", catTooBig: "Bestand te groot (max. 95 MB — GitHub-limiet).", catDone: "Toegevoegd aan catalogus ✅", catRemove: "Verwijderen", catRemoved: "Verwijderd uit catalogus", catOffline: "Catalogus niet beschikbaar (geen verbinding?)" },
+      catNeed: "Kies het bestand (of plak een link), vul de naam in en vink het vakje aan.", catTooBig: "Bestand te groot om direct te versturen (max. 95 MB): zet het in een GitHub-release (tot 2 GB) en plak de link.", catLink: "🔗 Groot bestand? Plak hier de link", catLinkHint: "Tot 2 GB: op github.com → kamei-console → Releases → maak (of wijzig) een release → sleep het bestand → publiceer, dan lang drukken op het bestand → link kopiëren.", catDone: "Toegevoegd aan catalogus ✅", catRemove: "Verwijderen", catRemoved: "Verwijderd uit catalogus", catOffline: "Catalogus niet beschikbaar (geen verbinding?)" },
     en: { cat: "📚 Catalogue", catHint: "Games made by Kamei Productions. Install them in one tap!", catEmpty: "The catalogue is empty for now.",
       only3ds: "📱 3DS games only install in the Android app (they open in Azahar).", install: "Install", installed: "Installed ✓", installing: "Downloading…", catAdded: (n) => `${n} is in your library!`, by: (a) => `by ${a}`, authorPage: "Author's page",
       addCat: "＋ Add a game to the catalogue", catTitle: "Game name", catAuthor: "Author", catSource: "Link (optional, https://…)", catCover: "Cover image (optional)",
       catAllowed: "I made this game (or I'm allowed to share it)", catPick: "Pick the game file", catSend: "Publish in the catalogue", catSending: "Uploading to GitHub…",
-      catNeed: "Pick the file, enter the name and tick the box.", catTooBig: "File too big (95 MB max — GitHub limit).", catDone: "Added to the catalogue ✅", catRemove: "Remove", catRemoved: "Removed from the catalogue", catOffline: "Catalogue unavailable (no connection?)" },
+      catNeed: "Pick the file (or paste a link), enter the name and tick the box.", catTooBig: "File too big to send directly (95 MB max): put it in a GitHub Release (up to 2 GB) and paste its link.", catLink: "🔗 Big file? Paste its link here", catLinkHint: "Up to 2 GB: on github.com → kamei-console → Releases → create (or edit) a release → drop the file → publish, then long-press the file → copy link.", catDone: "Added to the catalogue ✅", catRemove: "Remove", catRemoved: "Removed from the catalogue", catOffline: "Catalogue unavailable (no connection?)" },
   };
   Object.assign(STR.fr, { dcHint: "Pour ajouter un jeu : poste-le dans le salon #catalogue de ton Discord, avec le fichier en pièce jointe et en texte : Titre | Console | Description (une image jointe sert de jaquette).",
     dcRemove: "Pour le retirer, supprime son message dans #catalogue sur Discord.", dlFail: "Téléchargement impossible. Réessaie plus tard.", dlWeb: "Ton navigateur ne peut pas télécharger ce jeu directement : il s'ouvre dans un nouvel onglet. Ajoute-le ensuite avec le bouton +.",
-    ghAdd: "＋ Ajouter via GitHub (95 Mo max)", fromDiscord: "Discord" });
+    ghAdd: "＋ Ajouter un jeu (jusqu'à 2 Go)", fromDiscord: "Discord" });
   Object.assign(STR.nl, { dcHint: "Een spel toevoegen: post het in het kanaal #catalogue van je Discord, met het bestand als bijlage en als tekst: Titel | Console | Beschrijving (een bijgevoegde afbeelding wordt de hoes).",
     dcRemove: "Om het te verwijderen: wis het bericht in #catalogue op Discord.", dlFail: "Downloaden mislukt. Probeer later opnieuw.", dlWeb: "Je browser kan dit spel niet rechtstreeks downloaden: het opent in een nieuw tabblad. Voeg het daarna toe met de +-knop.",
-    ghAdd: "＋ Toevoegen via GitHub (max. 95 MB)", fromDiscord: "Discord" });
+    ghAdd: "＋ Spel toevoegen (tot 2 GB)", fromDiscord: "Discord" });
   Object.assign(STR.en, { dcHint: "To add a game: post it in the #catalogue channel of your Discord, with the file attached and as text: Title | Console | Description (an attached image becomes the cover).",
     dcRemove: "To remove it, delete its message in #catalogue on Discord.", dlFail: "Download failed. Try again later.", dlWeb: "Your browser can't download this game directly: it opens in a new tab. Then add it with the + button.",
-    ghAdd: "＋ Add via GitHub (95 MB max)", fromDiscord: "Discord" });
+    ghAdd: "＋ Add a game (up to 2 GB)", fromDiscord: "Discord" });
   for (const l of Object.keys(STR)) Object.assign(I18N[l], STR[l]);
   const isAdmin = () => { const m = window.kameiMe && window.kameiMe(); return !!(m && m.is_admin); };
   const canEdit = () => isAdmin() && GH && GH.token();
@@ -106,14 +106,14 @@
   async function install(x, btn) {
     // 3DS: the file is downloaded by the phone, then opened in Azahar / Citra (Android app only)
     if (x.system === "3ds") {
-      if (window.kamei3ds && window.kamei3ds.fromCatalogue) return window.kamei3ds.fromCatalogue(x, x.discord ? x.url : GH.raw(x.file), x.cover ? (x.discord ? x.cover : GH.raw(x.cover)) : null);
+      if (window.kamei3ds && window.kamei3ds.fromCatalogue) return window.kamei3ds.fromCatalogue(x, x.discord || x.url ? x.url : GH.raw(x.file), x.cover ? (x.discord ? x.cover : GH.raw(x.cover)) : null);
       return toast(t("only3ds"), 5000);
     }
     btn.disabled = true; btn.textContent = t("installing");
     try {
       let file;
-      if (x.discord) {
-        file = await download(x.url, x.file, (d, n) => { btn.textContent = n > 0 ? Math.floor(d * 100 / n) + "%" : (d / 1048576).toFixed(1) + " Mo"; });
+      if (x.discord || x.url) {
+        file = await download(x.url, x.discord ? x.file : x.fileName || "game.bin", (d, n) => { btn.textContent = n > 0 ? Math.floor(d * 100 / n) + "%" : (d / 1048576).toFixed(1) + " Mo"; });
       } else {
         const res = await fetch(GH.raw(x.file), { cache: "no-store" });
         if (!res.ok) throw new Error("HTTP " + res.status);
@@ -138,6 +138,7 @@
     let romFile = null, coverFile = null;
     openSheet(`<h3>${t("addCat")}</h3>
       <button class="row ok-row" id="cfPick">${t("catPick")}</button><p class="hint" id="cfName"></p>
+      <input id="cfLink" placeholder="${t("catLink")}" inputmode="url"><p class="hint" style="margin-top:-4px">${t("catLinkHint")}</p>
       <input id="cfTitle" placeholder="${t("catTitle")}" maxlength="60">
       <select id="cfSys" class="search" style="margin-bottom:12px">${Object.entries(SYSTEMS).map(([k, s]) => `<option value="${k}">${s.label}</option>`).join("")}${SYSTEMS["3ds"] ? "" : `<option value="3ds">Nintendo 3DS</option>`}</select>
       <input id="cfAuthor" placeholder="${t("catAuthor")}" maxlength="60" value="Kamei Productions">
@@ -161,8 +162,26 @@
     };
     $$("cfSend").onclick = async () => {
       const title = $$("cfTitle").value.trim(), author = $$("cfAuthor").value.trim(), source = $$("cfSrc").value.trim(), system = $$("cfSys").value;
-      if (!romFile || !title || (source && !/^https?:\/\/\S+\.\S+/.test(source)) || !$$("cfOk").checked) return toast(t("catNeed"), 4000);
-      if (romFile.size > 95 * 1048576) return toast(t("catTooBig"), 4000);
+      const link = $$("cfLink").value.trim(), linkOk = /^https:\/\/\S+\.\S+/.test(link);
+      if ((!romFile && !linkOk) || !title || (source && !/^https?:\/\/\S+\.\S+/.test(source)) || !$$("cfOk").checked) return toast(t("catNeed"), 4000);
+      if (romFile && romFile.size > 95 * 1048576 && !linkOk) return toast(t("catTooBig"), 7000);
+      // a link (GitHub Release, up to 2 GB): only the catalogue entry goes to GitHub, the file stays where it is
+      if (linkOk && (!romFile || romFile.size > 95 * 1048576)) {
+        $$("cfSend").disabled = true; toast(t("catSending"), 60000);
+        try {
+          const fresh = await load();
+          let id = slug(title); while (fresh.games.some((x) => x.id === id)) id += "-2";
+          const fileName = romFile ? romFile.name : decodeURIComponent(link.split("?")[0].split("/").pop() || id);
+          const files = [];
+          let cover = null;
+          if (coverFile) { const cext = (/\.(png|jpe?g|webp)$/i.exec(coverFile.name) || [".png"])[0].toLowerCase(); cover = `catalogue/covers/${id}${cext}`; files.push({ path: cover, b64: await GH.toB64(coverFile) }); }
+          fresh.games.push({ id, title, system, file: null, url: link, fileName, size: romFile ? romFile.size : null, author: author || "Kamei Productions", source: source || null, cover, added: new Date().toISOString() });
+          files.push({ path: "catalogue/catalogue.json", text: JSON.stringify(fresh, null, 2) });
+          await GH.commit(files, `Catalogue : ajout de ${title} (lien)`);
+          toast(t("catDone"), 4000); setTimeout(sheet, 1500);
+        } catch (e) { $$("cfSend").disabled = false; toast(String(e.message || e), 6000); }
+        return;
+      }
       $$("cfSend").disabled = true; toast(t("catSending"), 120000);
       try {
         const fresh = await load();
@@ -184,7 +203,7 @@
       const fresh = await load();
       const x = fresh.games.find((g) => g.id === id); if (!x) return sheet();
       fresh.games = fresh.games.filter((g) => g.id !== id);
-      await GH.commit([{ path: "catalogue/catalogue.json", text: JSON.stringify(fresh, null, 2) }], `Catalogue : retrait de ${x.title}`, [x.file, ...(x.cover ? [x.cover] : [])]);
+      await GH.commit([{ path: "catalogue/catalogue.json", text: JSON.stringify(fresh, null, 2) }], `Catalogue : retrait de ${x.title}`, [x.file, x.cover].filter(Boolean));
       toast(t("catRemoved")); setTimeout(sheet, 1200);
     } catch (e) { toast(String(e.message || e), 5000); }
   }
