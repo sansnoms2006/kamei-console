@@ -89,7 +89,7 @@
         <div style="min-width:0"><p class="mname">${esc(u.pseudo)} ${u.is_admin ? `<span class="badge">Admin</span>` : ""}</p>
         <div class="mcode"><span>${esc(u.friend_code || "")}</span><button class="mini" id="meCopy">${t("meCopy")}</button></div>
         ${!u.is_admin && (u.roles || []).length && t("roleNames") ? `<p class="hint" style="margin:6px 0 0;font-size:12.5px">${t("myRoles")} : ${u.roles.map((r) => esc(t("roleNames")[r] || r)).join(" · ")}</p>` : ""}</div></div>
-      ${window.kameiTitles ? window.kameiTitles.banner(u.id) : ""}
+      ${window.kameiTitles ? window.kameiTitles.banner(u.id) : ""}${window.kameiTeam ? window.kameiTeam.banner(u.id) : ""}
       <div id="mePetBox"></div>
       ${grp(t("meProfile"), [
         window.kameiEvents && F("events") ? row("mePalm", t("navPalm")) : "",
@@ -97,7 +97,7 @@
         window.kameiTrades && F("trades") ? row("meTrades", t("trades").replace(/^\S+\s/, "")) : "",
       ])}
       ${grp(t("meSettings"), [row("meLang", t("meLang"), lang.toUpperCase()), row("meApp", t("meApp")),
-        (() => { try { return window.KameiNative2 && window.KameiNative2.batteryOk && !window.KameiNative2.batteryOk() ? row("meBat", t("batT"), "⚠️") : ""; } catch (e) { return ""; } })(), window.kameiTour ? row("meTour", t("meTour")) : ""])}
+        (() => { try { return window.KameiNative2 && window.KameiNative2.batteryOk && !window.KameiNative2.batteryOk() ? row("meBat", t("batT"), "⚠️") : ""; } catch (e) { return ""; } })(), window.kameiTour ? row("meTour", t("meTour")) : "", window.kameiTeam ? row("meTeam", t("teamRow")) : ""])}
       ${grp(t("meData"), [row("meBios", t("meBios")), window.kameiBackup ? row("meBackup", t("meBackup")) : ""])}
       ${window.KameiNative ? "" : grp(t("meApkG"), [row("meApk", /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ? t("meApk") : t("meApk"))])}
       ${grp(t("meAccount"), [window.kameiSecure ? row("meSecure", t("secure")) : "", u.is_admin ? row("meAdmin", t("meAdmin")) : "", `<button id="meOut" class="danger"><span>${t("meLogout")}</span></button>`])}`;
@@ -110,6 +110,7 @@
     on("meLang", () => document.getElementById("langBtn").click());
     on("meApp", () => document.getElementById("langBtn").click());
     on("meTour", () => window.kameiTour());
+    on("meTeam", () => window.kameiTeam.page());
     on("meBios", () => biosList());
     on("meBackup", () => window.kameiBackup.open());
     on("meAdmin", () => window.kameiAdminSheet());

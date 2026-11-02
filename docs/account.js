@@ -421,6 +421,7 @@ const ROLE_ICON = { music: "🎵", requests: "📨", events: "🏆", tv: "📺" 
       <h3 style="margin:14px 0 4px">${t("ttl")}</h3>
       <div class="two" style="display:flex;gap:8px"><select id="uTtl" style="flex:1;min-width:0;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#0f1115;color:var(--text);font:600 15px Inter,sans-serif">${t("ttlOpts").map((lb, i) => `<option value="${i}" ${((window.kameiTitles && window.kameiTitles.get(u.id)) || { rank: 0 }).rank === i ? "selected" : ""}>${lb}</option>`).join("")}</select>
         <input id="uTtlG" style="flex:1" maxlength="60" placeholder="${t("ttlGame")}" value="${esc(((window.kameiTitles && window.kameiTitles.get(u.id)) || {}).game || "")}"></div>
+      <h3 style="margin:14px 0 4px">${t("jobT")}</h3><input id="uJob" maxlength="40" placeholder="${esc(t("jobPh") || "")}" value="${esc(u.staff_title || "")}">
       ${self || u.is_admin ? "" : `<h3 style="margin:14px 0 4px">${t("roles")}</h3><p class="hint" style="margin:0 0 6px">${t("rolesHint")}</p>
         ${Object.entries(t("roleNames")).map(([k, lb]) => `<label class="row" style="display:flex;gap:10px;align-items:center"><span style="flex:1">${lb}</span>
           <input type="checkbox" data-role="${k}" ${(u.roles || []).includes(k) ? "checked" : ""} style="width:22px;height:22px;margin:0;accent-color:var(--tacc,#8fc63f)"></label>`).join("")}`}
@@ -452,12 +453,18 @@ const ROLE_ICON = { music: "🎵", requests: "📨", events: "🏆", tv: "📺" 
       toast(t("ttlOk")); if (window.kameiTitles) window.kameiTitles.refresh();
     };
     document.getElementById("uTtl").onchange = saveTtl;
+    document.getElementById("uJob").onchange = async () => {
+      const v = document.getElementById("uJob").value.trim();
+      const res = await sb.rpc("admin_set_staff_title", { uid: u.id, value: v });
+      if (res.error) return toast(errMsg(res.error), 3000);
+      u.staff_title = v || null; toast(t("jobOk")); if (window.kameiTeam) window.kameiTeam.refresh();
+    };
     document.getElementById("uTtlG").onchange = () => { if (+document.getElementById("uTtl").value) saveTtl(); };
     document.querySelectorAll("#sheet input[data-role]").forEach((x) => x.onchange = async () => {
       const want = [...document.querySelectorAll("#sheet input[data-role]")].filter((y) => y.checked).map((y) => y.dataset.role);
       const res = await sb.rpc("admin_set_roles", { uid: u.id, value: want });
       if (res.error) { x.checked = !x.checked; return toast(errMsg(res.error), 3000); }
-      u.roles = res.data || want; toast(t("done"));
+      u.roles = res.data || want; toast(t("done")); if (window.kameiTeam) window.kameiTeam.refresh();
     });
     if (!self) {
       document.getElementById("uAdmin").onclick = async () => { if (await act("admin_set_admin", { uid: u.id, value: !u.is_admin })) { u.is_admin = !u.is_admin; adminUser(u); } };

@@ -60,7 +60,7 @@
   function html(p, s, self) {
     const B = t("pfB"), list = badges(s, self).filter((b) => self || b.on);
     const fav = p.fav_game || (s.top ? s.top[0] : null);
-    return `${window.kameiTitles ? window.kameiTitles.banner(p.id) : ""}${p.bio ? `<p class="pfbio">${esc(p.bio)}</p>` : ""}
+    return `${window.kameiTitles ? window.kameiTitles.banner(p.id) : ""}${window.kameiTeam ? window.kameiTeam.banner(p.id) : ""}${p.bio ? `<p class="pfbio">${esc(p.bio)}</p>` : ""}
       ${fav ? `<p class="hint" style="margin:2px 0 0">⭐ ${t("pfFavL")} : <b style="color:var(--text)">${esc(fav)}</b></p>` : ""}
       <div class="pfstats"><div><b>${t("minutes", s.min)}</b><small>${t("pfTime")}</small></div><div><b>${s.count}</b><small>${t("pfSessions")}</small></div><div><b>${s.sys}</b><small>${t("pfConsoles")}</small></div></div>
       <h4>🏅 ${t("pfBadges")} · ${list.filter((b) => b.on).length}</h4>

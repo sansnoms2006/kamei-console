@@ -144,7 +144,7 @@
     const v = view; if (!v || !v.isConnected) return;
     const x = X(), t = cur() || list[0], u = me();
     const links = t && t.links ? LINKS.filter(([k]) => t.links[k]).map(([k, n, c]) => `<a href="${esc(t.links[k])}" target="_blank" rel="noopener" data-ext="${esc(t.links[k])}" style="background:${c}">${n}</a>`).join("") : "";
-    v.innerHTML = `${canM() ? `<div style="text-align:right;margin:-4px 0 10px"><button class="mini" id="rAdd">${x.add}</button></div>` : ""}
+    v.innerHTML = `${window.kameiTeam ? window.kameiTeam.credit("music") : ""}${canM() ? `<div style="text-align:right;margin:-4px 0 10px"><button class="mini" id="rAdd">${x.add}</button></div>` : ""}
       ${list.length ? `<div class="rnow ${!audio.paused ? "on" : ""}">${t && t.cover ? `<img class="cv" src="${esc(cover(t))}" alt="">` : `<div class="cv">🎵</div>`}
         <div><small>${x.title}</small><b>${esc(t.title)}</b><small>${esc(t.artist)}</small>
           <div class="rbar" id="rBar"><i data-rprog></i></div><div class="rtime"><span id="rT1">0:00</span><span id="rT2">${fmt(t.dur)}</span></div></div>

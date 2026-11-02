@@ -59,7 +59,7 @@
     if (!sb || !me()) return;
     const admin = window.kameiCan("requests");
     if (!v.querySelector(".rqform")) {
-      v.innerHTML = `<h2>${t("rqTitle")}</h2><p class="hint">${t("rqHint")}</p>
+      v.innerHTML = `<h2>${t("rqTitle")}</h2><p class="hint">${t("rqHint")}</p>${window.kameiTeam ? window.kameiTeam.credit("requests") : ""}
         <div class="rqform"><input id="rqT" maxlength="80" placeholder="${t("rqName")}">
           <select id="rqS"><option value="">${t("rqSys")}</option>${Object.values(SYSTEMS).map((s) => `<option>${esc(s.label)}</option>`).join("")}</select>
           <textarea id="rqD" maxlength="500" placeholder="${t("rqDetails")}"></textarea>

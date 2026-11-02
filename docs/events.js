@@ -393,7 +393,7 @@
     const order = { live: 0, checkin: 1, reg: 2, closed: 3, draft: 4, done: 5, cancelled: 6 };
     const sorted = list.slice().sort((a, b) => (order[phaseOf(a)] - order[phaseOf(b)]) || (Date.parse(a.starts_at) - Date.parse(b.starts_at)));
     v.querySelector(".evhead").innerHTML = `<h2 class="vtitle">${X.evTitle}</h2>${window.kameiCan("events") ? `<button class="mini" id="evNew">${X.evCreate}</button>` : ""}`;
-    v.querySelector("#evBody").innerHTML = (window.kameiTitles ? window.kameiTitles.hall() : "") + calendar() +
+    v.querySelector("#evBody").innerHTML = (window.kameiTeam ? window.kameiTeam.credit("events") : "") + (window.kameiTitles ? window.kameiTitles.hall() : "") + calendar() +
       (sorted.length ? sorted.map((e) => poster(e)).join("") : `<div class="vlogin"><p>${X.evNone}</p></div>`);
     const nb = v.querySelector("#evNew"); if (nb) nb.onclick = () => form();
     v.querySelector("#evPrev").onclick = () => { ym = ym.m === 0 ? { y: ym.y - 1, m: 11 } : { y: ym.y, m: ym.m - 1 }; render(v); };

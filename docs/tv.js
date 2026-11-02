@@ -103,7 +103,7 @@
     } else {
       body = `<div class="tvsoon"><svg viewBox="0 -70 240 526"><use href="#kFull" x="0" y="0" width="240" height="456"/></svg><p>${t("tvSoon")}</p></div>`;
     }
-    v.innerHTML = `<h2>${t("tvTitle")}</h2>
+    v.innerHTML = `<h2>${t("tvTitle")}</h2>${window.kameiTeam ? window.kameiTeam.credit("tv") : ""}
       <div class="tvhead"><span class="tvchip ${live ? "live" : ""}">${live ? t("tvLive") : t("tvOff")}</span>${live && c.tv_title ? `<b>${esc(c.tv_title)}</b>` : ""}</div>
       ${!live && c.tv_next ? `<p class="hint" style="font-size:14px">${esc(t("tvNext", c.tv_next))}</p>` : ""}
       ${body}
