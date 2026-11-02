@@ -271,5 +271,18 @@
   // a game starts: the music pauses (it would cover the game's sound)
   function pause() { if (!audio.paused) { audio.pause(); toast(X().paused, 2500); } }
 
+  // leaving the app (home button, other app, screen off): the music stops, even in the background
+  const stopOut = () => { if (!audio.paused) audio.pause(); };
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") stopOut(); });
+  window.addEventListener("pagehide", stopOut);
+  // the APK calls window.kameiPause() as soon as the app goes to the background
+  const wrapPause = () => {
+    const old = window.kameiPause;
+    if (old && old.kameiRadio) return;
+    const fn = function () { stopOut(); return old ? old.apply(this, arguments) : undefined; };
+    fn.kameiRadio = true; window.kameiPause = fn;
+  };
+  wrapPause(); setTimeout(wrapPause, 0); document.addEventListener("DOMContentLoaded", wrapPause);
+
   window.kameiRadio = { render, pause, playAt, toggle, next, list: () => list };
 })();
