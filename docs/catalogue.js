@@ -3,17 +3,17 @@
   const GH = window.KameiGH;
   const STR = {
     fr: { cat: "📚 Catalogue", catHint: "Les jeux créés par Kamei Productions. Installe-les en un clic !", catEmpty: "Le catalogue est vide pour l'instant.",
-      install: "Installer", installed: "Installé ✓", installing: "Téléchargement…", catAdded: (n) => `${n} est dans ta bibliothèque !`, by: (a) => `par ${a}`, authorPage: "Page de l'auteur",
+      only3ds: "📱 Les jeux 3DS s'installent seulement dans l'appli Android (ils s'ouvrent dans Azahar).", install: "Installer", installed: "Installé ✓", installing: "Téléchargement…", catAdded: (n) => `${n} est dans ta bibliothèque !`, by: (a) => `par ${a}`, authorPage: "Page de l'auteur",
       addCat: "＋ Ajouter un jeu au catalogue", catTitle: "Nom du jeu", catAuthor: "Auteur", catSource: "Lien (optionnel, https://…)", catCover: "Image de jaquette (optionnel)",
       catAllowed: "C'est un jeu que j'ai créé (ou j'ai le droit de le partager)", catPick: "Choisir le fichier du jeu", catSend: "Publier dans le catalogue", catSending: "Envoi sur GitHub…",
       catNeed: "Choisis le fichier, mets le nom et coche la case.", catTooBig: "Fichier trop gros (95 Mo max — limite de GitHub).", catDone: "Ajouté au catalogue ✅", catRemove: "Retirer", catRemoved: "Retiré du catalogue", catOffline: "Catalogue indisponible (pas de connexion ?)" },
     nl: { cat: "📚 Catalogus", catHint: "De spellen gemaakt door Kamei Productions. Installeer ze met één klik!", catEmpty: "De catalogus is nog leeg.",
-      install: "Installeren", installed: "Geïnstalleerd ✓", installing: "Downloaden…", catAdded: (n) => `${n} staat in je bibliotheek!`, by: (a) => `door ${a}`, authorPage: "Pagina van de maker",
+      only3ds: "📱 3DS-spellen installeer je alleen in de Android-app (ze openen in Azahar).", install: "Installeren", installed: "Geïnstalleerd ✓", installing: "Downloaden…", catAdded: (n) => `${n} staat in je bibliotheek!`, by: (a) => `door ${a}`, authorPage: "Pagina van de maker",
       addCat: "＋ Spel toevoegen aan catalogus", catTitle: "Naam van het spel", catAuthor: "Maker", catSource: "Link (optioneel, https://…)", catCover: "Hoesje (optioneel)",
       catAllowed: "Ik heb dit spel zelf gemaakt (of mag het delen)", catPick: "Spelbestand kiezen", catSend: "Publiceren in catalogus", catSending: "Bezig met uploaden naar GitHub…",
       catNeed: "Kies het bestand, vul de naam in en vink het vakje aan.", catTooBig: "Bestand te groot (max. 95 MB — GitHub-limiet).", catDone: "Toegevoegd aan catalogus ✅", catRemove: "Verwijderen", catRemoved: "Verwijderd uit catalogus", catOffline: "Catalogus niet beschikbaar (geen verbinding?)" },
     en: { cat: "📚 Catalogue", catHint: "Games made by Kamei Productions. Install them in one tap!", catEmpty: "The catalogue is empty for now.",
-      install: "Install", installed: "Installed ✓", installing: "Downloading…", catAdded: (n) => `${n} is in your library!`, by: (a) => `by ${a}`, authorPage: "Author's page",
+      only3ds: "📱 3DS games only install in the Android app (they open in Azahar).", install: "Install", installed: "Installed ✓", installing: "Downloading…", catAdded: (n) => `${n} is in your library!`, by: (a) => `by ${a}`, authorPage: "Author's page",
       addCat: "＋ Add a game to the catalogue", catTitle: "Game name", catAuthor: "Author", catSource: "Link (optional, https://…)", catCover: "Cover image (optional)",
       catAllowed: "I made this game (or I'm allowed to share it)", catPick: "Pick the game file", catSend: "Publish in the catalogue", catSending: "Uploading to GitHub…",
       catNeed: "Pick the file, enter the name and tick the box.", catTooBig: "File too big (95 MB max — GitHub limit).", catDone: "Added to the catalogue ✅", catRemove: "Remove", catRemoved: "Removed from the catalogue", catOffline: "Catalogue unavailable (no connection?)" },
@@ -42,8 +42,11 @@
       return r.data.games.map((g) => ({ ...g, discord: true, system: matchSys(g.sys, g.file), source: null, author: g.author || "Kamei Productions" }));
     } catch (e) { return []; }
   }
+  const SYS3DS = { label: "Nintendo 3DS", short: "3DS", theme: "#ef4444" };
+  const sysOf = (k) => SYSTEMS[k] || (k === "3ds" ? SYS3DS : { short: "?", label: "?", theme: "#888" });
   function matchSys(txt, file) {
     const v = String(txt || "").trim().toLowerCase();
+    if (/^(nintendo )?3ds$/.test(v) || /\.(3ds|cci|cia|cxi|3dsx)$/i.test(file || "")) return "3ds";
     if (v) for (const [k, s] of Object.entries(SYSTEMS)) if (k === v || s.short.toLowerCase() === v || s.label.toLowerCase() === v || (s.label.toLowerCase().replace(/[^a-z0-9]/g, "") === v.replace(/[^a-z0-9]/g, ""))) return k;
     const e = (/\.([a-z0-9]+)$/i.exec(file || "") || [])[1];
     return (e && EXT[e.toLowerCase()]) || null;
@@ -85,7 +88,7 @@
       ${isAdmin() ? `<p class="hint">💬 ${t("dcHint")}</p>` : ""}
       ${canEdit() ? `<button class="row" id="catAdd">${t("ghAdd")}</button>` : ""}
       ${list.length ? list.map((x) => {
-        const s = SYSTEMS[x.system] || { short: x.system, theme: "#888" };
+        const s = sysOf(x.system);
         return `<div class="catitem" style="--c:${s.theme}">
           <div class="cimg">${x.cover ? `<img src="${esc(x.discord ? x.cover : GH.raw(x.cover))}" alt="" loading="lazy" onerror="this.remove()">` : ""}<span>${esc(s.short)}</span></div>
           <div class="cinfo"><b>${esc(x.title)}</b><small>${esc(s.label || s.short)} · ${esc(t("by", x.author || "?"))}</small>
@@ -101,6 +104,11 @@
   }
 
   async function install(x, btn) {
+    // 3DS: the file is downloaded by the phone, then opened in Azahar / Citra (Android app only)
+    if (x.system === "3ds") {
+      if (window.kamei3ds && window.kamei3ds.fromCatalogue) return window.kamei3ds.fromCatalogue(x, x.discord ? x.url : GH.raw(x.file), x.cover ? (x.discord ? x.cover : GH.raw(x.cover)) : null);
+      return toast(t("only3ds"), 5000);
+    }
     btn.disabled = true; btn.textContent = t("installing");
     try {
       let file;
@@ -131,7 +139,7 @@
     openSheet(`<h3>${t("addCat")}</h3>
       <button class="row ok-row" id="cfPick">${t("catPick")}</button><p class="hint" id="cfName"></p>
       <input id="cfTitle" placeholder="${t("catTitle")}" maxlength="60">
-      <select id="cfSys" class="search" style="margin-bottom:12px">${Object.entries(SYSTEMS).map(([k, s]) => `<option value="${k}">${s.label}</option>`).join("")}</select>
+      <select id="cfSys" class="search" style="margin-bottom:12px">${Object.entries(SYSTEMS).map(([k, s]) => `<option value="${k}">${s.label}</option>`).join("")}${SYSTEMS["3ds"] ? "" : `<option value="3ds">Nintendo 3DS</option>`}</select>
       <input id="cfAuthor" placeholder="${t("catAuthor")}" maxlength="60" value="Kamei Productions">
       <input id="cfSrc" placeholder="${t("catSource")}" inputmode="url">
       <button class="row" id="cfCover">🖼️ ${t("catCover")}</button>
@@ -148,6 +156,7 @@
       $$("cfName").textContent = romFile.name + " · " + fmtSize(romFile.size);
       const d = await readRom(romFile);
       if (!d.error && d.system) $$("cfSys").value = d.system;
+      if (/\.(3ds|cci|cia|cxi|3dsx)$/i.test(romFile.name)) $$("cfSys").value = "3ds";
       if (!$$("cfTitle").value) $$("cfTitle").value = cleanTitle(romFile.name);
     };
     $$("cfSend").onclick = async () => {

@@ -43,10 +43,28 @@
     document.getElementById("n3All").onclick = () => { closeSheet(); document.getElementById("file").click(); };
     document.getElementById("n3Ds").onclick = () => { closeSheet(); pickFile(null); };
   }
+  /* ---------- catalogue: download the file, then pick it from Downloads ---------- */
+  let pendingCat = null;
+  const C = { fr: { t: (n) => `Installer ${n}`, h: "Les jeux 3DS sont trop gros pour rester dans Kamei : le fichier va dans le dossier Téléchargements de ton téléphone, puis Kamei l'ouvre dans Azahar.",
+      s1: "⬇️ 1. Télécharger le jeu", s1h: "Ton navigateur s'ouvre et télécharge le fichier. Attends la fin du téléchargement.", s2: "📁 2. C'est téléchargé : le choisir", s2h: "Ouvre « Téléchargements » et touche le fichier du jeu." },
+    nl: { t: (n) => `${n} installeren`, h: "3DS-spellen zijn te groot om in Kamei te blijven: het bestand gaat naar de map Downloads van je telefoon, daarna opent Kamei het in Azahar.",
+      s1: "⬇️ 1. Spel downloaden", s1h: "Je browser opent en downloadt het bestand. Wacht tot het klaar is.", s2: "📁 2. Gedownload: kiezen", s2h: "Open « Downloads » en tik op het spelbestand." },
+    en: { t: (n) => `Install ${n}`, h: "3DS games are too big to stay inside Kamei: the file goes to your phone's Downloads folder, then Kamei opens it in Azahar.",
+      s1: "⬇️ 1. Download the game", s1h: "Your browser opens and downloads the file. Wait until it's done.", s2: "📁 2. Downloaded: pick it", s2h: "Open « Downloads » and tap the game file." } };
+  function fromCatalogue(x, url, cover) {
+    const c = C[lang] || C.fr;
+    openSheet(`<h3>${esc(c.t(x.title))}</h3><p class="hint">${c.h}</p>
+      <button class="row ok-row" id="n3Dl" style="text-align:left">${c.s1}<br><small style="opacity:.8;font-weight:500">${c.s1h}</small></button>
+      <button class="row" id="n3Pk" style="text-align:left">${c.s2}<br><small style="color:var(--muted);font-weight:500">${c.s2h}</small></button>
+      <div class="btns"><button id="n3Cb">←</button></div>`);
+    document.getElementById("n3Dl").onclick = () => openUrl(url);
+    document.getElementById("n3Pk").onclick = () => { closeSheet(); pendingCat = { id: x.id, title: x.title, cover }; replacing = null; N2.pick3ds(); };
+    document.getElementById("n3Cb").onclick = closeSheet;
+  }
   let replacing = null;
   function pickFile(g) { replacing = g; N2.pick3ds(); }
   window.kameiPicked3ds = async (o) => {
-    const g0 = replacing; replacing = null;
+    const g0 = replacing, cat = pendingCat; replacing = null; pendingCat = null;
     if (!o || !o.uri) return;
     const x = X(), name = o.name || "3DS";
     if (!/\.(3ds|cci|cia|cxi|3dsx|app|z3ds|zcci|zcxi)$/i.test(name)) toast(x.notGame, 4500);
@@ -55,9 +73,11 @@
     const old0 = await getGame(id), old = old0 && old0.id ? old0 : null;
     await putGame(Object.assign(old || { added: Date.now(), lastPlayed: 0, cover: null, coverTried: false }, {
       id, fileName: name, romName: name, title: (old && old.title) || cleanTitle(name), tags: tags(name), system: "3ds", size: o.size || 0,
-      saveKey: baseName(name), uri: o.uri, external: true, blob: null }));
+      saveKey: baseName(name), uri: o.uri, external: true, blob: null },
+      cat ? { title: cat.title, catId: cat.id, cover: cat.cover || null, coverTried: !!cat.cover } : {}));
     await load();
-    toast(x.added(cleanTitle(name)));
+    toast(x.added(cat ? cat.title : cleanTitle(name)));
+    if (cat && window.kameiCatalogue && window.kameiNav && window.kameiNav.current && window.kameiNav.current() === "catalogue") window.kameiNav.rerender();
     try { scrapeMissing(); } catch (e) {}
   };
 
@@ -124,5 +144,5 @@
     const meta = sheet.querySelector(".gf-meta"); if (meta) meta.insertAdjacentHTML("afterend", `<p class="hint" style="margin:4px 0 8px">${x.note}</p>`);
   }
 
-  window.kamei3ds = { addChoice, launch, decorate, emus };
+  window.kamei3ds = { addChoice, launch, decorate, emus, fromCatalogue };
 })();
