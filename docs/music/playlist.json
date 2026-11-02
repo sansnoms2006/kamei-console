@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-02T16:20:32.126Z",
+  "updated": "2026-11-02T16:26:25.089Z",
   "tracks": [
     {
       "id": "abeka-silhouettes-mvzgtkeu",
@@ -13,6 +13,19 @@
         "youtube": "https://youtu.be/rwLRszdddsA?si=WU_qlxEkO-La5JaG"
       },
       "added": "2026-11-02T16:20:32.126Z"
+    },
+    {
+      "id": "abeka-longtemps-mvzh13e6",
+      "title": "Longtemps",
+      "artist": "Abeka",
+      "file": "abeka-longtemps-mvzh13e6.mp3",
+      "cover": "abeka-longtemps-mvzh13e6.jpg",
+      "dur": 164,
+      "links": {
+        "spotify": "https://open.spotify.com/intl-fr/album/0iU8sI2b45cvs2EQ1JTTrm?si=P3VeKzOUQDiVIfIJ6fjB-g",
+        "youtube": "https://youtu.be/ETAbyvce9Zg?si=MCvugbO1jUbblvGy"
+      },
+      "added": "2026-11-02T16:26:25.089Z"
     }
   ]
 }
