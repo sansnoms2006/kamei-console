@@ -45,7 +45,7 @@
   async function features() {
     const c = window.kameiConfig ? window.kameiConfig() : {};
     const f = Object.assign({}, c.features || {});
-    const on = (k) => (k in f ? f[k] !== false : !["tv", "events"].includes(k));
+    const on = (k) => (k in f ? f[k] !== false : !(window.kameiDefaultOff || ["tv", "events", "radio"]).includes(k));
     openSheet(`<h3>${t("adFeatures")}</h3><p class="hint">${t("adFeatHint")}</p>` +
       FEATS.map((k) => `<label class="row" style="display:flex;gap:10px;align-items:center"><span style="flex:1">${t("adF")[k]}</span>
         <input type="checkbox" data-f="${k}" ${on(k) ? "checked" : ""} style="width:22px;height:22px;margin:0;accent-color:var(--tacc,#8fc63f)"></label>`).join("") + backBtn);
