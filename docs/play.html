@@ -316,7 +316,17 @@
       .ejs_virtualGamepad_right { transform: translateY(${-lift}px) scale(${sz}); transform-origin: bottom right; opacity: ${op}; }
       .ejs_virtualGamepad_top, .ejs_virtualGamepad_bottom { opacity: ${op}; }`;
     if (opts.cheats) {
-      try { const gm = emu().gameManager; gm.resetCheat(); opts.cheats.forEach((c, i) => { if (c.on && c.code) gm.setCheat(i, 1, c.code); }); } catch (e) {}
+      /* register the codes in EmulatorJS's own list so they survive its internal resets,
+         and accept several codes in one cheat (new lines / spaces / commas → "+") */
+      try {
+        const e = emu(), list = opts.cheats.filter((c) => c.code).map((c) => ({
+          desc: c.name || c.code, checked: !!c.on, is_permanent: true,
+          code: String(c.code).toUpperCase().replace(/[^0-9A-F+\-]+/g, "+").replace(/^\++|\++$/g, "").replace(/\++/g, "+") }));
+        e.cheats = list;
+        let done = false;
+        try { if (e.updateCheatUI && e.elements && e.elements.cheatRows) { e.updateCheatUI(); done = true; } } catch (x) {}
+        if (!done) { e.gameManager.resetCheat(); list.forEach((c, i) => e.gameManager.setCheat(i, c.checked ? 1 : 0, c.code)); }
+      } catch (err) {}
     }
     document.getElementById("rew").style.display = opts.rewind ? "grid" : "none";
     try { fitSoon(); } catch (e) {}
